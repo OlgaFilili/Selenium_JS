@@ -44,6 +44,9 @@ build/Release
 node_modules/
 jspm_packages/
 
+# VS Code settings
+.vscode/
+
 # Snowpack dependency directory (https://snowpack.dev/)
 web_modules/
 
@@ -140,3 +143,4 @@ dist
 # Vite logs files
 vite.config.js.timestamp-*
 vite.config.ts.timestamp-*
+.vscode/settings.json
