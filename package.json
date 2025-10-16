@@ -20,7 +20,7 @@
   "devDependencies": {
     "chai": "^6.2.0",
     "chromedriver": "^141.0.2",
-    "mocha": "^11.7.2",
+    "mocha": "^10.2.0",
     "selenium-webdriver": "^4.35.0"
   }
 }
