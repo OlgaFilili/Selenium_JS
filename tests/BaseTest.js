@@ -6,12 +6,8 @@ let homePage;
 
 before(async function() {
     // runs once before all tests
-    this.timeout(5000);
-    console.log(">>> before() starting driver...");
     driver= await createDriver();
-    console.log(">>> driver created!");
     await driver.manage().window().maximize();
-    console.log(">>> window maximized!");
 });
 
 beforeEach(async function() {
@@ -22,6 +18,7 @@ beforeEach(async function() {
 
 after(async function() {
     // runs once after all tests
+    //await new Promise(r => setTimeout(r, 5000));
     await quitDriver();
 });
 
