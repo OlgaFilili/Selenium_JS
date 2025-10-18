@@ -19,10 +19,16 @@ class BasePage
     await element.sendKeys(text);
   }
 
-  /*async _getmessage(locator) {
-    let element= await this.find(locator);
-    return await element.text();
-  }*/
+  /** @returns {Promise<string>} */
+  async _getText(locator) {
+    let element= await this._find(locator);
+    return element.getText();
+  }
+
+  async _getColorValue(locator, CSSProperty) {
+    let element= await this._find(locator);
+    return element.getCssValue(CSSProperty);
+  }
 
 }
 

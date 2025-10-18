@@ -2,6 +2,7 @@
 *.bak
 
 # Logs
+auxiliary
 logs
 *.log
 npm-debug.log*

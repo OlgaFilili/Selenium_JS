@@ -14,7 +14,6 @@ async function createDriver() {
       .setChromeOptions(options)
       .build();
   }
-
   // Ensure the promise resolves before continuing
   //await driver.getSession();
   return driver;
@@ -22,7 +21,6 @@ async function createDriver() {
 
 async function quitDriver() {
   if (driver) {
-    await new Promise(r => setTimeout(r, 5000));
     await driver.quit();
     driver = null;
   }

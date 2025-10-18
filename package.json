@@ -4,7 +4,7 @@
   "description": "First automation testing project with Selenium WebDriver/JS.",
   "main": "index.js",
   "scripts": {
-    "test": "mocha ./tests/**/*.js"
+    "test": "mocha ./tests/**/*.js --timeout 10000"
   },
   "repository": {
     "type": "git",
