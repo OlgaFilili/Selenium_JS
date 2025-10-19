@@ -1,4 +1,4 @@
-const { scrollToElement, clickElement } = require('../utils/BrowserUtils');
+const { scrollToElement } = require('../utils/BrowserUtils');
 const BasePage = require("./BasePage");
 const ElementsPage = require('./ElementsPage.js');
 const FormsPage = require('./FormsPage.js');

@@ -1,6 +1,5 @@
 const HomePage = require('../pages/HomePage');
-const BasePage = require('../pages/BasePage');
-const { createDriver, quitDriver }= require('../utils/driver');
+const { createDriver, quitDriver }= require('../utils/DriverUtils');
 let driver;
 let url = 'https://demoqa.com/';
 let homePage;
@@ -14,7 +13,6 @@ before(async function() {
 beforeEach(async function() {
     // runs before each test
     await driver.get(url);
-    //basePage= new BasePage(driver);
     homePage =new HomePage(driver);
     
 });
