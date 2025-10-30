@@ -1,9 +1,11 @@
 const { getHomePage } = require("../BaseTest");
 const { capitalizeFirstLetter } = require("../../utils/StringUtils")
 const { expect } = require('chai');
+const RadioButtonPage = require("../../pages/elements/RadioButtonPage");
 
 describe('Radiobuttons functionality check', function() {
   const options = ['yes', 'impressive', 'no'];
+  /** @type {RadioButtonPage} */
   let radioButtonPage;
   beforeEach (async function(){
     const homePage= await getHomePage();
@@ -26,9 +28,9 @@ describe('Radiobuttons functionality check', function() {
       const actualOptionColorInMessage= await radioButtonPage.verifyColor();
       //console.log(`Color for ${option}:`, actualOptionColorInMessage);
       expect(optionSelected, `${option}-option was not selected`).to.be.true;
-      expect(actualConfirmationText, 'The Message Does Not Start With "You have selected "').to.be.equal("You have selected ");
-      expect(actualConfirmation, 'Actual And Expected Confirmation Text Do Not Match').to.be.equal(capitalizeFirstLetter(option));
-      expect(actualOptionColorInMessage, 'Actual And Expected Color Of Selected Option In Message Do Not Match').to.be.equal("rgba(40, 167, 69, 1)");
+      expect(actualConfirmationText, 'The message does not start with "You have selected "').to.be.equal("You have selected ");
+      expect(actualConfirmation, 'Actual and expected confirmation text do not match').to.be.equal(capitalizeFirstLetter(option));
+      expect(actualOptionColorInMessage, 'Actual and txpected color of selected option in message do not match').to.be.equal("rgba(40, 167, 69, 1)");
     });
   });
 });
