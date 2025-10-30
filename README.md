@@ -24,20 +24,25 @@ Includes page object model, utility functions, and test scripts.
 4. Project Structure
 Selenium_JS/
 ├─ node_modules/          # Installed dependencies (ignored by Git)
-├─ tests/                 # Test scripts
-│   ├─ BaseTest.js        # Common test setup/teardown
-│   ├─ elements/
-│   │   └─ RadioButtonTest.js
-│   └─ (other test files)
 ├─ pages/                 # Page Object Model classes
-│   ├─ BasePage.js
-│   ├─ HomePage.js
-│   ├─ ElementsPage.js
 │   ├─ elements/
+│   │   ├─ CheckBoxPage.js
 │   │   └─ RadioButtonPage.js
+│   ├─ BasePage.js
+│   ├─ ElementsPage.js
+│   ├─ HomePage.js
 │   └─ (other page objects)
+├─ tests/                 # Test scripts
+│   ├─ elements/
+│   │   ├─ CheckBoxTest.js
+│   │   └─ RadioButtonTest.js
+│   ├─ BaseTest.js        # Common test setup/teardown
+│   └─ (other test files)
 ├─ utils/                 # Utility/helper functions
-│   ├─ driver.js
+│   ├─ BrowserUtils.js
+│   ├─ DriverUtils.js
+│   ├─ StringUtils.js
+│   ├─ WaitUtils.js
 │   └─ (other utilities)
 ├─ package.json           # Node.js dependencies and scripts
 ├─ package-lock.json      # Locked dependency versions
@@ -49,12 +54,14 @@ Selenium_JS/
 ## Project Status
 Fully functional with working Mocha tests.
 Page Object Model implemented (pages/ and utils/ folders).
-Test examples: RadioButtonTest.js in tests/elements/.
+Test examples: RadioButtonTest.js in tests/elements/,
+               CheckBoxTest.js in tests/elements
 Core reusable components: BaseTest.js, BasePage.js.
 
 ## Notes
 ChromeDriver is managed by the chromedriver package.
 Tests are designed using Mocha + Chai + Selenium WebDriver.
-Test failures caused by page elements (ads, modals) should be handled in Page Objects.
+Completed RadioButtonTest suite.
+Completed CheckBoxTest suite.
 Use async/await in tests for proper promise handling.
 
