@@ -9,7 +9,7 @@ class RadioButtonPage extends BasePage
     this.RBXpathSuffix= "Radio']";
     this.RBXpathLabelSuffix= "/following-sibling::label";
     this.confirmationMessageXpath="//p[@class='mt-3']";
-    }
+  }
   
   // helper: builds full locator for given option
   _getRBInputLocator(option){
@@ -43,7 +43,6 @@ class RadioButtonPage extends BasePage
     const locator= { xpath: `${this.confirmationMessageXpath}//span` };
     return await this._getColorValue(locator, 'color');
   }
-
 }
 
 module.exports= RadioButtonPage;

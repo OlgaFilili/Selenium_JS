@@ -1,4 +1,3 @@
-const { scrollToElement } = require('../utils/BrowserUtils');
 const BasePage = require("./BasePage");
 const ElementsPage = require('./ElementsPage.js');
 const FormsPage = require('./FormsPage.js');
@@ -20,39 +19,31 @@ class HomePage extends BasePage
   }
  
   async gotoElements() {
-    const element = await this._find(this.ElementsCard);
-    await scrollToElement(this.driver, element);
-    //await clickElement(element);
     await this._click(this.ElementsCard);
     return new ElementsPage(this.driver);
   }
 
   async gotoForms() {
-    await scrollToElement(this.driver, this._find(this.FormsCard));
     await this._click(this.FormsCard);
     return new FormsPage(this.driver);
   }
 
   async gotoAlertsFrameWindows() {
-    await scrollToElement(this.driver, this._find(this.AlertsFrameWindowsCard));
     await this._click(this.AlertsFrameWindowsCard);
     return new AlertsFrameWindowsPage(this.driver);
   }
 
   async gotoWidgets() {
-    await scrollToElement(this.driver, this._find(this.WidgetsCard));
     await this._click(this.WidgetsCard);
     return new WidgetsPage(this.driver);
   }
 
   async gotoInteractions() {
-    await scrollToElement(this.driver, this._find(this.InteractionsCard));
     await this._click(this.InteractionsCard);
     return new InteractionsPage(this.driver);
   }
 
   async gotoBookStoreApplication() {
-    await scrollToElement(this.driver, this._find(this.BookStoreApplicationCard));
     await this._click(this.BookStoreApplicationCard);
     return new BookStoreApplicationPage(this.driver);
   }
