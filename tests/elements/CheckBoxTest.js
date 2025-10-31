@@ -1,10 +1,9 @@
 const { getHomePage }= require("../BaseTest");
 const { uniteAndTtrimExtention } = require("../../utils/StringUtils");
-const { waitVisible } = require("../../utils/WaitUtils");
 const CheckBoxPage = require('../../pages/elements/CheckBoxPage');
 const { expect }= require('chai');
 
-describe.only('Checkbox Page functionality check', function() {
+describe('Check Box Page functionality check', function() {
     const normalize = name => name.toLowerCase();
     const tree= normalize('Home');
     const nodes=['Desktop', 'Documents', 'Downloads'].map(normalize);
@@ -21,13 +20,13 @@ describe.only('Checkbox Page functionality check', function() {
         checkBoxPage= await elementsPage.gotoCheckBoxMenuItem();
     });
     describe('smoke: Basic functionality check', function(){
-        it ('should confirm default state', async function () {
+        it ('should confirm default state', async function() {
             const expanded= await checkBoxPage.isNodeExpanded(tree);
             expect(expanded, `"${tree}" is expanded`).to.be.false;
             const folderSelected= await checkBoxPage.getCheckBoxState(tree);
             expect(folderSelected, `"${tree}" is selected`).to.be.equal('uncheck');
         });
-        it ('should confirm basic functionality', async function(){
+        it ('should confirm basic functionality', async function() {
             await checkBoxPage.expandNode(tree);
             let expanded= await checkBoxPage.isNodeExpanded(tree);
             expect(expanded, `"${tree}" is not expanded`).to.be.true;
@@ -50,7 +49,7 @@ describe.only('Checkbox Page functionality check', function() {
 
         });
     });
-    describe ('regression: Expand/Collapse All buttons', function(){
+    describe ('regression: Expand/Collapse All buttons', function() {
         it('should expand all nodes when clicking "Expand All"', async function() {
             await checkBoxPage.clickExpandAllButton();
             let expanded= await checkBoxPage.isNodeExpanded(tree);
@@ -73,7 +72,7 @@ describe.only('Checkbox Page functionality check', function() {
         });
     });
 
-    it('regression: should select all children if parent was selected', async function(){
+    it('regression: should select all children if parent was selected', async function() {
         await checkBoxPage.expandAndDo('click', tree, nodes[0]);
         const folderSelected= await checkBoxPage.getCheckBoxState(nodes[0]);
         expect(folderSelected, `"${nodes[0]}" is not selected`).to.be.equal('check');
