@@ -1,6 +1,7 @@
 const BasePage = require("./BasePage");
 const RadioButtonPage = require('./elements/RadioButtonPage.js');
 const CheckBoxPage= require('./elements/CheckBoxPage.js');
+const WebTablesPage= require('./elements/WebTablesPage.js');
 
 class ElementsPage extends BasePage 
 {
@@ -8,15 +9,20 @@ class ElementsPage extends BasePage
     super(driver);
     this.CheckBoxMenuItem= { xpath: "//li[@id='item-1']//span[text()='Check Box']"};
     this.RadioButtonMenuItem= { xpath: "//li[@id='item-2']//span[text()='Radio Button']"};
+    this.WebTablesMenuItem= { xpath: "//li[@id='item-3']//span[text()='Web Tables']"};
   }
 
   async gotoRadioButtonMenuItem() {
-      await this._click(this.RadioButtonMenuItem);
-      return new RadioButtonPage(this.driver);
+    await this._click(this.RadioButtonMenuItem);
+    return new RadioButtonPage(this.driver);
   }
   async gotoCheckBoxMenuItem() {
-      await this._click(this.CheckBoxMenuItem);
-      return new CheckBoxPage(this.driver);
+    await this._click(this.CheckBoxMenuItem);
+    return new CheckBoxPage(this.driver);
+  }
+  async gotoWebTablesMenuItem() {
+    await this._click(this.WebTablesMenuItem);
+    return new WebTablesPage(this.driver);
   }
 }
 
