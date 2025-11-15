@@ -27,7 +27,8 @@ Selenium_JS/
 ├─ pages/                 # Page Object Model classes
 │   ├─ elements/
 │   │   ├─ CheckBoxPage.js
-│   │   └─ RadioButtonPage.js
+│   │   ├─ RadioButtonPage.js
+│   │   └─ RWebTablesPage.js
 │   ├─ BasePage.js
 │   ├─ ElementsPage.js
 │   ├─ HomePage.js
@@ -35,7 +36,8 @@ Selenium_JS/
 ├─ tests/                 # Test scripts
 │   ├─ elements/
 │   │   ├─ CheckBoxTest.js
-│   │   └─ RadioButtonTest.js
+│   │   ├─ RadioButtonTest.js
+│   │   └─ WebTablesTest.js
 │   ├─ BaseTest.js        # Common test setup/teardown
 │   └─ (other test files)
 ├─ utils/                 # Utility/helper functions
@@ -54,8 +56,9 @@ Selenium_JS/
 ## Project Status
 Fully functional with working Mocha tests.
 Page Object Model implemented (pages/ and utils/ folders).
-Test examples: RadioButtonTest.js in tests/elements/,
-               CheckBoxTest.js in tests/elements
+Test examples: CheckBoxTest.js in tests/elements,
+               RadioButtonTest.js in tests/elements/,
+               WebTablesTest.js in tests/elements/.
 Core reusable components: BaseTest.js, BasePage.js.
 
 ## Notes
@@ -63,5 +66,6 @@ ChromeDriver is managed by the chromedriver package.
 Tests are designed using Mocha + Chai + Selenium WebDriver.
 Completed RadioButtonTest suite.
 Completed CheckBoxTest suite.
+Completed WebTablesTest suite.
 Use async/await in tests for proper promise handling.
 
