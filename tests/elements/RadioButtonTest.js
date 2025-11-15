@@ -3,7 +3,7 @@ const { capitalizeFirstLetter } = require("../../utils/StringUtils")
 const { expect } = require('chai');
 const RadioButtonPage = require("../../pages/elements/RadioButtonPage");
 
-describe('Radiobuttons functionality check', function() {
+describe('Radio Button Page functionality check', function() {
   const options = ['yes', 'impressive', 'no'];
   /** @type {RadioButtonPage} */
   let radioButtonPage;
