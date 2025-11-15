@@ -7,7 +7,11 @@ async function clickElement(driver, element){
 }
 
 async function getDirectText(driver, locator) {
-    const element = await driver.findElement(locator);
-    return driver.executeScript('return arguments[0].childNodes[0].nodeValue;', element);
+  const element = await driver.findElement(locator);
+  return driver.executeScript("return arguments[0].childNodes[0].nodeValue;", element);
 }
-module.exports = { scrollToElement, getDirectText };
+
+async function isInputValid(driver, element) {
+  return driver.executeScript("return arguments[0].checkValidity();", element);
+}
+module.exports = { scrollToElement, getDirectText, isInputValid };

@@ -25,13 +25,11 @@ class RadioButtonPage extends BasePage
   }
   async isRBOptionEnabled(option) {
     const locator = this._getRBInputLocator(option);
-    const element = await this._find(locator);
-    return await element.isEnabled();
+    return await this._isEnabled(locator);
   }
   async isRBOptionSelected(option) {
     const locator= this._getRBInputLocator(option);
-    const element= await this._find(locator);
-    return await element.isSelected();
+    return await this._isSelected(locator);
   }
   async getRBOptionConfirmationText(){
     return await getDirectText(this.driver, { xpath: this.confirmationMessageXpath });

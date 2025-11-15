@@ -1,13 +1,41 @@
 const { scrollToElement } = require('../utils/BrowserUtils');
 const { waitClickable } = require('../utils/WaitUtils');
+const { Key }= require('selenium-webdriver');
 class BasePage 
 {
   constructor(driver){
     this.driver=driver;
   }
 
-  async _find (locator) {
+  async _find(locator){
     return await this.driver.findElement(locator);
+  }
+
+  async _finds(locator){
+    return await this.driver.findElements(locator);
+  }
+
+  async _findInside(element, locator) {
+    return await element.findElement(locator);
+  }
+
+  async _findsInside(element, locator) {
+    return await element.findElements(locator);
+  }
+
+  async _isEnabled(target) {
+    const element = (typeof target.getText === 'function') ? target : await this._find(target);
+    return await element.isEnabled();
+  }
+
+  async _isSelected(target) {
+    const element = (typeof target.getText === 'function') ? target : await this._find(target);
+    return await element.isSelected(); 
+  }
+
+  async _isDisplayed(locator) {
+    const element = await this._find(locator);
+    return await element.isDisplayed();
   }
 
   async _click(locator) {
@@ -27,28 +55,51 @@ class BasePage
     }
   }
 
-  /*async _click(locator) {
-    let element= await this._find(locator);
-    await element.click();
-  }*/
+  async _clickElement(element) {
+      try {
+          await element.click();
+      } catch (err) {
+          if (err.name === 'ElementClickInterceptedError') {
+              await scrollToElement(this.driver, element);
+              await element.click();
+          } else {
+            throw err;
+          }
+      }
+  }
 
   async _set(locator, text) {
     let element= await this._find(locator);
     await element.clear();
     await element.sendKeys(text);
   }
+  
+  async _backspace(locator, num) {
+    const element = await this._find(locator);
+    await element.sendKeys(Key.chord(...Array(num).fill(Key.BACK_SPACE)));
+  }
+  /** @returns {Promise<string>} */
+  async _getValue(element){
+    return await element.getAttribute('value');
+  }
 
   /** @returns {Promise<string>} */
-  async _getText(locator) {
-    let element= await this._find(locator);
-    return element.getText();
+  async _getText(target) {
+      let element;
+      if (typeof target === 'object' && typeof target.getText === 'function') {
+          // Already a WebElement
+          element = target;
+      } else {
+          // Treat as locator
+          element = await this._find(target);
+      }
+      return await element.getText();
   }
 
   async _getColorValue(locator, CSSProperty) {
     let element= await this._find(locator);
     return element.getCssValue(CSSProperty);
   }
-
 }
 
 module.exports = BasePage;
