@@ -1,11 +1,13 @@
 const { waitVisible } = require("../../utils/WaitUtils");
 const { isInputValid } = require("../../utils/BrowserUtils");
 const BasePage = require("../BasePage");
+const MainMenu = require("../../components/MainMenu");
 
 class WebTablesPage extends BasePage
 {
     constructor(driver) {
         super(driver);
+        this.menu=new MainMenu(driver);
         this.tableHeader= { xpath: "//h1[text()='Web Tables']"};
         this.addButton= { id: "addNewRecordButton"};
         this.searchBox= { id: "searchBox"};

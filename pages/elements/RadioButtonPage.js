@@ -1,10 +1,12 @@
 const BasePage = require("../BasePage");
 const { getDirectText } = require("../../utils/BrowserUtils");
+const MainMenu= require("../../components/MainMenu");
 
 class RadioButtonPage extends BasePage 
 {
   constructor(driver) {
     super(driver);
+    this.menu= new MainMenu(driver);
     this.RBXpathPrefix= "//input[@id='";
     this.RBXpathSuffix= "Radio']";
     this.RBXpathLabelSuffix= "/following-sibling::label";

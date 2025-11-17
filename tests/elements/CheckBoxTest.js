@@ -49,7 +49,7 @@ describe('Check Box Page functionality check', function() {
 
         });
     });
-    describe ('regression: Expand/Collapse All buttons', function() {
+    describe('regression: Expand/Collapse All buttons', function() {
         it('should expand all nodes when clicking "Expand All"', async function() {
             await checkBoxPage.clickExpandAllButton();
             let expanded= await checkBoxPage.isNodeExpanded(tree);

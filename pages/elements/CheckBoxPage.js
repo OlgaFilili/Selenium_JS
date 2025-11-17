@@ -1,9 +1,11 @@
+const MainMenu = require("../../components/MainMenu");
 const BasePage = require("../BasePage");
 
 class CheckBoxPage extends BasePage
 {
     constructor(driver) {
         super(driver);
+        this.menu= new MainMenu(driver);
         this.expandAllButton={ xpath: "//button[@title='Expand all']"};
         this.collapseAllButton={ xpath: "//button[@title= 'Collapse all']"};
         this.toggleButton= "//parent::span/button";
