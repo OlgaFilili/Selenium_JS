@@ -3,7 +3,7 @@ First automation testing project with Selenium WebDriver/JS.
 
 ## Project Overview
 Automated tests for a sample web application using Selenium WebDriver with JavaScript.  
-Includes page object model, utility functions, and test scripts.
+Includes page object model, components, utility functions, and test scripts.
 
 ## Prerequisites / Environment
 - Node.js v22.20.0
@@ -23,8 +23,11 @@ Includes page object model, utility functions, and test scripts.
 
 4. Project Structure
 Selenium_JS/
-├─ node_modules/          # Installed dependencies (ignored by Git)
-├─ pages/                 # Page Object Model classes
+├─ components/                  # Reusable elements
+│   ├─ MainMenu.js
+│   └─ (other components)
+├─ node_modules/                # Installed dependencies (ignored by Git)
+├─ pages/                       # Page Object Model classes
 │   ├─ elements/
 │   │   ├─ CheckBoxPage.js
 │   │   ├─ RadioButtonPage.js
@@ -33,29 +36,29 @@ Selenium_JS/
 │   ├─ ElementsPage.js
 │   ├─ HomePage.js
 │   └─ (other page objects)
-├─ tests/                 # Test scripts
+├─ tests/                       # Test scripts
 │   ├─ elements/
 │   │   ├─ CheckBoxTest.js
 │   │   ├─ RadioButtonTest.js
 │   │   └─ WebTablesTest.js
-│   ├─ BaseTest.js        # Common test setup/teardown
+│   ├─ BaseTest.js              # Common test setup/teardown
 │   └─ (other test files)
-├─ utils/                 # Utility/helper functions
+├─ utils/                       # Utility/helper functions
 │   ├─ BrowserUtils.js
 │   ├─ DriverUtils.js
 │   ├─ StringUtils.js
 │   ├─ WaitUtils.js
 │   └─ (other utilities)
-├─ package.json           # Node.js dependencies and scripts
-├─ package-lock.json      # Locked dependency versions
-└─ README.md              # Project documentation
+├─ package.json                 # Node.js dependencies and scripts
+├─ package-lock.json            # Locked dependency versions
+└─ README.md                    # Project documentation
 
 5. Running Tests
 ```npx mocha tests/ ```
 
 ## Project Status
 Fully functional with working Mocha tests.
-Page Object Model implemented (pages/ and utils/ folders).
+Page Object Model implemented (pages/, components/ and utils/ folders).
 Test examples: CheckBoxTest.js in tests/elements,
                RadioButtonTest.js in tests/elements/,
                WebTablesTest.js in tests/elements/.
