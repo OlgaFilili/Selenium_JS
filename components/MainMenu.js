@@ -1,8 +1,11 @@
+const { waitVisible } = require("../utils/WaitUtils");
+
 class MainMenu
 {
   constructor(driver) {
     this.driver= driver;
     this.navigationBarButton= {xpath: "//button[@class='navbar-toggler']"};
+    this.expandedMenuLocator= { xpath: "//div[contains(@class,'left-pannel')]"};
     this.cardMenuPrefix= "//div[contains(@class,'header-text') and text()='";
     this.cardMenuSuffix= "//ancestor::div[contains(@class,'element-group')]//div[contains(@class,'element-list')]";
     //Menu Items
@@ -19,7 +22,17 @@ class MainMenu
   _getMenuItemLocator(name) {
     return { xpath: `${this.menuItemPrefix}${name}']`};
   }
+  async _ensureMenuVisible() {
+    const expandedPanels = await this.driver.findElements(this.expandedMenuLocator);
+    if (expandedPanels.length > 0) {
+        return;
+    }
+    const button = await this.driver.findElement(this.navigationBarButton);
+    await button.click();
+    await waitVisible(this.driver, this.expandedMenuLocator);
+  }
   async expandMenu(name) {
+    await this._ensureMenuVisible();
     const header = this._getMenuHeaderLocator(name);
     const container = this._getMenuStatusLocator(name);
     const element = await this.driver.findElement(container);
@@ -30,6 +43,7 @@ class MainMenu
     }
   }
   async collapseMenu(name) {
+    await this._ensureMenuVisible();
     const header = this._getMenuHeaderLocator(name);
     const container = this._getMenuStatusLocator(name);
 
