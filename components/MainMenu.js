@@ -2,49 +2,49 @@ class MainMenu
 {
   constructor(driver) {
     this.driver= driver;
-    this.ElementsCard= { xpath: "//div[text()='Elements']"};
-    this.FormsCard= { xpath: "//div[text()='Forms']"};
-    this.AlertsFrameWindowsCard= { xpath: "//div[text()='Alerts, Frame & Windows']"};
-    this.WidgetsCard= { xpath: "//div[text()='Widgets']"};
-    this.InteractionsCard= { xpath: "//div[text()='Interactions']"};
-    this.BookStoreApplicationCard= { xpath: "//div[text()='Book Store Application']"};
-    //Elements` Menu Items
-    this.CheckBoxMenuItem= { xpath: "//li[@id='item-1']//span[text()='Check Box']"};
-    this.RadioButtonMenuItem= { xpath: "//li[@id='item-2']//span[text()='Radio Button']"};
-    this.WebTablesMenuItem= { xpath: "//li[@id='item-3']//span[text()='Web Tables']"};
-  }
- 
-  async clickElements() {
-    await this.driver.findElement(this.ElementsCard).click();
-  }
-  async clickRadioButtonMenuItem() {
-    await this.driver.findElement(this.RadioButtonMenuItem).click();
-  }
-  async clickCheckBoxMenuItem() {
-    await this.driver.findElement(this.CheckBoxMenuItem).click();
-  }
-  async clickWebTablesMenuItem() {
-    await this.driver.findElement(this.WebTablesMenuItem).click();
+    this.navigationBarButton= {xpath: "//button[@class='navbar-toggler']"};
+    this.cardMenuPrefix= "//div[contains(@class,'header-text') and text()='";
+    this.cardMenuSuffix= "//ancestor::div[contains(@class,'element-group')]//div[contains(@class,'element-list')]";
+    //Menu Items
+    this.menuItemPrefix="//li//span[text()='";
   }
 
-  async clickForms() {
-    await this.driver.findElement(this.FormsCard).click();
+  // possible names={'Elements', 'Forms', 'Alerts, Frame & Windows', 'Widgets', 'Interactions', 'Book Store Application'}
+  _getMenuHeaderLocator(name) {
+    return {xpath: `${this.cardMenuPrefix}${name}']`};
+  }
+  _getMenuStatusLocator(name) {
+    return {xpath: `${this.cardMenuPrefix}${name}']${this.cardMenuSuffix}`};
+  }
+  _getMenuItemLocator(name) {
+    return { xpath: `${this.menuItemPrefix}${name}']`};
+  }
+  async expandMenu(name) {
+    const header = this._getMenuHeaderLocator(name);
+    const container = this._getMenuStatusLocator(name);
+    const element = await this.driver.findElement(container);
+    const classValue = await element.getAttribute("class");
+
+    if (!classValue.includes("show")) {
+        await this.driver.findElement(header).click();
+    }
+  }
+  async collapseMenu(name) {
+    const header = this._getMenuHeaderLocator(name);
+    const container = this._getMenuStatusLocator(name);
+
+    const element = await this.driver.findElement(container);
+    const classValue = await element.getAttribute("class");
+
+    if (classValue.includes("show")) {
+        await this.driver.findElement(header).click();
+    }
   }
 
-  async clickAlertsFrameWindows() {
-    await this.driver.findElement(this.AlertsFrameWindowsCard).click();
-  }
-
-  async clickWidgets() {
-    await this.driver.findElement(this.WidgetsCard).click();
-  }
-
-  async clickInteractions() {
-    await this.driver.findElement(this.InteractionsCard).click();
-  }
-
-  async clickBookStoreApplication() {
-    await this.driver.findElement(this.BookStoreApplicationCard).click();
+  async clickMenuItem(menuName, itemName) {
+    await this.expandMenu(menuName);
+    const item = this._getMenuItemLocator(itemName);
+    await this.driver.findElement(item).click();
   }
 
 }
