@@ -78,6 +78,10 @@ class BasePage
     const element = await this._find(locator);
     await element.sendKeys(Key.chord(...Array(num).fill(Key.BACK_SPACE)));
   }
+  async _pressEscape() {
+    await this.driver.actions().sendKeys(Key.ESCAPE).perform();
+  }
+  
   /** @returns {Promise<string>} */
   async _getValue(element){
     return await element.getAttribute('value');

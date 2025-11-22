@@ -1,7 +1,8 @@
 const { waitVisible } = require("../../utils/WaitUtils");
-const { isInputValid } = require("../../utils/BrowserUtils");
+const { isInputValid, scrollRelatively } = require("../../utils/BrowserUtils");
 const BasePage = require("../BasePage");
 const MainMenu = require("../../components/MainMenu");
+const { Key }= require('selenium-webdriver');
 
 class WebTablesPage extends BasePage
 {
@@ -179,6 +180,12 @@ class WebTablesPage extends BasePage
         await this._clickElement(select);
         const option = await select.findElement({ css: `${this.rowsPerPageOptions}[value="${value}"]`});
         await option.click();
+    }
+    async closeRowsPerPageDropdown(){
+        const select = await this._find(this.rowsPerPageSelect);
+        await this._clickElement(select);
+        await this._pressEscape();
+        await scrollRelatively(this.driver, 0, -190);
     }
     async isPreviousButtonEnabled(){
         return await this._isEnabled(this.previousPageButton);
