@@ -19,7 +19,7 @@
   "homepage": "https://github.com/OlgaFilili/Selenium_JS#readme",
   "devDependencies": {
     "chai": "^6.2.0",
-    "chromedriver": "^141.0.2",
+    "chromedriver": "^142.0.3",
     "mocha": "^10.2.0",
     "selenium-webdriver": "^4.35.0"
   }

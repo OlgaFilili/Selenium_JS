@@ -9,7 +9,7 @@ Includes page object model, components, utility functions, and test scripts.
 - Node.js v22.20.0
 - npm v10.9.3
 - Windows 10 Pro
-- Chrome v141 (tested)
+- Chrome v142 (tested)
 
 ## Project Setup
 1. Clone the repo:
@@ -46,6 +46,7 @@ Selenium_JS/
 ├─ utils/                       # Utility/helper functions
 │   ├─ BrowserUtils.js
 │   ├─ DriverUtils.js
+│   ├─ ScreenshotUtils.js
 │   ├─ StringUtils.js
 │   ├─ WaitUtils.js
 │   └─ (other utilities)
@@ -71,4 +72,5 @@ Completed RadioButtonTest suite.
 Completed CheckBoxTest suite.
 Completed WebTablesTest suite.
 Use async/await in tests for proper promise handling.
+Add screenshot functionality for failing tests.
 
