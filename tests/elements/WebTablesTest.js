@@ -536,6 +536,7 @@ describe('Web Tables Page functionality check', function() {
             await webTablesPage.waitPreviousButton();
             await webTablesPage.clickNextPageButton();
             await webTablesPage.setRowsPerPage(10);
+            await webTablesPage.closeRowsPerPageDropdown();
             const actualPageNumber= await webTablesPage.getCurrentPageNumber();
             const totalPages= await webTablesPage.getTotalPages();
             const nextButtonState= await webTablesPage.isNextButtonEnabled();

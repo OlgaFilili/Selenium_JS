@@ -1,5 +1,26 @@
 const { until } = require('selenium-webdriver');
 
+const TRANSIENT_SELECTORS = [
+    '.dropdown-menu.show',
+    '.modal.show',
+    '.spinner',
+    '.tooltip.show'
+];
+
+async function waitForStableUI(driver, timeout = 5000) {
+    const startTime = Date.now();
+    while (true) {
+        const elements = await Promise.all(
+            TRANSIENT_SELECTORS.map(sel => driver.findElements({ css: sel }))
+        );
+        const visible = elements.flat().filter(el => el);
+        if (visible.length === 0) break;
+        if (Date.now() - startTime > timeout) break;
+        await new Promise(r => setTimeout(r, 50));
+    }
+    await new Promise(r => setTimeout(r, 50));
+}
+
 async function waitVisible(driver, locator) {
     const timeout= 5000;
     const element = await driver.wait(until.elementLocated(locator), timeout);
@@ -22,4 +43,4 @@ async function waitText(driver, locator, expectedText) {
         return text.includes(expectedText);
     }, timeout, `Text "${expectedText}" not found in element`);
 }
-module.exports={ waitClickable, waitVisible};
+module.exports={ waitClickable, waitVisible, waitForStableUI};

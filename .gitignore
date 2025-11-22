@@ -2,6 +2,7 @@
 *.bak
 
 # Logs
+screenshots
 auxiliary
 logs
 *.log

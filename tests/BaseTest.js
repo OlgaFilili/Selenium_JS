@@ -1,5 +1,6 @@
 const HomePage = require('../pages/HomePage');
 const { createDriver, quitDriver }= require('../utils/DriverUtils');
+const { saveScreenshot } = require('../utils/ScreenshotUtils');
 let driver;
 let url = 'https://demoqa.com/';
 let homePage;
@@ -15,6 +16,12 @@ beforeEach(async function() {
     await driver.get(url);
     homePage =new HomePage(driver);
     
+});
+
+afterEach(async function () {
+    if (this.currentTest.state === 'failed') {
+        await saveScreenshot(driver, this);
+    }
 });
 
 after(async function() {
