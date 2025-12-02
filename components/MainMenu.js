@@ -1,5 +1,6 @@
 const BasePage = require("../pages/BasePage.js");
 const { waitVisible, waitClickable, waitIsRemoved } = require("../utils/WaitUtils.js");
+const { scrollToElement } = require("../utils/BrowserUtils.js");
 
 class MainMenu extends BasePage
 {
@@ -107,6 +108,10 @@ class MainMenu extends BasePage
       return true;
     }
     return false;
+  }
+  async scrollToTheHead(){
+    const element=await this._find(this.navigationBarButton);
+    await scrollToElement(this.driver, element);
   }
 }
 module.exports = MainMenu;
