@@ -5,7 +5,7 @@ const WidgetsPage = require("../pages/WidgetsPage.js");
 const BooksPage= require ("../pages/book_store/BooksPage.js");
 const { expect }= require('chai');
 
-describe ('Main Menu responsive behavior check', function(){
+describe('Main Menu responsive behavior check', function(){
     const mainMenuNames=['Elements', 'Forms', 'Alerts, Frame & Windows', 'Widgets', 'Interactions', 'Book Store Application'];
     const elementsMenuItems=['Text Box', 'Radio Button', 'Check box', 'Web Tables'];
     const formsMenuItem='Practice Form';
@@ -46,7 +46,15 @@ describe ('Main Menu responsive behavior check', function(){
             expect(isActive, `${widgetsMenuItems[2]} sub-menu is not active`).to.be.true;
         });
     });
-    describe.only('regression: Main Menu checks after maximizing window', function(){
+    describe('regression: Book Store page behavior checks', function(){
+        it('should automatically scroll to the top of the page when opening Book Store Application from Home page', async function(){
+            anyPage= await homePage.gotoBookStoreApplication();
+            //await anyPage.menu.isNavBarVisible();
+            const isVisible= await anyPage.isLoginButtonVisible();
+            expect(isVisible, "The Book Store page is not automated scrolled to the top of the page redirecting from Home page").to.be.true;
+        });
+    });
+    describe('regression: Main Menu checks after maximizing window', function(){
         it('should check Navigation Bar button disappears and MainMenu keeps its state', async function(){
             anyPage= await homePage.gotoAlertsFrameWindows();
             const browserWindowsPage= await anyPage.gotoBrowserWindowsMenuItem();
@@ -64,6 +72,7 @@ describe ('Main Menu responsive behavior check', function(){
         it('should display Main Menu when opening Book Store Application from Home page', async function(){
             anyPage= await homePage.gotoBookStoreApplication();
             await anyPage.menu.waitNavBarButton();
+            await anyPage.menu.scrollToTheHead();
             await this.driver.manage().window().maximize();
             const isVisible= await anyPage.menu.isNavBarVisible();
             expect(isVisible, "Navigation Bar button is displayed").to.be.false;
