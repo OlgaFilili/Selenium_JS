@@ -17,4 +17,5 @@ async function getDirectText(driver, locator) {
 async function isInputValid(driver, element) {
   return driver.executeScript("return arguments[0].checkValidity();", element);
 }
+
 module.exports = { scrollToElement, getDirectText, isInputValid, scrollRelatively };

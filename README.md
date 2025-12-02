@@ -28,13 +28,31 @@ Selenium_JS/
 │   └─ (other components)
 ├─ node_modules/                # Installed dependencies (ignored by Git)
 ├─ pages/                       # Page Object Model classes
+│   ├─ alerts/
+│   │   └─BrowserWindowsPage.js
+│   ├─ book_store/
+│   │   ├─ BooksPage.js
+│   │   ├─ LoginPage.js
+│   │   ├─ ProfilePage.js
+│   │   └─ SwaggerPage.js
 │   ├─ elements/
 │   │   ├─ CheckBoxPage.js
 │   │   ├─ RadioButtonPage.js
 │   │   └─ RWebTablesPage.js
+│   ├─ forms/
+│   │   └─AutomationPracticeFormPage.js
+│   ├─ interactions/
+│   │   ├─ DroppablePage.js
+│   │   └─ SortablePage.js
+│   ├─ widgets/
+│   │   └─DatePickerPage.js
+│   ├─ AlertsFrameWindowsPage.js
 │   ├─ BasePage.js
 │   ├─ ElementsPage.js
+│   ├─ FormsPage.js
 │   ├─ HomePage.js
+│   ├─ InteractionsPage.js
+│   ├─ WidgetsPage.js
 │   └─ (other page objects)
 ├─ tests/                       # Test scripts
 │   ├─ elements/
@@ -42,10 +60,13 @@ Selenium_JS/
 │   │   ├─ RadioButtonTest.js
 │   │   └─ WebTablesTest.js
 │   ├─ BaseTest.js              # Common test setup/teardown
+│   ├─ MainMenuResponsiveTest.js  
+│   ├─ MainMenuTest.js   
 │   └─ (other test files)
 ├─ utils/                       # Utility/helper functions
 │   ├─ BrowserUtils.js
 │   ├─ DriverUtils.js
+│   ├─ PageFactoryUtils.js
 │   ├─ ScreenshotUtils.js
 │   ├─ StringUtils.js
 │   ├─ WaitUtils.js
@@ -62,7 +83,8 @@ Fully functional with working Mocha tests.
 Page Object Model implemented (pages/, components/ and utils/ folders).
 Test examples: CheckBoxTest.js in tests/elements,
                RadioButtonTest.js in tests/elements/,
-               WebTablesTest.js in tests/elements/.
+               WebTablesTest.js in tests/elements/,
+               MainMenuTest.js and MainMenuTestResponsive.js in tests/.
 Core reusable components: BaseTest.js, BasePage.js.
 
 ## Notes
@@ -71,6 +93,7 @@ Tests are designed using Mocha + Chai + Selenium WebDriver.
 Completed RadioButtonTest suite.
 Completed CheckBoxTest suite.
 Completed WebTablesTest suite.
+Completed MainMenuTest suite for navigation panel and MainMenuResponsiveTest suite.
 Use async/await in tests for proper promise handling.
 Add screenshot functionality for failing tests.
 

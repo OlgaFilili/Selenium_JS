@@ -34,8 +34,14 @@ class BasePage
   }
 
   async _isDisplayed(locator) {
-    const element = await this._find(locator);
-    return await element.isDisplayed();
+    try {
+        const element = await this._find(locator);
+        return await element.isDisplayed();
+    } catch (err) {
+        // element not found → it's definitely not visible
+        if (err.name === "NoSuchElementError") return false;
+        throw err;
+    }
   }
 
   async _click(locator) {
@@ -85,6 +91,9 @@ class BasePage
   /** @returns {Promise<string>} */
   async _getValue(element){
     return await element.getAttribute('value');
+  }
+  async _getClass(element){
+    return await element.getAttribute('class');
   }
 
   /** @returns {Promise<string>} */

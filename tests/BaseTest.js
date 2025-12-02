@@ -1,6 +1,7 @@
-const HomePage = require('../pages/HomePage');
-const { createDriver, quitDriver }= require('../utils/DriverUtils');
-const { saveScreenshot } = require('../utils/ScreenshotUtils');
+const HomePage = require("../pages/HomePage.js");
+const { createDriver, quitDriver }= require("../utils/DriverUtils.js");
+const { saveScreenshot } = require('../utils/ScreenshotUtils.js');
+
 let driver;
 let url = 'https://demoqa.com/';
 let homePage;
@@ -9,13 +10,14 @@ before(async function() {
     // runs once before all tests
     driver= await createDriver();
     await driver.manage().window().maximize();
+    this.driver=driver;
 });
 
 beforeEach(async function() {
     // runs before each test
     await driver.get(url);
     homePage =new HomePage(driver);
-    
+    this.homePage=homePage;
 });
 
 afterEach(async function () {
@@ -36,9 +38,4 @@ after(async function() {
 function getHomePage() {
   return homePage;
 }
-
-module.exports = {
-  getHomePage,
-  driver
-};
-
+module.exports = { getHomePage };
