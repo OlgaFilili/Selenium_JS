@@ -1,7 +1,7 @@
-const { getHomePage } = require("../BaseTest");
-const { capitalizeFirstLetter } = require("../../utils/StringUtils")
+const { getHomePage } = require("../BaseTest.js");
+const { capitalizeFirstLetter } = require("../../utils/StringUtils.js");
+const RadioButtonPage = require("../../pages/elements/RadioButtonPage.js");
 const { expect } = require('chai');
-const RadioButtonPage = require("../../pages/elements/RadioButtonPage");
 
 describe('Radio Button Page functionality check', function() {
   const options = ['yes', 'impressive', 'no'];

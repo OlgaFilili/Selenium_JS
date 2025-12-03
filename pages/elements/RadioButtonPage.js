@@ -1,6 +1,6 @@
-const BasePage = require("../BasePage");
-const { getDirectText } = require("../../utils/BrowserUtils");
-const MainMenu= require("../../components/MainMenu");
+const BasePage = require("../BasePage.js");
+const MainMenu= require("../../components/MainMenu.js");
+const { getDirectText } = require("../../utils/BrowserUtils.js");
 
 class RadioButtonPage extends BasePage 
 {

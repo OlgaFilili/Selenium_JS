@@ -1,7 +1,7 @@
-const { waitVisible } = require("../../utils/WaitUtils");
-const { isInputValid, scrollRelatively } = require("../../utils/BrowserUtils");
-const BasePage = require("../BasePage");
-const MainMenu = require("../../components/MainMenu");
+const BasePage = require("../BasePage.js");
+const MainMenu = require("../../components/MainMenu.js");
+const { waitVisible } = require("../../utils/WaitUtils.js");
+const { isInputValid, scrollRelatively } = require("../../utils/BrowserUtils.js");
 const { Key }= require('selenium-webdriver');
 
 class WebTablesPage extends BasePage
@@ -226,6 +226,6 @@ class WebTablesPage extends BasePage
             const currentCount = await this.getTotalNotNullEntriesNumber();
             return currentCount !== previousCount;
         }, timeout, 'Table did not update after search change');
-}
+    }
 }
 module.exports= WebTablesPage;

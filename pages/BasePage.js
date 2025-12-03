@@ -1,5 +1,5 @@
-const { scrollToElement } = require('../utils/BrowserUtils');
-const { waitClickable } = require('../utils/WaitUtils');
+const { scrollToElement } = require('../utils/BrowserUtils.js');
+const { waitClickable } = require('../utils/WaitUtils.js');
 const { Key }= require('selenium-webdriver');
 class BasePage 
 {
