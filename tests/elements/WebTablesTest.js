@@ -1,5 +1,5 @@
-const { getHomePage }= require("../BaseTest");
-const WebTablesPage = require('../../pages/elements/WebTablesPage');
+const { getHomePage }= require("../BaseTest.js");
+const WebTablesPage = require('../../pages/elements/WebTablesPage.js');
 const { expect }= require('chai');
 
 describe('Web Tables Page functionality check', function() {

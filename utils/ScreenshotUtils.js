@@ -1,6 +1,6 @@
 const fs = require('fs');
 const path = require('path');
-const { waitForStableUI } = require("./WaitUtils");
+const { waitForStableUI } = require("./WaitUtils.js");
 
 function _ensureDir(dirPath) {
     if (!fs.existsSync(dirPath)) {

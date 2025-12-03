@@ -1,6 +1,6 @@
-const { getHomePage }= require("../BaseTest");
-const { uniteAndTtrimExtention } = require("../../utils/StringUtils");
-const CheckBoxPage = require('../../pages/elements/CheckBoxPage');
+const { getHomePage }= require("../BaseTest.js");
+const { uniteAndTtrimExtention } = require("../../utils/StringUtils.js");
+const CheckBoxPage = require('../../pages/elements/CheckBoxPage.js');
 const { expect }= require('chai');
 
 describe('Check Box Page functionality check', function() {

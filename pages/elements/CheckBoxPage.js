@@ -1,5 +1,5 @@
-const MainMenu = require("../../components/MainMenu");
-const BasePage = require("../BasePage");
+const BasePage = require("../BasePage.js");
+const MainMenu = require("../../components/MainMenu.js");
 
 class CheckBoxPage extends BasePage
 {
