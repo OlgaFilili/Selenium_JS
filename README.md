@@ -4,6 +4,7 @@ First automation testing project with Selenium WebDriver/JS.
 ## Project Overview
 Automated tests for a sample web application using Selenium WebDriver with JavaScript.  
 Includes page object model, components, utility functions, and test scripts.
+The project also includes API testing documentation for the DemoQA Book Store application.
 
 ## Prerequisites / Environment
 - Node.js v22.20.0
@@ -26,6 +27,10 @@ Selenium_JS/
 ├─ components/                  # Reusable elements
 │   ├─ MainMenu.js
 │   └─ (other components)
+├─ docs/api/  
+│   ├── test-cases/             # API test cases (smoke, regression)
+│   ├── bugs/                   # Bug reports linked to test cases
+│   └── README.md               # API testing overview
 ├─ node_modules/                # Installed dependencies (ignored by Git)
 ├─ pages/                       # Page Object Model classes
 │   ├─ alerts/
@@ -86,6 +91,17 @@ Test examples: CheckBoxTest.js in tests/elements,
                WebTablesTest.js in tests/elements/,
                MainMenuTest.js and MainMenuTestResponsive.js in tests/.
 Core reusable components: BaseTest.js, BasePage.js.
+
+## API Testing
+Covered areas:
+- Authorization endpoint testing
+- Smoke and regression test cases
+- Negative and boundary scenarios
+- Basic security observations
+
+Test cases and bug reports can be found in:
+- `docs/api/`
+This part of the project demonstrates API testing approach, test design, and bug reporting skills.
 
 ## Notes
 ChromeDriver is managed by the chromedriver package.
