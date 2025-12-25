@@ -10,6 +10,8 @@ docs/
      │    └── regression.md
      └── bugs/
           ├── api_auth.md
+          ├── api_security.md
+          ├── documentation.md
           └── (other endpoints)
 ## Scope
 The following API endpoints is covered:
@@ -35,6 +37,10 @@ Each test case includes:
 ### Bugs
 All discovered issues related to the authorization endpoint are documented in:
 - `bugs/api_auth.md`
+All discovered issues related to the security issues are documented in:
+- `bugs/api_secutiry.md`
+Suggestions related to the documentation of DemoQA Book Store API are documented in:
+- `bugs/documentation.md`
 
 Bug reports include:
 - Clear reproduction steps
