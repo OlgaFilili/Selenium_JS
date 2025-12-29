@@ -10,12 +10,14 @@ docs/
      │    └── regression.md
      └── bugs/
           ├── api_auth.md
+          ├── api_generate.md
           ├── api_security.md
           ├── documentation.md
           └── (other endpoints)
 ## Scope
-The following API endpoints is covered:
+The following API endpoints are covered:
 - `POST /Account/v1/Authorized`
+- `POST /Account/v1/GenerateToken`
 
 Test coverage includes:
 - Smoke testing
@@ -37,8 +39,10 @@ Each test case includes:
 ### Bugs
 All discovered issues related to the authorization endpoint are documented in:
 - `bugs/api_auth.md`
+All discovered issues related to the generateToken endpoint are documented in:
+- `bugs/api_generate.md`
 All discovered issues related to the security issues are documented in:
-- `bugs/api_secutiry.md`
+- `bugs/api_security.md`
 Suggestions related to the documentation of DemoQA Book Store API are documented in:
 - `bugs/documentation.md`
 
@@ -57,6 +61,22 @@ Bug reports include:
 
 ## Traceability
 Bug reports include references to related test cases to maintain traceability between tests and detected defects.
+
+## Known Limitations and Open Questions
+The following aspects were intentionally left out of scope or require clarification in a real production environment:
+### Token expiration behavior
+  - Token validity duration was not verified due to long expiration time and limitations of the demo environment.
+  - Behavior after token expiration (reuse, rejection, refresh) requires clarification.
+### Multiple token generation for the same user
+  - It was not verified whether previously issued tokens remain valid after a new token is generated.
+  - Token invalidation and session management rules are not documented in the API specification.
+### Input validation rules
+  - Maximum allowed length for credentials appears to be enforced inconsistently across UI and API.
+  - Character set restrictions (e.g., non-ASCII characters) are not explicitly documented and were treated as accepted behavior due to lack of stated requirements.
+### Error handling consistency
+  - Some endpoints expose internal implementation details under malformed requests (documented as bugs).
+  - Expected standard error response format for validation errors is not clearly defined in the documentation.
+These items represent open questions that would normally be clarified with product owners or backend developers in a real project.
 
 ## Notes
 - API behavior was validated using Postman.
