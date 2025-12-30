@@ -1,3 +1,4 @@
+# API-SECURITY
 ## Bug-001
 **Title:** API endpoint accessible over HTTP
 **Environment:** DemoQA Book Store API  
@@ -22,3 +23,69 @@
 **Notes:**
 - This behavior indicates that API is not protected at the transport layer
 - API endpoint over HTTP responds with HTML content instead of API error or redirect
+
+## Bug-007
+**Title:** API exposes internal stack trace when unsupported charset is provided
+**Environment:** DemoQA Book Store API  
+**Endpoint:** POST /Account/v1/Authorized  
+**Severity:** Low / Medium 
+**Found during:** API security testing, error handling issue
+**Related test cases:**
+- API-AUTH-REGRESSION-020
+**Preconditions:**
+- User exists with username `Name` and password `Qwerty123!`
+**Steps to reproduce:**
+1. Send POST request to `http://demoqa.com/Account/v1/Authorized` with:
+- Header "Content-Type": "application/json; charset=UTF-16"
+- Body:
+   {
+     "userName": "Name",
+     "password": "Qwerty123!"
+   }
+2. Observe response.
+**Actual result:**
+- Status code: 400 Bad Request
+- Response body:
+``` <!DOCTYPE html> <html lang="en"> <head> <meta charset="utf-8"> <title>Error</title> </head> <body> <pre>SyntaxError: Unexpected token ൻ in JSON at position 0<br> &nbsp; &nbsp;at JSON.parse (&lt;anonymous&gt;)<br> &nbsp; &nbsp;at createStrictSyntaxError (/usr/projects/demosite/node_modules/body-parser/lib/types/json.js:169:10)<br> &nbsp; &nbsp;at parse (/usr/projects/demosite/node_modules/body-parser/lib/types/json.js:86:15)<br> &nbsp; &nbsp;at /usr/projects/demosite/node_modules/body-parser/lib/read.js:128:18<br> &nbsp; &nbsp;at AsyncResource.runInAsyncScope (node:async_hooks:203:9)<br> &nbsp; &nbsp;at invokeCallback (/usr/projects/demosite/node_modules/raw-body/index.js:238:16)<br> &nbsp; &nbsp;at done (/usr/projects/demosite/node_modules/raw-body/index.js:227:7)<br> &nbsp; &nbsp;at IncomingMessage.onEnd (/usr/projects/demosite/node_modules/raw-body/index.js:287:7)<br> &nbsp; &nbsp;at IncomingMessage.emit (node:events:517:28)<br> &nbsp; &nbsp;at endReadableNT (node:internal/streams/readable:1400:12)</pre> </body> </html> ```
+**Expected result:**
+- Response status: 400 Bad Request (or equivalent validation error)
+- No internal error details exposed
+- No stack trace or HTML error page returned
+**Notes:**
+- Similar issue observed in endpoint /Account/v1/GenerateToken (Bug-011)
+- Header validation should be perfomed before request body processing
+- API exposes internal implementation details and stack trace when an invalid charset is provided in the Content-Type request header
+- This behavior may lead to information disclosure and should be handled with a generic error response
+
+## Bug-011
+**Title:** API exposes internal stack trace when unsupported charset is provided
+**Environment:** DemoQA Book Store API  
+**Endpoint:** POST /Account/v1/GenerateToken 
+**Severity:** Low / Medium
+**Found during:** API security testing, error handling issue
+**Related test cases:**
+- API-GENERATE-REGRESSION-020
+**Preconditions:**
+- User exists with username `Name` and password `Qwerty123!`
+**Steps to reproduce:**
+1. Send POST request to `http://demoqa.com/Account/v1/GenerateToken` with:
+- Header "Content-Type": "application/json; charset=UTF-16"
+- Body:
+   {
+     "userName": "Name",
+     "password": "Qwerty123!"
+   }
+2. Observe response.
+**Actual result:**
+- Status code: 400 Bad Request
+- Response body:
+``` <!DOCTYPE html> <html lang="en"> <head> <meta charset="utf-8"> <title>Error</title> </head> <body> <pre>SyntaxError: Unexpected token ൻ in JSON at position 0<br> &nbsp; &nbsp;at JSON.parse (&lt;anonymous&gt;)<br> &nbsp; &nbsp;at createStrictSyntaxError (/usr/projects/demosite/node_modules/body-parser/lib/types/json.js:169:10)<br> &nbsp; &nbsp;at parse (/usr/projects/demosite/node_modules/body-parser/lib/types/json.js:86:15)<br> &nbsp; &nbsp;at /usr/projects/demosite/node_modules/body-parser/lib/read.js:128:18<br> &nbsp; &nbsp;at AsyncResource.runInAsyncScope (node:async_hooks:203:9)<br> &nbsp; &nbsp;at invokeCallback (/usr/projects/demosite/node_modules/raw-body/index.js:238:16)<br> &nbsp; &nbsp;at done (/usr/projects/demosite/node_modules/raw-body/index.js:227:7)<br> &nbsp; &nbsp;at IncomingMessage.onEnd (/usr/projects/demosite/node_modules/raw-body/index.js:287:7)<br> &nbsp; &nbsp;at IncomingMessage.emit (node:events:517:28)<br> &nbsp; &nbsp;at endReadableNT (node:internal/streams/readable:1400:12)</pre> </body> </html> ```
+**Expected result:**
+- Response status: 400 Bad Request (or equivalent validation error)
+- No internal error details exposed
+- No stack trace or HTML error page returned
+**Notes:**
+- Similar issue observed in endpoint /Account/v1/Authorized (Bug-007)
+- Header validation should be perfomed before request body processing
+- API exposes internal implementation details and stack trace when an invalid charset is provided in the Content-Type request header
+- This behavior may lead to information disclosure and should be handled with a generic error response
