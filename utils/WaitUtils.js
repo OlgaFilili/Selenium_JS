@@ -52,5 +52,12 @@ async function waitText(driver, locator, expectedText) {
         return text.includes(expectedText);
     }, timeout, `Text "${expectedText}" not found in element`);
 }
-module.exports={ waitClickable, waitVisible, waitForStableUI, waitIsRemoved };
+
+async function waitForFirstVisible(driver, successEl, failureEl) {
+    return await Promise.race([
+        waitVisible(driver, successEl).then(() => true),
+        waitVisible(driver, failureEl).then(() => false)
+    ]);
+}
+module.exports={ waitClickable, waitVisible, waitForStableUI, waitIsRemoved, waitForFirstVisible };
 
