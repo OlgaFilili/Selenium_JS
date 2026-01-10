@@ -25,7 +25,7 @@
 - API endpoint over HTTP responds with HTML content instead of API error or redirect
 
 ## Bug-007
-**Title:** API exposes internal stack trace when unsupported charset is provided
+**Title:** API exposes internal stack trace when unsupported charset in Authorized endpoint is provided
 **Environment:** DemoQA Book Store API  
 **Endpoint:** POST /Account/v1/Authorized  
 **Severity:** Low / Medium 
@@ -58,7 +58,7 @@
 - This behavior may lead to information disclosure and should be handled with a generic error response
 
 ## Bug-011
-**Title:** API exposes internal stack trace when unsupported charset is provided
+**Title:** API exposes internal stack trace when unsupported charset in generate token endpoint is provided
 **Environment:** DemoQA Book Store API  
 **Endpoint:** POST /Account/v1/GenerateToken 
 **Severity:** Low / Medium

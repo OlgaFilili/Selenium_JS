@@ -49,7 +49,7 @@ Verify that authorization endpoint returns `404 Not Found` for an existing user 
 }
 
 ### Test Case ID: API-AUTH-SMOKE-003  
-### Title: Authorization with non-correct username
+### Title: Authorization with incorrect username for existing user
 **Description:**  
 Verify that authorization endpoint returns `404 Not Found` for a non-existing valid username with the password from existing user.
 ### Preconditions:
