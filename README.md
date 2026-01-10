@@ -1,10 +1,10 @@
 # Selenium_JS
-First automation testing project with Selenium WebDriver/JS.
+An automation testing project using Selenium WebDriver with JavaScript.
 
 ## Project Overview
-Automated tests for a sample web application using Selenium WebDriver with JavaScript.  
-Includes page object model, components, utility functions, and test scripts.
-The project also includes API testing documentation for the DemoQA Book Store application.
+Automated UI tests for the DemoQA sample web application, implemented with Selenium WebDriver and JavaScript.
+The project follows the Page Object Model and includes reusable components, utilities, and structured test suites.
+API testing artifacts for the DemoQA Book Store authorization endpoints are also included.
 
 ## Prerequisites / Environment
 - Node.js v22.20.0
@@ -28,14 +28,15 @@ Selenium_JS/
 │   ├─ MainMenu.js
 │   └─ (other components)
 ├─ docs/api/  
-│   ├── test-cases/             # API test cases (smoke, regression)
 │   ├── bugs/                   # Bug reports linked to test cases
+│   ├── test-cases/             # API test cases (smoke, regression)
 │   └── README.md               # API testing overview
 ├─ node_modules/                # Installed dependencies (ignored by Git)
 ├─ pages/                       # Page Object Model classes
 │   ├─ alerts/
 │   │   └─BrowserWindowsPage.js
 │   ├─ book_store/
+│   │   ├─ AuthenticatedPage.js
 │   │   ├─ BooksPage.js
 │   │   ├─ LoginPage.js
 │   │   ├─ ProfilePage.js
@@ -43,7 +44,7 @@ Selenium_JS/
 │   ├─ elements/
 │   │   ├─ CheckBoxPage.js
 │   │   ├─ RadioButtonPage.js
-│   │   └─ RWebTablesPage.js
+│   │   └─ WebTablesPage.js
 │   ├─ forms/
 │   │   └─AutomationPracticeFormPage.js
 │   ├─ interactions/
@@ -56,10 +57,15 @@ Selenium_JS/
 │   ├─ ElementsPage.js
 │   ├─ FormsPage.js
 │   ├─ HomePage.js
-│   ├─ InteractionsPage.js
-│   ├─ WidgetsPage.js
 │   └─ (other page objects)
 ├─ tests/                       # Test scripts
+│   ├─ book_store/
+│   │   ├─ flows   
+│   │   │   ├─ AuthSessionTest.js
+│   │   │   ├─ LoginNegativeTest.js
+│   │   │   └─ LoginSuccessTest.js
+│   │   └─ ui
+│   │       └─ LoginUITest.js
 │   ├─ elements/
 │   │   ├─ CheckBoxTest.js
 │   │   ├─ RadioButtonTest.js
@@ -86,30 +92,42 @@ Selenium_JS/
 ## Project Status
 Fully functional with working Mocha tests.
 Page Object Model implemented (pages/, components/ and utils/ folders).
-Test examples: CheckBoxTest.js in tests/elements,
-               RadioButtonTest.js in tests/elements/,
-               WebTablesTest.js in tests/elements/,
-               MainMenuTest.js and MainMenuTestResponsive.js in tests/.
+Shared abstractions are used for common behavior, including an AuthenticatedPage base class for authorized user state.
+Test coverage includes:
+- UI component validation (Elements)
+- Navigation and layout checks
+- Book Store authentication flows (UI, functional, session-level behavior)
+
 Core reusable components: BaseTest.js, BasePage.js.
 
 ## API Testing
 Covered areas:
 - Authorization endpoint testing
-- Smoke and regression test cases
-- Negative and boundary scenarios
-- Basic security observations
+  - Smoke and regression test cases
+  - Negative and boundary scenarios
+  - Basic security observations
 
 Test cases and bug reports can be found in:
 - `docs/api/`
-This part of the project demonstrates API testing approach, test design, and bug reporting skills.
+This part of the project demonstrates API endpoints testing approach, test design, and bug reporting skills.
+API analysis is used to support UI and end-to-end authorization testing.
+
+## UI Test Structure Notes
+UI tests are organized based on the complexity and behavior of the tested area.
+- For isolated components (Elements), tests focus on direct UI checks.
+- For Book Store functionality, tests are grouped by intent:
+  - `ui/` — UI-level checks (layout, labels, element visibility)
+  - `flows/` — functional user flows (authentication, navigation, state changes)
+
+- Authorization automation is split into three layers:
+  - Login UI validation
+  - Login functionality (positive / negative)
+  - Authorization session flow (state-based behavior)
+
 
 ## Notes
-ChromeDriver is managed by the chromedriver package.
-Tests are designed using Mocha + Chai + Selenium WebDriver.
-Completed RadioButtonTest suite.
-Completed CheckBoxTest suite.
-Completed WebTablesTest suite.
-Completed MainMenuTest suite for navigation panel and MainMenuResponsiveTest suite.
-Use async/await in tests for proper promise handling.
-Add screenshot functionality for failing tests.
+ChromeDriver is managed via the chromedriver package.
+Tests are written using Mocha + Chai + Selenium WebDriver.
+Async/await is used consistently for reliable asynchronous handling.
+Screenshot capture is enabled for failing tests.
 

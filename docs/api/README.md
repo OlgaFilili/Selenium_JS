@@ -24,7 +24,18 @@ Test coverage includes:
 - Negative and boundary testing
 - Regression testing
 - Basic security-related checks
----
+
+## Relation to UI Automation
+API testing in this project was performed as an independent testing layer, focused on validating backend behavior, error handling, and security-related scenarios.
+The results of API analysis were later used to support UI automation, specifically:
+- Designing authorization-related UI test scenarios (positive, negative, and edge cases)
+- Verifying session-based behavior (login state, logout, and authorization persistence)
+- Automated UI tests that rely on these scenarios can be found in:
+  - `tests/book_store/flows/`
+  - `tests/book_store/ui/`
+
+This reflects a real-world approach where API analysis supports UI and end-to-end testing.
+
 ## Test Artifacts
 ### Test Cases
 Test cases are organized by test type:
@@ -36,6 +47,7 @@ Each test case includes:
 - Test data
 - Steps
 - Expected results
+
 ### Bugs
 All discovered issues related to the authorization endpoint are documented in:
 - `bugs/api_auth.md`
@@ -51,7 +63,6 @@ Bug reports include:
 - Actual vs expected results
 - Severity
 - Relation to test cases (where applicable)
----
 
 ## Test Data Assumptions
 - Test data is assumed to be available on the test environment.
@@ -72,7 +83,7 @@ The following aspects were intentionally left out of scope or require clarificat
   - Token invalidation and session management rules are not documented in the API specification.
 ### Input validation rules
   - Maximum allowed length for credentials appears to be enforced inconsistently across UI and API.
-  - Character set restrictions (e.g., non-ASCII characters) are not explicitly documented and were treated as accepted behavior due to lack of stated requirements.
+  - Character set restrictions (e.g., non-ASCII characters, spaces) are not explicitly documented and were treated as accepted behavior due to lack of stated requirements.
 ### Error handling consistency
   - Some endpoints expose internal implementation details under malformed requests (documented as bugs).
   - Expected standard error response format for validation errors is not clearly defined in the documentation.

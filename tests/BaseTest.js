@@ -1,4 +1,5 @@
 const HomePage = require("../pages/HomePage.js");
+const AuthenticatedPage = require("../pages/book_store/AuthenticatedPage.js");
 const { createDriver, quitDriver }= require("../utils/DriverUtils.js");
 const { saveScreenshot } = require('../utils/ScreenshotUtils.js');
 
@@ -25,7 +26,13 @@ afterEach(async function () {
         await saveScreenshot(driver, this);
     }
 });
-
+afterEach(async function () {
+    //for the correct state before the next test after successful authorization
+    if (this.currentTest.ctx.authSucceeded === true) {
+        const userPage= new AuthenticatedPage(driver);
+        await userPage.clickLogoutButton();
+    }
+});
 after(async function() {
     // runs once after all tests
     //await new Promise(r => setTimeout(r, 3000));

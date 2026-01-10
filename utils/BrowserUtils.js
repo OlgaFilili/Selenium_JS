@@ -35,4 +35,8 @@ async function isInputValid(driver, element) {
   return driver.executeScript("return arguments[0].checkValidity();", element);
 }
 
-module.exports = { scrollToElement, getDirectText, isInputValid, scrollRelatively, isInViewport };
+async function refreshPage(driver) {
+  await driver.navigate().refresh();
+}
+
+module.exports = { scrollToElement, getDirectText, isInputValid, scrollRelatively, isInViewport, refreshPage };
