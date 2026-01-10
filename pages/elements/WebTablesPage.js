@@ -2,7 +2,6 @@ const BasePage = require("../BasePage.js");
 const MainMenu = require("../../components/MainMenu.js");
 const { waitVisible } = require("../../utils/WaitUtils.js");
 const { isInputValid, scrollRelatively } = require("../../utils/BrowserUtils.js");
-const { Key }= require('selenium-webdriver');
 
 class WebTablesPage extends BasePage
 {
@@ -117,14 +116,13 @@ class WebTablesPage extends BasePage
         await this._clickElement(cells.DeleteButton);
     }
     async setValueInRegForm(placeholder, value){
-        const locator=this._getRegFormFieldLocator(placeholder);
+        const locator=await this._getRegFormFieldLocator(placeholder);
         await this._set(locator, value);
     }
     async editEntry(email, placeholder, value){
         console.log("email: ", email);
         const row= await this.findEntry(email);
         const cells= await this.getRowObject(row);
-        //console.log(`${cells}: `, cells);
         await this._clickElement(cells.EditButton);
         await this.setValueInRegForm(placeholder, value);
         await this.clickSubmitButton();
@@ -152,8 +150,7 @@ class WebTablesPage extends BasePage
         return await this._getText(selectedOption);
     }
     async listRowsPerPage(){
-        const select=await this._find(this.rowsPerPageSelect);
-        //await this._clickElement(select);
+        const select= await this._find(this.rowsPerPageSelect);
         const options= await this._findsInside(select, { css: `${this.rowsPerPageOptions}`});
         let list=[]; 
         let value;
@@ -165,7 +162,6 @@ class WebTablesPage extends BasePage
     }
     async listRowsPerPageText(){
         const select=await this._find(this.rowsPerPageSelect);
-        //await this._clickElement(select);
         const options= await this._findsInside(select, { css: `${this.rowsPerPageOptions}`});
         let list=[]; 
         let value;
@@ -206,8 +202,8 @@ class WebTablesPage extends BasePage
         return Number(value);
     }
     async getInputValidity(placeholder){
-        const locator=this._getRegFormFieldLocator(placeholder);
-        const element=this._find(locator);
+        const locator= await this._getRegFormFieldLocator(placeholder);
+        const element= await this._find(locator);
         const isValid= await isInputValid(this.driver, element);
         return isValid;
     }
