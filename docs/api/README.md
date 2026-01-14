@@ -10,6 +10,7 @@ docs/
      │    └── regression.md
      └── bugs/
           ├── api_auth.md
+          ├── api_delete_user.md
           ├── api_generate.md
           ├── api_security.md
           ├── documentation.md
@@ -18,6 +19,7 @@ docs/
 The following API endpoints are covered:
 - `POST /Account/v1/Authorized`
 - `POST /Account/v1/GenerateToken`
+- `DELETE /Account/v1/User/{UUID}`
 
 Test coverage includes:
 - Smoke testing
@@ -53,6 +55,8 @@ All discovered issues related to the authorization endpoint are documented in:
 - `bugs/api_auth.md`
 All discovered issues related to the generateToken endpoint are documented in:
 - `bugs/api_generate.md`
+All discovered issues related to DELETE User endpoint are documented in:
+- `bugs/api_delete_user.md`
 All discovered issues related to the security issues are documented in:
 - `bugs/api_security.md`
 Suggestions related to the documentation of DemoQA Book Store API are documented in:
@@ -79,7 +83,7 @@ The following aspects were intentionally left out of scope or require clarificat
   - Token validity duration was not verified due to long expiration time and limitations of the demo environment.
   - Behavior after token expiration (reuse, rejection, refresh) requires clarification.
 ### Multiple token generation for the same user
-  - It was not verified whether previously issued tokens remain valid after a new token is generated.
+  - During exploratory testing, it was observed that generating a new token for a user invalidates any previously issued tokens.
   - Token invalidation and session management rules are not documented in the API specification.
 ### Input validation rules
   - Maximum allowed length for credentials appears to be enforced inconsistently across UI and API.
