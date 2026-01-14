@@ -790,7 +790,7 @@ Verify that generate token endpoint returns `200 OK` and successful token genera
   - expires — valid datetime in the future,
   - status: "Success"
 
-### Test Case ID: API-GENERATE-REGRESSION-015  
+### Test Case ID: API-GENERATE-REGRESSION-015
 ### Title: Generate token for user with non-ASCII characters in the credentials
 **Description:**  
 Verify that generate token endpoint returns `200 OK` and successful token generation response for an existing user with non-ASCII in the credentials.
@@ -818,7 +818,7 @@ Ensure that last two letters in password ("Aa") are Latin.
 **Assumption:**
 Behavior is considered acceptable due to lack of explicit restrictions in requirements.
 
-### Test Case ID: API-GENERATE-REGRESSION-016  
+### Test Case ID: API-GENERATE-REGRESSION-016
 ### Title: Generate token request with SQL injection in username
 **Description:**  
 Verify that generate token endpoint handles gracefully SQL-injection in username field
@@ -838,7 +838,7 @@ Verify that generate token endpoint handles gracefully SQL-injection in username
   - expires: null,
   - status: "Failed"
 
-### Test Case ID: API-GENERATE-REGRESSION-017  
+### Test Case ID: API-GENERATE-REGRESSION-017
 ### Title: Generate token request with destructive SQL payload in password
 **Description:**  
 Verify that generate token endpoint handles gracefully destructive SQL payload in password field
@@ -859,7 +859,7 @@ Verify that generate token endpoint handles gracefully destructive SQL payload i
   - expires: null,
   - status: "Failed"
 
-### Test Case ID: API-GENERATE-REGRESSION-018  
+### Test Case ID: API-GENERATE-REGRESSION-018
 ### Title: Generate token request with missing required fields
 **Description:**  
 Verify that generate token endpoint handles gracefully empty request body or missing required fields.
@@ -883,7 +883,7 @@ Verify that generate token endpoint handles gracefully empty request body or mis
 - No internal error details exposed
 - No stack trace or HTML error page returned
 
-### Test Case ID: API-GENERATE-REGRESSION-019  
+### Test Case ID: API-GENERATE-REGRESSION-019
 ### Title: Generate token request with unsupported Content-Type header
 **Description:**  
 Verify that generate token endpoint handles gracefully unsupported request header value.
@@ -909,7 +909,7 @@ Verify that generate token endpoint handles gracefully unsupported request heade
 - No internal error details exposed
 - No stack trace or HTML error page returned
 
-### Test Case ID: API-GENERATE-REGRESSION-020  
+### Test Case ID: API-GENERATE-REGRESSION-020
 ### Title: Generate token request with malformed Content-Type header (unsupported charset)
 **Description:**  
 Verify that generate token endpoint handles gracefully unsupported charset in Content-Type header.
@@ -934,3 +934,184 @@ Verify that generate token endpoint handles gracefully unsupported charset in Co
    - message
 - No internal error details exposed
 - No stack trace or HTML error page returned
+
+## Delete User Account
+### Test Case ID: API-USER-DEL-REGRESSION-001
+### Title: DELETE User request for user with valid token from another account
+**Description:**  
+Verify that DELETE User endpoint does not allow user deletion with token that was issued to another user
+### Preconditions:
+- User account exists in the system
+(can be created via POST /Account/v1/User)
+- Valid, non-expired access token is issued for another user
+(can be obtained via POST /Account/v1/GenerateToken)
+**Test data:**  
+- UUID- valid User ID of an existing user
+- access_token- valid, non-expired access token issued for another user
+### Steps:
+1. Send a DELETE request to  
+   `https://demoqa.com/Account/v1/User/{UUID}`
+with header
+Authorization: Bearer <access_token>
+### Expected result:
+- Response status: 401 Unauthorized
+- Response body contains:
+  - error code,
+  - error message
+
+### Test Case ID: API-USER-DEL-REGRESSION-002
+### Title: DELETE User request for user with invalid userID
+**Description:**  
+Verify that DELETE User endpoint does not allow user deletion with invalid UUID in request
+### Preconditions:
+- User account exists in the system
+(can be created via POST /Account/v1/User)
+- Valid, non-expired access token is issued for this user
+(can be obtained via POST /Account/v1/GenerateToken)
+**Test data:**  
+- UUID- invalid User ID
+- access_token- valid, non-expired access token issued for the user
+**Test data notes:**
+Test data variations:
+- UUID with valid format but non-existing value
+- UUID with invalid format (e.g. "user-id")
+- UUID containing special characters or SQL-like payloads(e.g. `' OR '1'='1`, `1; DROP TABLE Users;`)
+### Steps:
+1. Send a DELETE request to  
+   `https://demoqa.com/Account/v1/User/{UUID}`
+with header
+Authorization: Bearer <access_token>
+### Expected result:
+- Response status: 
+  - 400 Bad Request (invalid UUID format) or 
+  - 404 Not Found (UUID valid format but user does not exist)
+- Response body contains:
+  - error code,
+  - error message
+
+
+### Test Case ID: API-USER-DEL-REGRESSION-003
+### Title: DELETE User request for user with invalid access token
+**Description:**  
+Verify that DELETE User endpoint does not allow user deletion with invalid token in Authorization header
+### Preconditions:
+- User account exists in the system
+(can be created via POST /Account/v1/User)
+- Valid, non-expired access token is issued for this user
+(can be obtained via POST /Account/v1/GenerateToken)
+**Test data:**  
+- UUID- valid User ID of an existing user
+- access_token- invalid value
+**Test data notes:**
+Test data variations:
+- Token with valid structure but altered signature
+- Token with invalid format (e.g. "token.4user")
+### Steps:
+1. Send a DELETE request to  
+   `https://demoqa.com/Account/v1/User/{UUID}`
+with header
+Authorization: Bearer <access_token>
+### Expected result:
+- Response status: 401 Unauthorized
+- Response body contains:
+  - error code,
+  - error message
+
+### Test Case ID: API-USER-DEL-REGRESSION-004
+### Title: DELETE User request for already deleted account
+**Description:**  
+Verify that DELETE User endpoint handles gracefully user account re-deletion
+### Preconditions:
+- User account exists in the system
+(can be created via POST /Account/v1/User)
+- Valid, non-expired access token is issued for this user
+(can be obtained via POST /Account/v1/GenerateToken)
+**Test data:**  
+- UUID- valid User ID
+- access_token- valid, non-expired access token issued for this user
+### Steps:
+1. Send a DELETE request to  
+   `https://demoqa.com/Account/v1/User/{UUID}`
+with header
+Authorization: Bearer <access_token>
+2. Observe response 204 No Content
+3. Repeat the same request.
+### Expected result:
+- Response status: 
+  - 404 Not Found
+- Response body contains:
+  - error code,
+  - error message indicating that user does not exist
+
+### Test Case ID: API-USER-DEL-REGRESSION-005 
+### Title: DELETE User request with non-empty body
+**Description:**  
+Verify that DELETE User endpoint does not validate request body
+### Preconditions:
+- User account exists in the system
+(can be created via POST /Account/v1/User)
+- Valid, non-expired access token is issued for this user
+(can be obtained via POST /Account/v1/GenerateToken)
+**Test data:**  
+- UUID- valid User ID
+- access_token- valid, non-expired access token issued for this user
+### Steps:
+1. Send a DELETE request to  
+   `https://demoqa.com/Account/v1/User/{UUID}`
+with header
+Authorization: Bearer <access_token>
+and request body:
+{
+  "userName": "Username",
+  "password": "Password1!"
+}
+### Expected result:
+- Response status: 204 No Content
+- Response body is empty
+- Subsequent GET request to /Account/v1/User/{UUID} returns an error indicating that the user no longer exists (401 Unauthorized or 404 Not Found)
+
+### Test Case ID: API-USER-DEL-REGRESSION-006 
+### Title: DELETE User request without UUID in the path
+**Description:**  
+Verify that DELETE User endpoint handles request without UUID in the path
+### Preconditions:
+- User account exists in the system
+(can be created via POST /Account/v1/User)
+- Valid, non-expired access token is issued for this user
+(can be obtained via POST /Account/v1/GenerateToken)
+**Test data:**  
+- access_token- valid, non-expired access token issued for this user
+### Steps:
+1. Send a DELETE request to  
+   `https://demoqa.com/Account/v1/User/`
+with header
+Authorization: Bearer <access_token>
+### Expected result:
+- Response status: 404 Not Found
+- Response body contains:
+  - error code,
+  - error message indicating invalid endpoint or missing user identifier
+
+### Test Case ID: API-USER-DEL-REGRESSION-007 
+### Title: DELETE User request with destructive payload instead of UUID in the path
+**Description:**  
+Verify that DELETE User endpoint handles request with a destructive payload (e.g., %00) instead of a valid UUID in the path.
+### Preconditions:
+- User account exists in the system
+(can be created via POST /Account/v1/User)
+- Valid, non-expired access token is issued for this user
+(can be obtained via POST /Account/v1/GenerateToken)
+**Test data:**
+- UUID- "%00",
+- access_token- valid, non-expired access token issued for this user
+### Steps:
+1. Send a DELETE request to  
+   `https://demoqa.com/Account/v1/User/{UUID}`
+with header
+Authorization: Bearer <access_token>
+### Expected result:
+- Response status: 400 Bad Request
+- Response body (JSON containing):
+ - error code
+ - error message indicating invalid endpoint or missing user identifier
+Note: Response format should be JSON to comply with API contract

@@ -223,3 +223,45 @@ Verify that generate token endpoint returns `400 Bad Request` for an existing us
 - Response body contains:
   - error code,
   - error message
+
+## Delete User Account
+### Test Case ID: API-USER-DEL-SMOKE-001  
+### Title: Successful user account deletion
+**Description:**  
+Verify that DELETE User endpoint allows an authenticated user to delete their own account
+### Preconditions:
+- User account exists in the system
+(can be created via POST /Account/v1/User)
+- Valid, non-expired access token is issued for this user
+(can be obtained via POST /Account/v1/GenerateToken)
+**Test data:**  
+- UUID- valid User ID of an existing user
+- access_token- valid, non-expired access token issued for this user
+### Steps:
+1. Send a DELETE request to  
+   `https://demoqa.com/Account/v1/User/{UUID}`
+with header
+Authorization: Bearer <access_token>
+### Expected result:
+- Response status: 204 No Content
+- Response body is empty
+- Subsequent GET request to /Account/v1/User/{UUID} returns an error indicating that the user no longer exists (401 Unauthorized or 404 Not Found)
+
+### Test Case ID: API-USER-DEL-SMOKE-002  
+### Title: DELETE User request without Authorization header
+**Description:**  
+Verify that DELETE User endpoint does not allow user deletion without authorization
+### Preconditions:
+- User account exists in the system
+(can be created via POST /Account/v1/User)
+**Test data:**  
+- UUID- valid User ID of an existing user
+### Steps:
+1. Send a DELETE request to  
+   `https://demoqa.com/Account/v1/User/{UUID}`
+without Authorization header
+### Expected result:
+- Response status: 401 Unauthorized
+- Response body contains:
+  - error code,
+  - error message
