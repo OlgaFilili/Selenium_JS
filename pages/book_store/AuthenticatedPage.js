@@ -7,6 +7,7 @@ class AuthenticatedPage extends BasePage
     super(driver);
     this.buttonsTag= "//button[text()='";
     this.logoutButtonText= "Log out";
+    this.userNameLabel = { id: "userName-label" };
     this.userNameValue = { id: "userName-value" };
   }
   _getLogoutButtonLocator(){

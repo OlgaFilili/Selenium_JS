@@ -11,15 +11,21 @@ class BooksPage extends AuthenticatedPage
         this.menu= new MainMenu(driver);
         this.loginButton= { id: "login" };
     }
-
+    async waitLoginButton(){
+        await waitVisible(this.driver, this.loginButton);
+    }
     async clickLoginButton(){
         await waitVisible(this.driver, this.loginButton);
         await this._click(this.loginButton);
         return new LoginPage(this.driver);
     }
     async isLoginButtonVisible(){
-        const element= await waitVisible(this.driver, this.loginButton);
+        const element= await this.waitLoginButton();
         return await isInViewport(this.driver, element);
+    }
+    async getLabelText(){
+        await this.waitUserPageReady();
+        await this._getText(this.userNameLabel);
     }
 
 }
