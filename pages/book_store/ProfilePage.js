@@ -13,6 +13,11 @@ class ProfilePage extends AuthenticatedPage
         this.gotoStoreButton= { id: "gotoStore" };
         this.deleteAccountButtonText= "Delete Account";
         this.deleteAllBooksButtonText= "Delete All Books";
+        this.deleteModalTitle= { id: "example-modal-sizes-title-sm"};
+        this.deleteModalText= { xpath: "//div[contains(text(),'to delete')]"};
+        this.deleteModalOkButton= { id: "closeSmallModal-ok"};
+        this.deleteModalCancelButton= { id: "closeSmallModal-cancel"};
+        this.deleteModalCloseButton= { xpath: "//span[text()= 'Close']//parent::button"};
     }
     _getdeleteAccountButtonLocator(){
         return { xpath: `${this.buttonsTag}${this.deleteAccountButtonText}']`};
@@ -25,6 +30,9 @@ class ProfilePage extends AuthenticatedPage
     }
     async waitNotLogginState(){
         await waitVisible(this.driver, this.notLogginMessage);
+    }
+    async waitDeleteModal(){
+        await waitVisible(this.driver, this.deleteModalTitle);
     }
     async getNotLogginMessage(){
         await this.waitNotLogginState();
@@ -48,6 +56,22 @@ class ProfilePage extends AuthenticatedPage
         const labels= await this._finds(this.userNameLabel);
         const labelsText= await Promise.all(labels.map(el => this._getText(el)));
         return labelsText.join('&');
+    }
+    async getDeleteModalHeader(){
+        await this.waitDeleteModal();
+        return await this._getText(this.deleteModalTitle);
+    }
+    async getDeleteModalMessage(){
+        await this.waitDeleteModal();
+        return await this._getText(this.deleteModalText);
+    }
+    async cancelAccountDeletion(){
+        await this.waitDeleteModal();
+        await this._click(this.deleteModalCancelButton);
+    }
+    async closeDeleteModal(){
+        await this.waitDeleteModal();
+        await this._click(this.deleteModalCloseButton);
     }
 }
 module.exports= ProfilePage;
