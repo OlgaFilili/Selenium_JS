@@ -1,24 +1,25 @@
 const { getHomePage } = require("../../BaseTest.js");
-const ProfilePage = require("../../../pages/book_store/ProfilePage.js");
 const { getPageByMenuItem } = require("../../../utils/PageFactoryUtils.js");
 const { loginTestUser } = require("../../helpers/LoginHelper.js");
+const ProfilePage = require("../../../pages/book_store/ProfilePage.js");
 const api = require("../../../api");
 const { expect }= require('chai');
-const LoginPage = require("../../../pages/book_store/LoginPage.js");
 
 
 describe('Profile Page UI check', function() {
     /** @type {ProfilePage} */
     let profilePage, booksPage, userPage;
-    let testUser;
-    before(async function () {
-        testUser = await api.user.createUser();
+    before(async function() {
+        this.testUser = await api.user.createUser();
     });
     beforeEach(async function(){
         const homePage= await getHomePage();
         booksPage= await homePage.gotoBookStoreApplication();
         await booksPage.menu.clickMenuItem("Book Store Application", "Profile");
-        this.profilePage= await getPageByMenuItem(this.driver, "Profile");
+        profilePage= await getPageByMenuItem(this.driver, "Profile");
+    });
+    after(async function(){
+        await api.user.deleteUser(this.testUser);
     });
     describe('smoke: Basic UI check', function(){
         describe('not logged in state of the page', function(){
@@ -33,14 +34,20 @@ describe('Profile Page UI check', function() {
             });
         });
         describe('logged in state of the page', function(){
-            beforeEach(async function () {
-                await this.profilePage.gotoLoginPage();
-                await loginTestUser(this, testUser);
+            beforeEach(async function() {
+                await profilePage.gotoLoginPage();
+                await loginTestUser(this);
+            });
+            afterEach(async function() {
+                await profilePage.clickLogoutButton();
             });
             it.only('should login in', async function(){
-                await this.profilePage.waitUserPageReady();
-                const currentUrl= await this.profilePage.getProfilePageUrl();
-                expect(currentUrl, "Error! Wrong redirect link").to.be.include("/profile");
+                await profilePage.waitUserPageReady();
+                const actualLoggedInUsername= await profilePage.getUserName();
+                //console.log(actualLoggedInUsername);
+                //console.log(this.testUser);
+                //const currentUrl= await profilePage.getProfilePageUrl();
+                expect(actualLoggedInUsername, 'Error!!! Wrong logged-in Username').to.be.equal(this.testUser.userName);
             });
         });
     });
@@ -48,6 +55,15 @@ describe('Profile Page UI check', function() {
         describe('not-logged in state of the page', function(){
         });
         describe('logged in state of the page', function(){
+            beforeEach(async function () {
+                await profilePage.gotoLoginPage();
+                await loginTestUser(this);
+            });
+            afterEach(async function() {
+                await profilePage.clickLogoutButton();
+            });
+            it('should blah-blah-blah', async function(){
+            });
         });
     });
 });
