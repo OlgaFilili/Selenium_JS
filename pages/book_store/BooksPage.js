@@ -11,6 +11,9 @@ class BooksPage extends AuthenticatedPage
         this.menu= new MainMenu(driver);
         this.loginButton= { id: "login" };
     }
+    async getBooksPageUrl() {
+        return await this._getUrl();
+    }
     async waitLoginButton(){
         await waitVisible(this.driver, this.loginButton);
     }

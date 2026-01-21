@@ -1,68 +1,90 @@
 const { getHomePage } = require("../../BaseTest.js");
 const { getPageByMenuItem } = require("../../../utils/PageFactoryUtils.js");
-const { loginTestUser } = require("../../helpers/LoginHelper.js");
-const ProfilePage = require("../../../pages/book_store/ProfilePage.js");
 const api = require("../../../api");
+const { loginTestUser } = require("../../helpers/LoginHelper.js");
+const { logoutTestUser } = require("../../helpers/LogoutHelper.js");
+const ProfilePage = require("../../../pages/book_store/ProfilePage.js");
+const LoginPage = require("../../../pages/book_store/LoginPage.js");
 const { expect }= require('chai');
+const BooksPage = require("../../../pages/book_store/BooksPage.js");
 
 
 describe('Profile Page UI check', function() {
     /** @type {ProfilePage} */
-    let profilePage, booksPage, userPage;
+    let profilePage, booksPage, loginPage;
     before(async function() {
         this.testUser = await api.user.createUser();
     });
-    beforeEach(async function(){
+    beforeEach(async function() {
         const homePage= await getHomePage();
         booksPage= await homePage.gotoBookStoreApplication();
         await booksPage.menu.clickMenuItem("Book Store Application", "Profile");
         profilePage= await getPageByMenuItem(this.driver, "Profile");
     });
-    after(async function(){
+    after(async function() {
         await api.user.deleteUser(this.testUser);
     });
-    describe('smoke: Basic UI check', function(){
-        describe('not logged in state of the page', function(){
-            it('should check the visibility of not-logged in message on the page', async function(){
+    describe('smoke: Basic UI check', function() {
+        describe('smoke: Not logged-in state of the page', function(){
+            it('should check the visibility of not logged-in message on the page', async function(){
                 const actualMessage = await profilePage.getNotLogginMessage();
                 const expectedMessage= "Currently you are not logged into the Book Store application, please visit the login page to enter or register page to register yourself.";
                 expect(actualMessage, 'Actual and expected not-logged in messages do not match').to.be.equal(expectedMessage);
             });
             it('should check the link to the login page', async function(){
+                await profilePage.gotoLoginPage();
+                loginPage= new LoginPage(profilePage.driver);
+                await loginPage.waitNotLoggedInState();
+                const actualMessage = await loginPage.getWelcomeMessage();
+                const expectedMessage= "Welcome, Login in Book Store";
+                expect(actualMessage, 'Actual and expected welcome messages do not match').to.be.equal(expectedMessage);
             });
             it('should check the link to the register page', async function(){
             });
         });
-        describe('logged in state of the page', function(){
+        describe('smoke: Logged-in state of the page', function(){
             beforeEach(async function() {
                 await profilePage.gotoLoginPage();
                 await loginTestUser(this);
             });
             afterEach(async function() {
-                await profilePage.clickLogoutButton();
+                await logoutTestUser(this);
             });
-            it.only('should login in', async function(){
+            it('should login in', async function(){
                 await profilePage.waitUserPageReady();
+                const currentUrl= await profilePage.getProfilePageUrl();
+                expect(currentUrl, "Error! Wrong redirect link").to.be.include("/profile");
                 const actualLoggedInUsername= await profilePage.getUserName();
-                //console.log(actualLoggedInUsername);
-                //console.log(this.testUser);
-                //const currentUrl= await profilePage.getProfilePageUrl();
-                expect(actualLoggedInUsername, 'Error!!! Wrong logged-in Username').to.be.equal(this.testUser.userName);
+                expect(actualLoggedInUsername, 'Error!!! Wrong logged-in Username').to.be.equal(this.testUser.userName);   
             });
         });
     });
     describe('regression: Basic UI check', function(){
-        describe('not-logged in state of the page', function(){
+        beforeEach(async function () {
+            await profilePage.gotoLoginPage();
+            await loginTestUser(this);
         });
-        describe('logged in state of the page', function(){
-            beforeEach(async function () {
-                await profilePage.gotoLoginPage();
-                await loginTestUser(this);
-            });
+        describe('regression: Logged-in state (non-destructive)', function(){
             afterEach(async function() {
-                await profilePage.clickLogoutButton();
+                await logoutTestUser(this);
             });
-            it('should blah-blah-blah', async function(){
+            it('should check redirection to the Book Store', async function(){
+                await profilePage.waitUserPageReady();
+                await profilePage.gotoBookStore();
+                booksPage= new BooksPage(profilePage.driver);
+                await booksPage.waitUserPageReady();
+                const currentUrl= await booksPage.getBooksPageUrl();
+                expect(currentUrl, "Error! Wrong redirect link").to.be.include("/books");
+            });
+        });
+        describe('regression: Session-ending flows', function(){
+            it('should check successful log out with redirection to login page', async function(){
+                await profilePage.waitUserPageReady();
+                await profilePage.clickLogoutButton();
+                loginPage= new LoginPage(profilePage.driver);
+                await loginPage.waitNotLoggedInState();
+                const currentUrl= await loginPage.getLoginPageUrl();
+                expect(currentUrl, "Error! Wrong redirect link").to.be.include("/login");
             });
         });
     });
