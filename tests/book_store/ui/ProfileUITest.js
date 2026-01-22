@@ -76,6 +76,33 @@ describe('Profile Page UI check', function() {
                 const currentUrl= await booksPage.getBooksPageUrl();
                 expect(currentUrl, "Error! Wrong redirect link").to.be.include("/books");
             });
+            it('should check the delete modal dialog visibility', async function(){
+                await profilePage.waitUserPageReady();
+                await profilePage.deleteAccount();
+                const actualMessage= await profilePage.getDeleteModalMessage();
+                const expectedMessage= "Do you want to delete your account?";
+                expect(actualMessage, 'Actual and expected messages in Delete Modal do not match').to.be.equal(expectedMessage);
+                let isDisplayed= await profilePage.isCloseDeleteModalDisplayed();
+                expect(isDisplayed, "There is no Close Button in Delete Modal").to.be.true;
+                isDisplayed= await profilePage.isOkModalButtonDisplayed();
+                expect(isDisplayed, "There is no Ok Button in Delete Modal").to.be.true;
+                isDisplayed= await profilePage.isCancelModalButtonDisplayed();
+                expect(isDisplayed, "There is no Cancel Button in Delete Modal").to.be.true;
+                await profilePage.closeDeleteModal();
+                const actualLoggedInUsername= await profilePage.getUserName();
+                expect(actualLoggedInUsername, 'There is no Username on the page').to.be.equal(this.testUser.userName);  
+            })
+            it('should check the delete modal dialog buttons enabling', async function(){
+                await profilePage.waitUserPageReady();
+                await profilePage.deleteAccount();
+                let isEnabled= await profilePage.isOkModalButtonEnabled();
+                expect(isEnabled, "Ok Button in Delete Modal is not enabled").to.be.true;
+                isEnabled= await profilePage.isCancelModalButtonEnabled();
+                expect(isEnabled, "Cancel Button in Delete Modal is not enabled").to.be.true;
+                await profilePage.cancelAccountDeletion();
+                const actualLoggedInUsername= await profilePage.getUserName();
+                expect(actualLoggedInUsername, 'There is no Username on the page').to.be.equal(this.testUser.userName);
+            })
         });
         describe('regression: Session-ending flows', function(){
             it('should check successful log out with redirection to login page', async function(){

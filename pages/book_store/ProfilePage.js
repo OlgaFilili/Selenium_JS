@@ -17,7 +17,7 @@ class ProfilePage extends AuthenticatedPage
         this.deleteModalText= { xpath: "//div[contains(text(),'to delete')]"};
         this.deleteModalOkButton= { id: "closeSmallModal-ok"};
         this.deleteModalCancelButton= { id: "closeSmallModal-cancel"};
-        this.deleteModalCloseButton= { xpath: "//span[text()= 'Close']//parent::button"};
+        this.deleteModalCloseButton= { xpath: "//span[text()='Close']//parent::button"};
     }
     _getdeleteAccountButtonLocator(){
         return { xpath: `${this.buttonsTag}${this.deleteAccountButtonText}']`};
@@ -42,6 +42,10 @@ class ProfilePage extends AuthenticatedPage
     }
     async gotoBookStore(){
         await this._click(this.gotoStoreButton);
+    }
+    async deleteAccount(){
+        const locator= await this._getdeleteAccountButtonLocator();
+        await this._click(locator);
     }
     async gotoLoginPage(){
         await this.waitNotLogginState();
@@ -69,9 +73,33 @@ class ProfilePage extends AuthenticatedPage
         await this.waitDeleteModal();
         await this._click(this.deleteModalCancelButton);
     }
+    async confirmAccountDeletion(){
+        await this.waitDeleteModal();
+        await this._click(this.deleteModalOkButton);
+    }
     async closeDeleteModal(){
         await this.waitDeleteModal();
         await this._click(this.deleteModalCloseButton);
+    }
+    async isCloseDeleteModalDisplayed(){
+        await this.waitDeleteModal();
+        return await this._isDisplayed(this.deleteModalCloseButton);
+    }
+    async isOkModalButtonDisplayed(){
+        await this.waitDeleteModal();
+        return await this._isDisplayed(this.deleteModalOkButton);
+    }
+    async isCancelModalButtonDisplayed(){
+        await this.waitDeleteModal();
+        return await this._isDisplayed(this.deleteModalCancelButton);
+    }
+    async isOkModalButtonEnabled(){
+        await this.waitDeleteModal();
+        return await this._isEnabled(this.deleteModalOkButton);
+    }
+    async isCancelModalButtonEnabled(){
+        await this.waitDeleteModal();
+        return await this._isEnabled(this.deleteModalCancelButton);
     }
 }
 module.exports= ProfilePage;

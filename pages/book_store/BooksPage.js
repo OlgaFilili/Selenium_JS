@@ -23,7 +23,7 @@ class BooksPage extends AuthenticatedPage
         return new LoginPage(this.driver);
     }
     async isLoginButtonVisible(){
-        const element= await this.waitLoginButton();
+        const element= await this._find(this.loginButton);
         return await isInViewport(this.driver, element);
     }
     async getLabelText(){
