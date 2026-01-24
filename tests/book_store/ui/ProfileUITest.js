@@ -39,8 +39,13 @@ describe('Profile Page UI check', function() {
                 const expectedMessage= "Welcome, Login in Book Store";
                 expect(actualMessage, 'Actual and expected welcome messages do not match').to.be.equal(expectedMessage);
             });
-            it('should check the link to the register page', async function(){
-            });
+            /*it('should check the link to the register page', async function(){
+                await profilePage.gotoRegisterPage();
+                registerPage= new RegisterPage(profilePage.driver);
+                await registerPage.waitPageReady();
+                const currentUrl= await registerPage.getRegisterPageUrl();
+                expect(currentUrl, "Error! Wrong redirect link").to.be.include("/register");
+            });*/
         });
         describe('smoke: Logged-in state of the page', function(){
             beforeEach(async function() {

@@ -16,18 +16,14 @@ class UserApi {
         return user;
     }
     async deleteUser(user) {
-    // 1. Generate token
-    const tokenResponse = await axios.post(`${BASE_URL}/Account/v1/GenerateToken`,
-        {
-            userName: user.userName,
-            password: user.password
-        });
-    const token = tokenResponse.data.token;
-    // 2. Delete user
-    await axios.delete(`${BASE_URL}/Account/v1/User/${user.userId}`,
-        {
-            headers: {Authorization: `Bearer ${token}`}
-        });
+        // 1. Generate token
+        const tokenResponse = await axios.post(`${BASE_URL}/Account/v1/GenerateToken`,
+            {   userName: user.userName,
+                password: user.password});
+        const token = tokenResponse.data.token;
+        // 2. Delete user
+        await axios.delete(`${BASE_URL}/Account/v1/User/${user.userId}`,
+            {headers: {Authorization: `Bearer ${token}`}});
     }
 }
 module.exports = new UserApi();

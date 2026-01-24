@@ -1,5 +1,6 @@
 const AuthenticatedPage = require("./AuthenticatedPage.js");
 const MainMenu = require("../../components/MainMenu.js");
+const BooksTable = require("../../components/BooksTable.js");
 const { waitVisible } = require("../../utils/WaitUtils.js");
 
 class ProfilePage extends AuthenticatedPage
@@ -7,6 +8,7 @@ class ProfilePage extends AuthenticatedPage
     constructor(driver) {
         super(driver);
         this.menu= new MainMenu(driver);
+        this.booksTable= new BooksTable(driver);
         this.notLogginMessage= { id: "notLoggin-label" };
         this.loginLink= { xpath: "//label[@id='notLoggin-label']//a[text()='login']" };
         this.registerLink= { xpath: "//label[@id='notLoggin-label']//a[text()='register']" };

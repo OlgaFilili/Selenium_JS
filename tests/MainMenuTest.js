@@ -54,7 +54,7 @@ describe ('Main Menu navigation functionality check', function(){
             expect(actualHeader, 'Actual and expected main headers do not match').to.be.equal(interactionsMenuItems[3]);
         });
         it('should check Book Store Application menu is expanded and Book Store sub-menu is activated', async function(){
-            anyPage= await homePage.gotoBookStoreApplication()
+            anyPage= await homePage.gotoBookStoreApplication();
             await anyPage.waitLoginButton();
             const isExpanded= await anyPage.menu.isMenuExpanded(mainMenuNames[5]);
             expect(isExpanded, `${mainMenuNames[5]} menu is not expanded`).to.be.true;

@@ -4,6 +4,7 @@ const api = require("../../../api");
 const { loginTestUser } = require("../../helpers/LoginHelper.js");
 const ProfilePage = require("../../../pages/book_store/ProfilePage.js");
 const LoginPage = require("../../../pages/book_store/LoginPage.js");
+const { refreshPage }= require("../../../utils/BrowserUtils.js");
 const { getAlertText, acceptAlert } = require("../../../utils/AlertUtils.js");
 const { expect }= require('chai');
 
@@ -18,12 +19,10 @@ describe('Delete User Account flow check', function() {
         booksPage= await homePage.gotoBookStoreApplication();
         await booksPage.menu.clickMenuItem("Book Store Application", "Profile");
         profilePage= await getPageByMenuItem(this.driver, "Profile");
+        await profilePage.gotoLoginPage();
+        await loginTestUser(this);
     });
-    describe('smoke: Basic flow check', function() {
-        beforeEach(async function() {
-            await profilePage.gotoLoginPage();
-            await loginTestUser(this);
-        });
+    describe('smoke: Basic successful deletion flow check', function(){
         it('should check the delete modal dialog visibility', async function(){
             const errorMessage="Invalid username or password!";
             const alertMessage="User Deleted.";
@@ -42,6 +41,21 @@ describe('Delete User Account flow check', function() {
             expect(loginInFailed, "Error! System behaved unexpectedly").to.be.true;
             const ActualErrorMessage= await loginPage.getErrorMessage();
             expect(ActualErrorMessage, "Actual and expected error messages do not match").to.be.equal(errorMessage);
+        });
+    });
+    describe('regression: Handle of expired token session check', function(){
+        it('should check previous token login session closes correctly after account deletion', async function(){
+            await profilePage.waitUserPageReady();
+            await api.user.deleteUser(this.testUser);
+            await refreshPage(profilePage.driver);
+            // Expected: user should be redirected to logged-out state
+            // Actual: blank page (BUG)
+            await profilePage.waitNotLogginState();
+            await profilePage.gotoLoginPage();
+            loginPage= new LoginPage(profilePage.driver);
+            await loginPage.inputCredentials(this.testUser.userName, this.testUser.password);
+            const loginInFailed= await loginPage.isLoginInFailed();
+            expect(loginInFailed, "Error! System behaved unexpectedly").to.be.true;
         });
     });
 });

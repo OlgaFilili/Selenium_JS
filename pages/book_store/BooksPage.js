@@ -1,5 +1,6 @@
 const AuthenticatedPage = require("./AuthenticatedPage.js");
 const MainMenu = require("../../components/MainMenu.js");
+const BooksTable = require("../../components/BooksTable.js");
 const LoginPage = require("../book_store/LoginPage.js");
 const { waitVisible } = require("../../utils/WaitUtils.js");
 const { isInViewport } = require("../../utils/BrowserUtils.js");
@@ -9,6 +10,7 @@ class BooksPage extends AuthenticatedPage
     constructor(driver) {
         super(driver);
         this.menu= new MainMenu(driver);
+        this.booksTable= new BooksTable(driver);
         this.loginButton= { id: "login" };
     }
     async getBooksPageUrl() {
