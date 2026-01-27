@@ -100,6 +100,9 @@ class BasePage
   async _getType(element){
     return await element.getAttribute('type');
   }
+  async _getSrc(element){
+    return await element.getAttribute('src');
+  }
   async _getText(target) {
     let element;
     if (typeof target === 'object' && typeof target.getText === 'function') {

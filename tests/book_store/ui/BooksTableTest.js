@@ -2,22 +2,33 @@ const api = require("../../../api");
 const { loginTestUser } = require("../../helpers/LoginHelper.js");
 const { logoutTestUser } = require("../../helpers/LogoutHelper.js");
 const BooksPage = require("../../../pages/book_store/BooksPage.js");
+const BooksTable = require("../../../components/BooksTable.js");
 const { expect }= require('chai');
 
 describe('BooksTable component functionality check', function() {
     /*!!!!!!!!!!!Check the sequence of column headers on the page!!!!!!!!!!
     Tests are written for: Image-> Title-> Author ->Publisher-> Action
-    Second test of 'smoke: Basic functionality check' suite!!
+    Test in 'smoke: Basic functionality check, not logged-in state' suite and
+    'smoke: Basic functionality check, logged-in state' suite
     !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!*/
     const formFields = {
         image: {placeholder: 'src', type: 'string'},
-        href: {placeholder: 'a', type: 'string'},   // extracted from href
+        a: {placeholder: 'href', type: 'string'},   // extracted from href
         title: {placeholder: 'text', type: 'string'},
         author: {placeholder: 'text', type: 'string'},
         publisher: {placeholder: 'text', type: 'string'}
     };
     function entry(image, ID, title, auth, pub) {
-        return { image: image, href: ID, title: title, author: auth, publisher: pub };
+        return { image: image, a: ID, title: title, author: auth, publisher: pub };
+    }
+    function entryVisibleText(entry) {
+        return (`${entry.title} ${entry.author} ${entry.publisher}`).replace(/\s+/g, ' ').trim();
+    }
+    function entryLink(entry) {
+        return entry.a;
+    }
+    function entryImage(entry) {
+        return entry.image;
     }
     const placeholders = Object.values(formFields).map(f => f.placeholder);
     const keys = Object.keys(formFields);
@@ -32,6 +43,7 @@ describe('BooksTable component functionality check', function() {
         ,entry( '/images/bookimage2.jpg', '/books?book=9781593275846', 'Eloquent JavaScript, Second Edition', 'Marijn Haverbeke', "No Starch Press")
         ,entry( '/images/bookimage3.jpg', '/books?book=9781593277574', 'Understanding ECMAScript 6', 'Nicholas C. Zakas', "No Starch Press")
     ];
+
     /** @type {BooksPage} */
     let homePage, booksTablePage;
     beforeEach(async function(){
@@ -59,11 +71,6 @@ describe('BooksTable component functionality check', function() {
             const expectedValue=10;
             expect(defaultRowsPerPage, `Expected and actual rows amount ${defaultRowsPerPage} do not match`).to.be.equal(expectedValue);
         });
-        it('should check the text for number of rows showed per page by default', async function() {
-            const defaultRowsPerPageText= await booksTablePage.booksTable.rowsPerPageText();
-            const expectedValue='10 rows';
-            expect(defaultRowsPerPageText, `Expected and actual rows amount ${defaultRowsPerPageText} do not match`).to.be.equal(expectedValue);
-        });
         it('should check the list of available numbers of rows showed per page', async function() {
             const optionsList= await booksTablePage.booksTable.listRowsPerPage();
             expect(optionsList, `Expected and actual rows amount ${optionsList} do not match`).to.deep.equal(rowsPerPage);
@@ -79,97 +86,100 @@ describe('BooksTable component functionality check', function() {
             const actualRowsPerPage= await booksTablePage.booksTable.rowsPerPage();
             expect(actualRowsPerPage, `Expected and actual new number of rows do not match`).to.be.equal(expectedRowsPerPage);
         });
-        it('should check that buttons "Previous" and "Next" are disabled', async function() {
+        it('should check that buttons "Previous" and "Next" are disabled if there is only one page', async function() {
             const previousButtonState= await booksTablePage.booksTable.isPreviousButtonEnabled();
             const nextButtonState= await booksTablePage.booksTable.isNextButtonEnabled();
             expect(previousButtonState, "'Previous' Button is enabled").to.be.false;
             expect(nextButtonState, "'Next' Button is enabled").to.be.false;
         });
     });
-    describe('regression: Live search functionality check', function(){
-        it('should search text through the page', async function() {
-            const searchText='rra';
-            await webTablesPage.searchEntries(searchText);
-            const entriesTotal= await webTablesPage.getTotalNotNullEntriesNumber();
-            expect(entriesTotal, `Total number of entries don't equal ${entriesTotal}`).to.be.equal(2);
-            let entryString = keys.map(k => defaultEntries[0][k]).join(' ');
-            let inTable=await webTablesPage.isEntryOnPage(entryString);
-            expect(inTable, `Entry with ${searchText} in ${defaultEntries[0].FirstName} was not found`).to.be.true;
-            entryString = keys.map(k => defaultEntries[2][k]).join(' ');
-            inTable=await webTablesPage.isEntryOnPage(entryString);
-            expect(inTable, `Entry with ${searchText} in ${defaultEntries[2].FirstName} was not found`).to.be.true;
+    describe('regression: Live search functionality check, not logged-in state', function(){
+        it('should search books with the text', async function() {
+            const searchText='des';
+            await booksTablePage.booksTable.searchEntries(searchText);
+            const entriesTotal= await booksTablePage.booksTable.getTotalNotNullEntriesNumber();
+            expect(entriesTotal, `Expected 2 entries, got ${entriesTotal}`).to.be.equal(2);
+            let expectedEntry= defaultEntries[1];
+            let inTable = await booksTablePage.booksTable.isEntryOnPage({title: expectedEntry.title,
+                auth: expectedEntry.author, pub: expectedEntry.publisher });
+            expect(inTable, `Entry with '${searchText}' in ${defaultEntries[1].title} was not found`).to.be.true;
+            expectedEntry= defaultEntries[2];
+            inTable = await booksTablePage.booksTable.isEntryOnPage({title: expectedEntry.title,
+                auth: expectedEntry.author, pub: expectedEntry.publisher });
+            expect(inTable, `Entry with '${searchText}' in ${defaultEntries[2].title} was not found`).to.be.true;
         });
-        it('should display empty table if search text is missing', async function() {
+        it('should show correct image for each book', async function() {
+            const searchText='des';
+            await booksTablePage.booksTable.searchEntries(searchText);
+            await booksTablePage.booksTable.waitSearchResult();
+            let expectedEntry= defaultEntries[1];
+            let expectedImageSrc= entryImage(expectedEntry);
+            let actualImageSrc= await booksTablePage.booksTable.getImageSrc({title: expectedEntry.title, 
+                auth: expectedEntry.author });
+            let actualPath = new URL(actualImageSrc).pathname;
+            expect(actualPath, `Bug!!! Wrong image for ${defaultEntries[1].title}`).to.be.equal(expectedImageSrc);
+            expectedEntry= defaultEntries[2];
+            expectedImageSrc= entryImage(expectedEntry);
+            console.log(expectedImageSrc);
+            actualImageSrc= await booksTablePage.booksTable.getImageSrc({title: expectedEntry.title, 
+                auth: expectedEntry.author });
+            actualPath = new URL(actualImageSrc).pathname;
+            expect(actualPath, `Bug!!! Wrong image for ${defaultEntries[2].title}`).to.be.equal(expectedImageSrc);
+        });
+        it('should display No Data message and empty table if search text is missing', async function() {
             const searchText='na';
-            await webTablesPage.searchEntries(searchText);
-            const entriesTotal= await webTablesPage.getTotalNotNullEntriesNumber();
-            expect(entriesTotal, `Total number of entries don't equal ${entriesTotal}`).to.be.equal(0);
+            await booksTablePage.booksTable.searchEntries(searchText);
+            const isMessageVisible= await booksTablePage.booksTable.waitSearchResult();
+            expect(isMessageVisible, "No Data Message is not visible").to.be.false;
+            const entriesTotal= await booksTablePage.booksTable.getTotalNotNullEntriesNumber();
+            expect(entriesTotal, `Expected 2 entries, got ${entriesTotal}`).to.be.equal(0);
         });
-        it('should search text through several pages of entries and include new added entries', async function() {
-            await webTablesPage.setRowsPerPage(5);
-            const dataEntry = testUsers.map(user => keys.map(k => user[k]));
-            await webTablesPage.addNewEntry(placeholders, ...dataEntry);
-            await webTablesPage.waitPreviousButton();
-            const searchText='2';
-            await webTablesPage.searchEntries(searchText);
-            const entriesTotal= await webTablesPage.getTotalNotNullEntriesNumber();
-            expect(entriesTotal, `Total number of entries don't equal ${entriesTotal}`).to.be.equal(4);
-            let entryString = keys.map(k => defaultEntries[1][k]).join(' ');
-            let inTable=await webTablesPage.isEntryOnPage(entryString);
-            expect(inTable, `Entry with ${searchText} in ${defaultEntries[1].Salary} was not found`).to.be.true;
-            entryString = keys.map(k => defaultEntries[2][k]).join(' ');
-            inTable=await webTablesPage.isEntryOnPage(entryString);
-            expect(inTable, `Entry with ${searchText} in ${defaultEntries[2].Age} and ${defaultEntries[2].Salary} was not found`).to.be.true;
-            entryString = keys.map(k => testUsers[1][k]).join(' ');
-            inTable=await webTablesPage.isEntryOnPage(entryString);
-            expect(inTable, `Entry with ${searchText} in ${testUsers[1].LastName} and ${testUsers[1].Email} was not found`).to.be.true;
-            entryString = keys.map(k => testUsers[2][k]).join(' ');
-            inTable=await webTablesPage.isEntryOnPage(entryString);
-            expect(inTable, `Entry with ${searchText} in ${testUsers[2].Department} was not found`).to.be.true;
+        it('should search text through several pages with books', async function() {
+            await booksTablePage.booksTable.setRowsPerPage(5);
+            await booksTablePage.booksTable.isNextButtonEnabled();
+            const searchText='No';
+            await booksTablePage.booksTable.searchEntries(searchText);
+            const entriesTotal= await booksTablePage.booksTable.getTotalNotNullEntriesNumber();
+            expect(entriesTotal, `Expected 3 entries, got ${entriesTotal}`).to.be.equal(3);
+            let expectedEntry= defaultEntries[4];
+            let inTable = await booksTablePage.booksTable.isEntryOnPage({title: expectedEntry.title,
+                auth: expectedEntry.author, pub: expectedEntry.publisher });
+            expect(inTable, `Entry with '${searchText}' in ${defaultEntries[4].title} was not found`).to.be.true;
+            expectedEntry= defaultEntries[6];
+            inTable = await booksTablePage.booksTable.isEntryOnPage({title: expectedEntry.title,
+                auth: expectedEntry.author, pub: expectedEntry.publisher });
+            expect(inTable, `Entry with '${searchText}' in ${defaultEntries[6].publisher} was not found`).to.be.true;
+            expectedEntry= defaultEntries[7];
+            inTable = await booksTablePage.booksTable.isEntryOnPage({title: expectedEntry.title,
+                auth: expectedEntry.author, pub: expectedEntry.publisher });
+            expect(inTable, `Entry with '${searchText}' in ${defaultEntries[7].publisher} was not found`).to.be.true;
         });
         it('should expand search result when reduce text', async function() {
-            await webTablesPage.setRowsPerPage(5);
-            const dataEntry = testUsers.map(user => keys.map(k => user[k]));
-            await webTablesPage.addNewEntry(placeholders, ...dataEntry);
-            await webTablesPage.waitForTableUpdate(3);
-            const searchText='example.e';
-            await webTablesPage.searchEntries(searchText);
-            const initialCount = await webTablesPage.getTotalNotNullEntriesNumber();
+            const searchText='JavaScript ';
+            await booksTablePage.booksTable.searchEntries(searchText);
+            const initialCount = await booksTablePage.booksTable.getTotalNotNullEntriesNumber();
             //console.log("Entries after first search: ", initialCount);
-            await webTablesPage.deleteCharsFromTextSearch();
-            await webTablesPage.waitForTableUpdate(initialCount);
-            const expandedCount= await webTablesPage.getTotalNotNullEntriesNumber();
+            await booksTablePage.booksTable.deleteCharsFromTextSearch();
+            await booksTablePage.booksTable.waitForTableUpdate(initialCount);
+            const expandedCount= await booksTablePage.booksTable.getTotalNotNullEntriesNumber();
             //console.log("Entries after backspacing: ", expandedCount);
             expect(expandedCount, "Entries did not expand after reducing text").to.be.greaterThan(initialCount);
             expect(expandedCount, "Total number of entries don`t equal 4").to.be.equal(4);
-            let entryString = keys.map(k => testUsers[0][k]).join(' ');
-            let inTable=await webTablesPage.isEntryOnPage(entryString);
-            expect(inTable, `Entry with 'example.' in ${testUsers[0].Email} was not found`).to.be.true;
-            entryString = keys.map(k => defaultEntries[0][k]).join(' ');
-            inTable=await webTablesPage.isEntryOnPage(entryString);
-            expect(inTable, `Entry with 'example.' in ${defaultEntries[0].Email} was not found`).to.be.true;
-            entryString = keys.map(k => defaultEntries[1][k]).join(' ');
-            inTable=await webTablesPage.isEntryOnPage(entryString);
-            expect(inTable, `Entry with 'example.' in ${defaultEntries[1].Email} was not found`).to.be.true;
-            entryString = keys.map(k => defaultEntries[2][k]).join(' ');
-            inTable=await webTablesPage.isEntryOnPage(entryString);
-            expect(inTable, `Entry with 'example.' in ${defaultEntries[2].Email} was not found`).to.be.true;
         });
         it('should check that search result could include more than one page', async function() {
-            await webTablesPage.setRowsPerPage(5);
-            const dataEntry = testUsers.map(user => keys.map(k => user[k]));
-            await webTablesPage.addNewEntry(placeholders, ...dataEntry);
-            await webTablesPage.waitForTableUpdate(3);
-            const searchText='@';
-            await webTablesPage.searchEntries(searchText);
-            await webTablesPage.clickNextPageButton();
-            const searchTextNextPage= await webTablesPage.getSearchFieldValue();
+            await booksTablePage.booksTable.setRowsPerPage(5);
+            const searchText="O'Reilly";
+            await booksTablePage.booksTable.searchEntries(searchText);
+            await booksTablePage.booksTable.clickNextPageButton();
+            const searchTextNextPage= await booksTablePage.booksTable.getSearchFieldValue();
             expect(searchTextNextPage, "Search text does not match with typed on the previous page").to.be.equal(searchText);
+            const entriesTotal= await booksTablePage.booksTable.getTotalNotNullEntriesNumber();
+            expect(entriesTotal, `Expected 1 entry, got ${entriesTotal}`).to.be.equal(1);
         });
     });
-    describe('regression: Pagination bottom menu check', function() {
+    describe.only('regression: Pagination bottom menu check, not logged-in state', function() {
         it('should check the text for number of rows showed per page by default', async function() {
-            const defaultRowsPerPageText= await webTablesPage.rowsPerPageText();
+            const defaultRowsPerPageText= await booksTablePage.booksTable.rowsPerPageText();
             const expectedValue='10 rows';
             expect(defaultRowsPerPageText, `Expected and actual rows amount ${defaultRowsPerPageText} do not match`).to.be.equal(expectedValue);
         });

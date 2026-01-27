@@ -413,13 +413,13 @@ describe('Web Tables Page functionality check', function() {
             const searchText='rra';
             await webTablesPage.searchEntries(searchText);
             const entriesTotal= await webTablesPage.getTotalNotNullEntriesNumber();
-            expect(entriesTotal, `Total number of entries don't equal ${entriesTotal}`).to.be.equal(2);
+            expect(entriesTotal, `Expected 2 entries, got ${entriesTotal}`).to.be.equal(2);
             let entryString = keys.map(k => defaultEntries[0][k]).join(' ');
             let inTable=await webTablesPage.isEntryOnPage(entryString);
-            expect(inTable, `Entry with ${searchText} in ${defaultEntries[0].FirstName} was not found`).to.be.true;
+            expect(inTable, `Entry with '${searchText}' in ${defaultEntries[0].FirstName} was not found`).to.be.true;
             entryString = keys.map(k => defaultEntries[2][k]).join(' ');
             inTable=await webTablesPage.isEntryOnPage(entryString);
-            expect(inTable, `Entry with ${searchText} in ${defaultEntries[2].FirstName} was not found`).to.be.true;
+            expect(inTable, `Entry with '${searchText}' in ${defaultEntries[2].FirstName} was not found`).to.be.true;
         });
         it('should display empty table if search text is missing', async function() {
             const searchText='na';
