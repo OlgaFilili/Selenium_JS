@@ -24,6 +24,9 @@ API testing artifacts for the DemoQA Book Store authorization endpoints are also
 
 4. Project Structure
 Selenium_JS/
+├─ .github/
+│   └─ workflows/
+│       └─ ci.yml               # GitHub Actions workflow (PR-only, runs all tests)
 ├─ components/                  # Reusable elements
 │   ├─ MainMenu.js
 │   └─ (other components)
@@ -124,6 +127,21 @@ UI tests are organized based on the complexity and behavior of the tested area.
   - Login functionality (positive / negative)
   - Authorization session flow (state-based behavior)
 
+## CI / GitHub Actions (learning setup)
+As part of learning test automation workflows, I experimented with a basic CI pipeline using **GitHub Actions**.
+The pipeline runs **only on Pull Requests to `main`** and executes the full automated test suite.
+
+Some tests may fail consistently due to known issues in the DemoQA application.  
+This is expected and intentional — the goal is to demonstrate:
+- real UI test execution
+- handling of unstable test environments
+- collecting failure artifacts (screenshots)
+### What is included:
+- PR-only test execution
+- Automated test run via `npm test`
+- Screenshots saved as artifacts on test failures
+
+This setup is primarily educational and was added to better understand how automated tests can be integrated into CI pipelines.
 
 ## Notes
 ChromeDriver is managed via the chromedriver package.
