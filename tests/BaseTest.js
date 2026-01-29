@@ -10,7 +10,9 @@ let homePage;
 before(async function() {
     // runs once before all tests
     driver= await createDriver();
-    await driver.manage().window().maximize();
+    if (process.env.CI !== 'true') {
+        await driver.manage().window().maximize();
+    }
     this.driver=driver;
 });
 

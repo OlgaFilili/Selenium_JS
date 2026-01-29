@@ -7,6 +7,16 @@ let driver; // will be created once
 async function createDriver() {
   if (!driver) {
     const options = new chrome.Options();
+    // CI = headless, local= Chrome
+    if (process.env.CI === 'true') {
+      options.addArguments(
+        '--headless=new',
+        '--no-sandbox',
+        '--disable-dev-shm-usage',
+        '--disable-gpu',
+        '--window-size=1920,1080'
+      );
+    }
     const service= new chrome.ServiceBuilder(chromedriver.path);
     driver = await new Builder()
       .forBrowser("chrome")
