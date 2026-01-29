@@ -90,7 +90,10 @@ Selenium_JS/
 └─ README.md                    # Project documentation
 
 5. Running Tests
-```npx mocha tests/ ```
+Run all tests locally:
+```npx mocha tests/```
+Locally: tests run with a visible Chrome browser (headed mode).
+In CI (GitHub Actions): tests run automatically in headless Chrome.
 
 ## Project Status
 Fully functional with working Mocha tests.
