@@ -1,6 +1,6 @@
 const BasePage = require("../pages/BasePage.js");
 const { waitVisible, waitClickable, waitIsRemoved, waitForFirstVisible } = require("../utils/WaitUtils.js");
-const { scrollToElement } = require("../utils/BrowserUtils.js");
+const { scrollRelatively } = require("../utils/BrowserUtils.js");
 
 class BooksTable extends BasePage
 {
@@ -8,14 +8,14 @@ class BooksTable extends BasePage
         super(driver);
         this.searchBox= { id: "searchBox"};
         this.tableColumns= { xpath: "//div[contains(@class,'header-content')]"};
-        this.tableElements= { xpath: "//div[@class='rt-tr-group']"};
-        this.cell= { xpath: ".//div[@role='gridcell'][2]"};
         this.entryOnPage= { xpath: "//div[@class='rt-tbody']//div[@role='row']"};
         this.rowImage= { xpath: ".//img"};
-        this.notNullEntry= { xpath: "//div[@class='rt-table']//img[@src]"}; 
+        this.notNullEntry= { xpath: "//div[@class='rt-td']//img[@src]"}; 
         this.noDataText= { xpath: "//div[@class='rt-noData']"};
         this.rowsPerPageSelect= { xpath: "//select"};
         this.rowsPerPageOptions="option";
+        this.currentPage= { xpath: "//input[@aria-label='jump to page']"};
+        this.totalPages= {xpath: "//span[text()='Page']//span"};
         this.previousPageButton= { xpath: "//button[text()='Previous']"};
         this.nextPageButton= { xpath: "//button[text()='Next']"};
 
@@ -107,13 +107,12 @@ class BooksTable extends BasePage
         return null;
     }
     async getTotalNotNullEntriesNumber(){
-        const rows= await this._finds(this.tableElements);
-        let firstCell, firstText;
+        const rows= await this._finds(this.entryOnPage);
+        let img;
         let number=0;
         for (const row of rows) {
-            firstCell = await this._findInside(row, this.cell);
-            firstText = (await this._getText(firstCell)).trim();
-            if (firstText){
+            img = await this._findsInside(row, this.rowImage);
+            if (img.length > 0) {
                 number++;
             }
             else break;
@@ -127,7 +126,7 @@ class BooksTable extends BasePage
         const element= await this._find(this.searchBox);
         return await this._getValue(element);
     }
-    async waitForTableUpdate(previousCount, timeout = 2000) {
+    async waitForTableUpdate(previousCount, timeout = 5000) {
         await this.driver.wait(async () => {
             const currentCount = await this.getTotalNotNullEntriesNumber();
             return currentCount !== previousCount;
@@ -138,6 +137,15 @@ class BooksTable extends BasePage
     }
     async clickNextPageButton(){
         await this._click(this.nextPageButton);
+    }
+    async getTotalPages(){
+        const value= await this._getText(this.totalPages);
+        return Number(value);
+    }
+    async getCurrentPageNumber(){
+        const element= await this._find(this.currentPage);
+        const value= await this._getValue(element);
+        return Number(value);
     }
 }
 module.exports= BooksTable;

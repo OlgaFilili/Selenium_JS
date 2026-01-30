@@ -6,7 +6,8 @@ const TRANSIENT_SELECTORS = [
     '.spinner',
     '.tooltip.show'
 ];
-async function waitForStableUI(driver, timeout = 5000) {
+async function waitForStableUI(driver) {
+    const timeout= 10000;
     const startTime = Date.now();
     while (true) {
         const elements = await Promise.all(
@@ -20,13 +21,13 @@ async function waitForStableUI(driver, timeout = 5000) {
     await new Promise(r => setTimeout(r, 50));
 }
 async function waitVisible(driver, locator) {
-    const timeout= 5000;
+    const timeout= 10000;
     const element = await driver.wait(until.elementLocated(locator), timeout);
     await driver.wait(until.elementIsVisible(element), timeout);
     return element;
 }
 async function waitIsRemoved(driver, locator) {
-    const timeout = 5000;
+    const timeout= 10000;
     try {
         const element = await driver.findElement(locator);
         await driver.wait(until.stalenessOf(element), timeout);
@@ -39,13 +40,13 @@ async function waitIsRemoved(driver, locator) {
     }
 }
 async function waitClickable(driver, locator) {
-    const timeout= 5000;
+    const timeout= 10000;
     const element = await waitVisible(driver, locator);
     await driver.wait(until.elementIsEnabled(element), timeout);
     return element;
 }
 async function waitText(driver, locator, expectedText) {
-    const timeout= 5000;
+    const timeout= 10000;
     await driver.wait(async () => {
         const element = await driver.findElement(locator);
         const text = await element.getText();

@@ -2,7 +2,6 @@ const api = require("../../../api");
 const { loginTestUser } = require("../../helpers/LoginHelper.js");
 const { logoutTestUser } = require("../../helpers/LogoutHelper.js");
 const BooksPage = require("../../../pages/book_store/BooksPage.js");
-const BooksTable = require("../../../components/BooksTable.js");
 const { expect }= require('chai');
 
 describe('BooksTable component functionality check', function() {
@@ -97,6 +96,7 @@ describe('BooksTable component functionality check', function() {
         it('should search books with the text', async function() {
             const searchText='des';
             await booksTablePage.booksTable.searchEntries(searchText);
+            await booksTablePage.booksTable.waitSearchResult();
             const entriesTotal= await booksTablePage.booksTable.getTotalNotNullEntriesNumber();
             expect(entriesTotal, `Expected 2 entries, got ${entriesTotal}`).to.be.equal(2);
             let expectedEntry= defaultEntries[1];
@@ -177,58 +177,46 @@ describe('BooksTable component functionality check', function() {
             expect(entriesTotal, `Expected 1 entry, got ${entriesTotal}`).to.be.equal(1);
         });
     });
-    describe.only('regression: Pagination bottom menu check, not logged-in state', function() {
+    describe('regression: Pagination bottom menu check, not logged-in state', function() {
         it('should check the text for number of rows showed per page by default', async function() {
             const defaultRowsPerPageText= await booksTablePage.booksTable.rowsPerPageText();
             const expectedValue='10 rows';
             expect(defaultRowsPerPageText, `Expected and actual rows amount ${defaultRowsPerPageText} do not match`).to.be.equal(expectedValue);
         });
         it('should display more than one page', async function() {
-            const dataEntry = testUsers.map(user => keys.map(k => user[k]));
-            //const expectedEntry = dataEntry.join(' ');
-            await webTablesPage.addNewEntry(placeholders, ...dataEntry);
-            await webTablesPage.waitPreviousButton();
-            await webTablesPage.setRowsPerPage(5);
-            const totalPages= await webTablesPage.getTotalPages();
-            const nextButtonState= await webTablesPage.isNextButtonEnabled();
-            const previousButtonState= await webTablesPage.isPreviousButtonEnabled();
-            const actualPageNumber= await webTablesPage.getCurrentPageNumber();
+            await booksTablePage.booksTable.setRowsPerPage(5);
+            const totalPages= await booksTablePage.booksTable.getTotalPages();
+            const nextButtonState= await booksTablePage.booksTable.isNextButtonEnabled();
+            const previousButtonState= await booksTablePage.booksTable.isPreviousButtonEnabled();
+            const actualPageNumber= await booksTablePage.booksTable.getCurrentPageNumber();
             expect(actualPageNumber, "Actual and expected current page number do not match").to.be.equal(1);
             expect(totalPages, "Actual and expected total pages numbers do not match").to.be.equal(2);
             expect(nextButtonState, "'Next' Button is not enabled").to.be.true;
             expect(previousButtonState, "'Previous' Button is enabled").to.be.false;
         });
         it('should switch to the next page', async function() {
-            const dataEntry = testUsers.map(user => keys.map(k => user[k]));
-            //const expectedEntry = dataEntry.join(' ');
-            await webTablesPage.addNewEntry(placeholders, ...dataEntry);
-            await webTablesPage.waitPreviousButton();
-            await webTablesPage.setRowsPerPage(5);
-            await webTablesPage.clickNextPageButton();
-            const totalPages= await webTablesPage.getTotalPages();
-            const nextButtonState= await webTablesPage.isNextButtonEnabled();
-            const previousButtonState= await webTablesPage.isPreviousButtonEnabled();
-            const actualPageNumber= await webTablesPage.getCurrentPageNumber();
-            const notNullEntriesOnPage= await webTablesPage.getTotalNotNullEntriesNumber();
-            expect(notNullEntriesOnPage, "Actual and expected amount of entries on page do not match").to.be.equal(1);
+            await booksTablePage.booksTable.setRowsPerPage(5);
+            await booksTablePage.booksTable.clickNextPageButton();
+            const totalPages= await booksTablePage.booksTable.getTotalPages();
+            const nextButtonState= await booksTablePage.booksTable.isNextButtonEnabled();
+            const previousButtonState= await booksTablePage.booksTable.isPreviousButtonEnabled();
+            const actualPageNumber= await booksTablePage.booksTable.getCurrentPageNumber();
+            const notNullEntriesOnPage= await booksTablePage.booksTable.getTotalNotNullEntriesNumber();
+            expect(notNullEntriesOnPage, "Actual and expected amount of entries on page do not match").to.be.equal(3);
             expect(actualPageNumber, "Actual and expected current page number do not match").to.be.equal(2);
             expect(totalPages, "Actual and expected total pages numbers do not match").to.be.equal(2);
             expect(nextButtonState, "'Next' Button is enabled").to.be.false;
             expect(previousButtonState, "'Previous' Button is  not enabled").to.be.true;
         });
         it('should display corresponding number of pages and current page after switching to bigger amount', async function() {
-            await webTablesPage.setRowsPerPage(5);
-            const dataEntry = testUsers.map(user => keys.map(k => user[k]));
-            //const expectedEntry = dataEntry.join(' ');
-            await webTablesPage.addNewEntry(placeholders, ...dataEntry);
-            await webTablesPage.waitPreviousButton();
-            await webTablesPage.clickNextPageButton();
-            await webTablesPage.setRowsPerPage(10);
-            await webTablesPage.closeRowsPerPageDropdown();
-            const actualPageNumber= await webTablesPage.getCurrentPageNumber();
-            const totalPages= await webTablesPage.getTotalPages();
-            const nextButtonState= await webTablesPage.isNextButtonEnabled();
-            const previousButtonState= await webTablesPage.isPreviousButtonEnabled();
+            await booksTablePage.booksTable.setRowsPerPage(5);
+            await booksTablePage.booksTable.clickNextPageButton();
+            await booksTablePage.booksTable.setRowsPerPage(10);
+            await booksTablePage.booksTable.closeRowsPerPageDropdown();
+            const actualPageNumber= await booksTablePage.booksTable.getCurrentPageNumber();
+            const totalPages= await booksTablePage.booksTable.getTotalPages();
+            const nextButtonState= await booksTablePage.booksTable.isNextButtonEnabled();
+            const previousButtonState= await booksTablePage.booksTable.isPreviousButtonEnabled();
             expect(totalPages, "Actual and expected total pages numbers do not match").to.be.equal(1);
             expect(actualPageNumber, "Actual and expected current page number do not match").to.be.equal(1);
             expect(nextButtonState, "'Next' Button is enabled").to.be.false;
