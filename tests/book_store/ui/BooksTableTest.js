@@ -74,11 +74,6 @@ describe('BooksTable component functionality check', function() {
                 const optionsList= await booksPage.booksTable.listRowsPerPage();
                 expect(optionsList, `Expected and actual rows amount ${optionsList} do not match`).to.deep.equal(rowsPerPage);
             });
-            it('should check the list of available numbers of rows text showed per page', async function() {
-                const optionsList= await booksPage.booksTable.listRowsPerPageText();
-                const expectedList = rowsPerPage.map(n => `${n} rows`);
-                expect(optionsList, `Expected and actual rows amount ${optionsList} do not match`).to.deep.equal(expectedList);
-            });
             it('should change the number of rows showed per page', async function() {
                 const expectedRowsPerPage= 20;
                 await booksPage.booksTable.setRowsPerPage(expectedRowsPerPage);
@@ -194,6 +189,11 @@ describe('BooksTable component functionality check', function() {
                 const defaultRowsPerPageText= await booksPage.booksTable.rowsPerPageText();
                 const expectedValue='10 rows';
                 expect(defaultRowsPerPageText, `Expected and actual rows amount ${defaultRowsPerPageText} do not match`).to.be.equal(expectedValue);
+            });
+            it('should check the list of available numbers of rows text showed per page', async function() {
+                const optionsList= await booksPage.booksTable.listRowsPerPageText();
+                const expectedList = rowsPerPage.map(n => `${n} rows`);
+                expect(optionsList, `Expected and actual rows amount ${optionsList} do not match`).to.deep.equal(expectedList);
             });
             it('should display more than one page', async function() {
                 await booksPage.booksTable.setRowsPerPage(5);
