@@ -9,6 +9,7 @@ class BooksTable extends BasePage
         this.searchBox= { id: "searchBox"};
         this.tableColumns= { xpath: "//div[contains(@class,'header-content')]"};
         this.entryOnPage= { xpath: "//div[@class='rt-tbody']//div[@role='row']"};
+        this.cell= { xpath: ".//div[@role='gridcell']"};
         this.rowImage= { xpath: ".//img"};
         this.notNullEntry= { xpath: "//div[@class='rt-td']//img[@src]"}; 
         this.noDataText= { xpath: "//div[@class='rt-noData']"};
@@ -25,6 +26,29 @@ class BooksTable extends BasePage
         const columns= await this._finds(this.tableColumns);
         const text= await Promise.all(columns.map(col => this._getText(col)));
         return text.join(' ');
+    }
+    async findBook(title){
+        const rows= await this._finds(this.entryOnPage);
+        let text;
+        for (const row of rows) {
+            text = await this._getText(row);
+            if (text.includes(title)) {
+                return row;
+            }
+        }
+        return null;
+    }
+    async gotoLink(rowElement) {
+        const cells = await this._findsInside(rowElement, this.cell);
+        const link= await this._findInside(cells[1], { xpath: ".//a"});
+        await this._clickElement(link);
+    }
+    async gotoBook(title){
+        const row= await this.findBook(title);
+        await this.gotoLink(row);
+    }
+    async getBookUrl() {
+        return await this._getUrl();
     }
     async rowsPerPage(){
         const select=await this._find(this.rowsPerPageSelect);
@@ -146,6 +170,24 @@ class BooksTable extends BasePage
         const element= await this._find(this.currentPage);
         const value= await this._getValue(element);
         return Number(value);
+    }
+    async getDisplayedBooks(){
+        const noBooks= await this._isDisplayed(this.noDataText);
+        let books= [];
+        if (noBooks) {
+            return [];
+        }
+        const rows = await this._finds(this.entryOnPage);
+        for (const row of rows) {
+            const entryData= (await this._getText(row)).replace(/\s+/g, ' ').trim();
+            if (entryData) {
+                books.push(entryData);
+            }
+        }
+        return books;
+    }
+    async isMessageDisplayed(){
+        return await this._isDisplayed(this.noDataText);
     }
 }
 module.exports= BooksTable;

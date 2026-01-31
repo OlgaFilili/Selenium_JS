@@ -9,21 +9,31 @@ class UserApi {
             password: 'Test123!'
         };
     }
+    async _generateToken(user) {
+        const tokenResponse = await axios.post(`${BASE_URL}/Account/v1/GenerateToken`,
+            {   userName: user.userName,
+                password: user.password} );
+        const token = tokenResponse.data.token;
+        return token;
+    }
     async createUser() {
         const user = this._generateUser();
         const response = await axios.post(`${BASE_URL}/Account/v1/User`, user);
         user.userId = response.data.userID;
+        user.books= response.data.books;
         return user;
     }
     async deleteUser(user) {
-        // 1. Generate token
-        const tokenResponse = await axios.post(`${BASE_URL}/Account/v1/GenerateToken`,
-            {   userName: user.userName,
-                password: user.password});
-        const token = tokenResponse.data.token;
-        // 2. Delete user
+        const token= await this._generateToken(user);
         await axios.delete(`${BASE_URL}/Account/v1/User/${user.userId}`,
             {headers: {Authorization: `Bearer ${token}`}});
+    }
+    async getUserBooks(user) {
+        const token= await this._generateToken(user);
+        const userResponse= await axios.get(`${BASE_URL}/Account/v1/User/${user.userId}`,
+            {headers: {Authorization: `Bearer ${token}`}});
+        const userBooks= userResponse.data.books;
+        return userBooks;
     }
 }
 module.exports = new UserApi();
