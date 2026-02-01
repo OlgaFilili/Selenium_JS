@@ -10,7 +10,7 @@ API testing artifacts for the DemoQA Book Store authorization endpoints are also
 - Node.js v22.20.0
 - npm v10.9.3
 - Windows 10 Pro
-- Chrome v142 (tested)
+- Chrome v144 (tested)
 
 ## Project Setup
 1. Clone the repo:
@@ -26,7 +26,7 @@ API testing artifacts for the DemoQA Book Store authorization endpoints are also
 Selenium_JS/
 ├─ .github/
 │   └─ workflows/
-│       └─ ci.yml               # GitHub Actions workflow (PR-only, runs all tests)
+│       └─ ci.yml               # GitHub Actions workflow (E2E tests)
 ├─ components/                  # Reusable elements
 │   ├─ MainMenu.js
 │   └─ (other components)
@@ -130,19 +130,17 @@ UI tests are organized based on the complexity and behavior of the tested area.
   - Login functionality (positive / negative)
   - Authorization session flow (state-based behavior)
 
-## CI / GitHub Actions (learning setup)
-As part of learning test automation workflows, I experimented with a basic CI pipeline using **GitHub Actions**.
-The pipeline runs **only on Pull Requests to `main`** and executes the full automated test suite.
-
-Some tests may fail consistently due to known issues in the DemoQA application.  
-This is expected and intentional — the goal is to demonstrate:
-- real UI test execution
-- handling of unstable test environments
-- collecting failure artifacts (screenshots)
-### What is included:
-- PR-only test execution
-- Automated test run via `npm test`
-- Screenshots saved as artifacts on test failures
+## CI / GitHub Actions
+This project uses **GitHub Actions** for automated E2E tests.
+Key points for the current setup:
+- CI pipeline runs **only on Pull Requests to `main`** when JS files, `package.json`/`package-lock.json`, or workflow files are changed.
+- Added **manual trigger** via `workflow_dispatch` for rerunning tests outside PRs.
+- Full automated test suite is executed.
+- Screenshots are collected for failed tests.
+- Some tests may fail consistently due to known issues in the DemoQA application. This is expected and intentional - the goal is to demonstrate:
+  - real UI test execution
+  - handling of unstable test environments
+  - capturing failure artifacts
 
 This setup is primarily educational and was added to better understand how automated tests can be integrated into CI pipelines.
 
