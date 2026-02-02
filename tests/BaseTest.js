@@ -1,7 +1,7 @@
 const HomePage = require("../pages/HomePage.js");
 const AuthenticatedPage = require("../pages/book_store/AuthenticatedPage.js");
 const { createDriver, quitDriver }= require("../utils/DriverUtils.js");
-const { saveScreenshot } = require('../utils/ScreenshotUtils.js');
+const { saveScreenshot } = require("../utils/ScreenshotUtils.js");
 
 let driver;
 let url = 'https://demoqa.com/';
@@ -10,7 +10,9 @@ let homePage;
 before(async function() {
     // runs once before all tests
     driver= await createDriver();
-    await driver.manage().window().maximize();
+    if (process.env.CI !== 'true') {
+        await driver.manage().window().maximize();
+    }
     this.driver=driver;
 });
 

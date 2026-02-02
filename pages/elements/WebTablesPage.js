@@ -11,7 +11,7 @@ class WebTablesPage extends BasePage
         this.tableHeader= { xpath: "//h1[text()='Web Tables']"};
         this.addButton= { id: "addNewRecordButton"};
         this.searchBox= { id: "searchBox"};
-        this.tableColumns= { xpath: "//div[contains(@class,'header-content')]"}
+        this.tableColumns= { xpath: "//div[contains(@class,'header-content')]"};
         this.tableElements= { xpath: "//div[@class='rt-tr-group']"};
         this.cell= { xpath: ".//div[@role='gridcell']"};
         this.editButton={ xpath: ".//span[@title='Edit']"};

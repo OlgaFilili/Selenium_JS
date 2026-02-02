@@ -3,6 +3,7 @@ const LoginPage = require('../../../pages/book_store/LoginPage.js');
 const AuthenticatedPage = require("../../../pages/book_store/AuthenticatedPage.js");
 const ProfilePage = require("../../../pages/book_store/ProfilePage.js");
 const { expect }= require('chai');
+const { user } = require("../../../api/index.js");
 
 describe('Login Page UI check', function() {
     /** @type {LoginPage} */
@@ -97,6 +98,7 @@ describe('Login Page UI check', function() {
             await booksPage.menu.clickMenuItem("Book Store Application", "Login");
             await loginPage.goToProfileFromAlreadyLoggedInMessage();
             userPage= new ProfilePage(loginPage.driver);
+            await userPage.waitUserPageReady();
             const currentUrl= await userPage.getProfilePageUrl();
             expect(currentUrl, "Error! Wrong redirect link").to.be.include("/profile");
             const isAuth= await userPage.isUserNameDisplayed();
