@@ -20,8 +20,16 @@ class LoginPage extends BasePage
         this.authButton= { id: "submit"};
         
     }
+    async getLoginPageUrl() {
+        return await this._getUrl();
+    }
     async waitUserPageReady(){
         await waitVisible(this.driver, this.authButton);
+    }
+    async waitNotLoggedInState(){
+        await waitVisible(this.driver, this.userNameField);
+        await waitVisible(this.driver, this.passwordField);
+        await waitVisible(this.driver, this.loginButton);
     }
     async getWelcomeMessage(){
         await waitVisible(this.driver, this.loginButton);
