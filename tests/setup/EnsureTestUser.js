@@ -8,7 +8,7 @@ const Test_User = {
 (async () => {
   try {
     console.log('Ensuring test user exists...');
-    await api.user.createPermanentUser(Test_User.username, Test_User.password);
+    await api.user.createPermanentUser(Test_User.userName, Test_User.password);
     console.log('Test user is ready');
   } catch (error) {
     console.error('Failed to ensure test user', error);
