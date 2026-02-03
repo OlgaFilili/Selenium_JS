@@ -18,6 +18,7 @@
   },
   "homepage": "https://github.com/OlgaFilili/Selenium_JS#readme",
   "devDependencies": {
+    "axios": "^1.13.2",
     "chai": "^4.3.10",
     "chromedriver": "^144.0.1",
     "mocha": "^10.2.0",

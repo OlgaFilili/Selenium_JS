@@ -19,8 +19,8 @@
 **Expected result:**
 - Swagger documentation should include description of possible 200 OK response with boolean false, including conditions under which it is returned.
 **Notes:**
-- The document should clarify and include the description of /Authorized end-point undocumented authorization state
-- It seems that response body false to 200 OK state corresponds to user which was not activated
+- The document should clarify and include the description of /Authorized end-point undocumented authorization state.
+- It seems that response body false to 200 OK state corresponds to user which was not activated.
 
 ## Bug-006
 **Title:** API contract violation for Account /GenerateToken endpoint

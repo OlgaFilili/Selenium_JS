@@ -33,6 +33,7 @@ describe('Authorization negative check', function() {
             expect(ActualErrorMessage, "Authorization failed, but system did not show expected error").to.be.equal(errorMessage);
         });
         it('should fail to login with incorrect password letter case', async function(){
+            // Known issue: Bug-008, 009
             const username= "Name";
             const password= "QwertY123!";
             await loginPage.inputCredentials(username, password);
@@ -65,6 +66,7 @@ describe('Authorization negative check', function() {
             expect(ActualErrorMessage, "Authorization failed, but system did not show expected error").to.be.equal(errorMessage);
         });
         it('should fail login with trailing spaces in credentials', async function(){
+            // Known issue: Bug-003, 010
             const username= "Name ";
             const password= "Qwerty123! ";
             await loginPage.inputCredentials(username, password);
