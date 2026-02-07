@@ -31,7 +31,7 @@ Verify that the register endpoint successfully creates a new user.
 ### Test Case ID: API-REGISTER-SMOKE-002  
 ### Title: Trying to register a new user with an empty required field
 **Description:**  
-Verify that register endpoint does not allow creating a new user with empty required fields.
+Verify that the register endpoint does not allow creating a new user with empty required fields.
 ### Preconditions:
 - User with provided userName does not exist in the system
 **Test data:**
