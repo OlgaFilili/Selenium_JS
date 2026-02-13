@@ -120,3 +120,36 @@ Documentation should list correct responses:
 - The Swagger documentation is not consistent with responses of DELETE /User endpoint.
 - The current Swagger documentation may mislead developers and testers about expected behavior.
 - Actual API returns 200 OK for invalid UUID, which is an API bug (Bug-014).
+
+## Bug-027
+**Title:** POST /User endpoint documentation does not match actual API responses
+**Environment:** DemoQA Book Store documentation (https://demoqa.com/swagger/#/Account/AccountV1UserPost)
+**Severity:** Low 
+**Found during:** API exploratory/regression/security testing
+**Related test cases:**
+- API-REGISTER-SMOKE-001
+- API-REGISTER-REGRESSION-001
+- API-REGISTER-REGRESSION-010
+**Steps to reproduce:**
+1. Open Swagger documentation for POST /Account/v1/User/.
+2. Compare the documented responses with actual API behavior observed during testing:
+- Success: 201 Created
+- Errors: 400 Bad Request, 406 Not Acceptable
+**Actual result:**
+Swagger lists:
+- 201 Success
+- 404 as Error
+- 406 as Error
+In reality:
+- 201 Created is returned for successful registration
+- 406 Not Acceptable is returned only when attempting to register a user with an already existing userName
+- 404 is not returned for any tested scenarios
+**Expected result:**
+Documentation should list correct responses:
+- 201 Created as successful creation
+- 406 Not Acceptable for duplicate userName
+- 400 Bad Request for invalid or malformed requests
+**Notes:**
+- Swagger documentation should be updated to reflect actual API behavior.
+- The Swagger documentation is not consistent with responses of POST /User endpoint.
+- The current Swagger documentation may mislead developers and testers about expected behavior.

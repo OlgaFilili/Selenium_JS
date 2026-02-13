@@ -25,24 +25,33 @@
 - API endpoint over HTTP responds with HTML content instead of API error or redirect
 
 ## Bug-007
-**Title:** API exposes internal stack trace when unsupported charset in Authorized endpoint is provided
+**Title:** API exposes internal stack trace when unsupported charset is provided in Content-Type header
 **Environment:** DemoQA Book Store API  
-**Endpoint:** POST /Account/v1/Authorized  
-**Severity:** Low / Medium 
+**Endpoints:** 
+POST /Account/v1/Authorized
+POST /Account/v1/GenerateToken
+POST /Account/v1/User 
+**Severity:** Medium 
 **Found during:** API security testing, error handling issue
 **Related test cases:**
 - API-AUTH-REGRESSION-020
+- API-GENERATE-REGRESSION-020
+- API-REGISTER-REGRESSION-017
 **Preconditions:**
-- User exists with username `Name` and password `Qwerty123!`
+Preconditions depend on the tested endpoint. See related test cases for concrete examples.
+Scenario A, B: for /Authorized and /GenerateToken endpoints
+- User exists in the system with valid credentials
+Scenario C: for /User endpoint
+- User with provided userName does not exist in the system
 **Steps to reproduce:**
-1. Send POST request to `http://demoqa.com/Account/v1/Authorized` with:
-- Header "Content-Type": "application/json; charset=UTF-16"
-- Body:
+1. Send POST request to `http://demoqa.com${endpoint}` with:
+- header "Content-Type": "application/json; charset=UTF-16"
+- and body corresponding preconditions:
    {
      "userName": "Name",
-     "password": "Qwerty123!"
+     "password": "Password1!"
    }
-2. Observe response.
+2. Observe response status code and body.
 **Actual result:**
 - Status code: 400 Bad Request
 - Response body:
@@ -52,12 +61,12 @@
 - No internal error details exposed
 - No stack trace or HTML error page returned
 **Notes:**
-- Similar issue observed in endpoint /Account/v1/GenerateToken (Bug-011)
-- Header validation should be perfomed before request body processing
+- Issue reproduced consistently across multiple endpoints
+- Header validation should be performed before request body processing
 - API exposes internal implementation details and stack trace when an invalid charset is provided in the Content-Type request header
 - This behavior may lead to information disclosure and should be handled with a generic error response
 
-## Bug-011
+## Bug-011 !!!Duplicate /Linked issue (Bug- 007)
 **Title:** API exposes internal stack trace when unsupported charset in generate token endpoint is provided
 **Environment:** DemoQA Book Store API  
 **Endpoint:** POST /Account/v1/GenerateToken 
@@ -86,6 +95,6 @@
 - No stack trace or HTML error page returned
 **Notes:**
 - Similar issue observed in endpoint /Account/v1/Authorized (Bug-007)
-- Header validation should be perfomed before request body processing
+- Header validation should be performed before request body processing
 - API exposes internal implementation details and stack trace when an invalid charset is provided in the Content-Type request header
 - This behavior may lead to information disclosure and should be handled with a generic error response

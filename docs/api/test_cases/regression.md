@@ -1114,4 +1114,29 @@ Authorization: Bearer <access_token>
 - Response body (JSON containing):
  - error code
  - error message indicating invalid endpoint or missing user identifier
-Note: Response format should be JSON to comply with API contract
+**Notes:**
+- Response format should be JSON to comply with API contract
+
+### Test Case ID: API-USER-DEL-REGRESSION-008
+### Title: DELETE User request for user with expired access token
+**Description:**  
+Verify that DELETE User endpoint does not allow user deletion with expired token in Authorization header
+### Preconditions:
+- User account exists in the system
+(can be created via POST /Account/v1/User)
+- An access token for the user has expired
+(can be obtained via POST /Account/v1/GenerateToken)
+- No new access token has been issued after expiration
+**Test data:**  
+- UUID- valid User ID of an existing user
+- access_token- expired access token for user
+### Steps:
+1. Send a DELETE request to  
+   `https://demoqa.com/Account/v1/User/{UUID}`
+with header
+Authorization: Bearer <access_token>
+### Expected result:
+- Response status: 401 Unauthorized
+- Response body contains:
+  - error code,
+  - error message

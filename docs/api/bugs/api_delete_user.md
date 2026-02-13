@@ -99,3 +99,35 @@ Authorization: Bearer <access_token>
 - Error handled by web layer, not API.
 - Response format inconsistent with API contract.
 - Frontend may fail to parse HTML response expecting JSON.
+
+## Bug-022
+**Title:** DELETE /User allows account deletion using expired access token
+**Environment:** DemoQA Book Store API  
+**Endpoint:** DELETE /Account/v1/User/{UUID}  
+**Severity:** Medium  
+**Found during:** API security testing
+**Related test cases:**
+- API-USER-DEL-REGRESSION-008
+**Preconditions:**
+- User account exists in the system
+(can be created via POST /Account/v1/User)
+- An access token for the user has expired (expired_access_token)
+(can be obtained via POST /Account/v1/GenerateToken)
+- No new access token has been issued after expiration
+**Steps to reproduce:**
+1. Send DELETE request to `https://demoqa.com/Account/v1/User/{UUID}` with header:
+Authorization: Bearer <expired_access_token>
+2. Observe response status code and body.
+**Actual result:**
+- Status code: 204 No Content
+- User account is successfully deleted
+**Expected result:**
+- 401 Unauthorized
+- Response body in JSON format contains:
+  - error code,
+  - error message indicating that user is not authorized.
+**Notes:**
+- Potential security issue: expired access token is accepted for destructive operation.
+- Inconsistent authorization behavior:
+    GET /User before deletion returns 401 Unauthorized for the same expired token.
+- Indicates missing or incorrect token expiration validation in DELETE /User endpoint.
