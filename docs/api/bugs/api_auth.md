@@ -64,37 +64,55 @@ with request body:
 - Other whitespace scenarios (leading spaces, internal spaces in username) are handled correctly
 
 ## Bug-004
-**Title:** Invalid input validation for maximum allowed length of the credentials
+**Title:** Missing centralized credential length validation causes 5xx errors during token generation
 **Environment:** DemoQA Book Store API  
-**Endpoint:** POST /Account/v1/Authorized  
-**Severity:** Medium  
+**Endpoint:** 
+POST /Account/v1/User
+POST /Account/v1/GenerateToken
+POST /Account/v1/Authorized
+**Severity:** High  
 **Found during:** API regression testing  
 **Related test cases:**
+- API-REGISTER-REGRESSION-012
 - API-AUTH-REGRESSION-010
 **Preconditions:**
-- Username or password exceeds the maximum allowed length(42 characters).
+User with provided userName does not exist in the system before Step 1.
 **Steps to reproduce:**
-1. Send POST request to `https://demoqa.com/Account/v1/Authorized`
-with request body:
+1. Send a POST request with credentials exceeding 42 characters to `https://demoqa.com/Account/v1/User` with request body (application/json):
   {
-    "userName": "ThisUserCanNotExist!@#$%^&*AAAAAAAaaaaaaaa1",
-    "password": "01!@#$%^&*AAAAAAAaaaaaaa2345678901!@#$%^&AA"
+    "userName": "This User Can Not Exist In The System!!!!!1",
+    "password": "1Password!_Bug"
   }
 2. Observe response status code and body.
+3. Send POST request to `https://demoqa.com/Account/v1/GenerateToken` with the same credentials.
+4. Observe response status code and body.
+5. (Optional) Send POST request to `https://demoqa.com/Account/v1/Authorized` with the same credentials.
+6. (Optional) Observe response status code and body.
 **Actual result:**
-Input validation is not performed first.
-Depending on internal state, the endpoint returns:
-- 200 OK with false
-, or
-- 404 Not Found
+Step 2:
+- 201 Created
+- Response body contains:
+    - userID (UUID),
+    - username matching the provided userName,  
+    - empty books list
+- User is successfully registered despite exceeding maximum allowed length
+Step 4:
+- 502 Bad Gateway
+- Server error occurs during token generation.
+Step 6 (Optional):
+- 200 OK
+- Response body: false
 **Expected result:**
-- 400 Bad Request
-- Validation error for credentials exceeding maximum allowed length
+- Requests exceeding the maximum allowed length (42 characters) must be rejected with:
+  - 400 Bad Request
+  - Controlled validation error message
+- Credential length validation must be enforced consistently across all authentication endpoints
+- Server errors (5xx) must never occur due to invalid client input
 **Notes:**
-- UI allows creation of users exceeding backend limits
-- Inconsistent handling of existing users with invalid attributes
-- Invalid input check should prioritize upon any other checks in the end-point params
-- Further operations with such users may lead to 5xx errors (observed 502 during token generation)
+- The system allows creation of users with credentials exceeding backend processing limits
+- This leads to unstable behavior in downstream endpoints
+- Input validation should be performed before any business logic execution
+- The defect indicates missing centralized validation logic across authentication flow
 
 ## Bug-008
 **Title:** Authorization endpoint does not validate password letter case
