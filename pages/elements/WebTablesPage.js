@@ -120,7 +120,7 @@ class WebTablesPage extends BasePage
         await this._set(locator, value);
     }
     async editEntry(email, placeholder, value){
-        console.log("email: ", email);
+        //console.log("email: ", email);
         const row= await this.findEntry(email);
         const cells= await this.getRowObject(row);
         await this._clickElement(cells.EditButton);
