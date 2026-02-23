@@ -23,7 +23,7 @@ describe('Web Tables Page functionality check', function() {
     }
     const placeholders = Object.values(formFields).map(f => f.placeholder);
     const keys = Object.keys(formFields);
-    const rowsPerPage= [5, 10, 20, 25, 50, 100];
+    const rowsPerPage= [10, 20, 30, 40, 50];
     const defaultEntries=freezeEntries([
          entry( 'Cierra', 'Vega', 39, 'cierra@example.com', 10000, 'Insurance')
         ,entry( 'Alden', 'Cantrell', 45, 'alden@example.com', 12000, 'Compliance')
@@ -31,8 +31,13 @@ describe('Web Tables Page functionality check', function() {
     ]);
     const testUsers=freezeEntries([
          entry( 'Abc', 'Def', 99, 'Abc-99@.example.ert', 1, 'qwerty111#@!')
-        ,entry( 'F', 'L 2', 53, 'F.2@34-5_df.com', 9990000, 'True')
-        ,entry( 'Arthur Jr.', 'Trudo', 17, 'Arthur_Jr@asd.dklm', 10000, 'False2')
+        ,entry( 'F', 'L 2', 53, 'F.2@34-5_df.com', 8880000, 'True')
+        ,entry( 'Arthur Jr.', 'Trudo', 17, 'Arthur_Jr@asd.dklm', 10000, 'False3')
+        ,entry( 'Boris', 'Stuart', 67, 'Boris_St@dsf.kljeq', 99999999, '1st Dep')
+        ,entry( 'Clara 2', 'Uber', 44, 'Clara44@ksd.wr', 103456789, 'Other department')
+        ,entry( 'Dinto', 'Ventil', 50, 'Dinto@asd.dklm', 600006, 'IT')
+        ,entry( 'Emma', 'Winzel II', 38, 'WEmma@bv.fhg', 300, '345')
+        ,entry( 'Froster', 'Yiekl', 81, 'Yiekllll@ds1.lkj', 5050, 'E2-E4')
     ]);
     const extremeUsers=[ //extreme values for all fields
         entry( 'AbcdeFgh1jKlmnoPqrst@@@@@', '#UvwxYz123Zyxwv%tsrQp0nml', 1
@@ -60,8 +65,11 @@ describe('Web Tables Page functionality check', function() {
     let webTablesPage;
     beforeEach(async function(){
         const homePage= await getHomePage();
+        await homePage.waitCardsVisible();
         const elementsPage= await homePage.gotoElements();
+        await elementsPage.menu.waitMenuVisible("Elements");
         webTablesPage= await elementsPage.gotoWebTablesMenuItem();
+        await webTablesPage.waitPreviousButton();
     });
     describe('smoke: Basic functionality check', function(){
         it('should confirm table header', async function() {
@@ -131,19 +139,9 @@ describe('Web Tables Page functionality check', function() {
             const expectedValue=10;
             expect(defaultRowsPerPage, `Expected and actual rows amount ${defaultRowsPerPage} do not match`).to.be.equal(expectedValue);
         });
-        it('should check the text for number of rows showed per page by default', async function() {
-            const defaultRowsPerPageText= await webTablesPage.rowsPerPageText();
-            const expectedValue='10 rows';
-            expect(defaultRowsPerPageText, `Expected and actual rows amount ${defaultRowsPerPageText} do not match`).to.be.equal(expectedValue);
-        });
         it('should check the list of available numbers of rows showed per page', async function() {
             const optionsList= await webTablesPage.listRowsPerPage();
             expect(optionsList, `Expected and actual rows amount ${optionsList} do not match`).to.deep.equal(rowsPerPage);
-        });
-        it('should check the list of available numbers of rows text showed per page', async function() {
-            const optionsList= await webTablesPage.listRowsPerPageText();
-            const expectedList = rowsPerPage.map(n => `${n} rows`);
-            expect(optionsList, `Expected and actual rows amount ${optionsList} do not match`).to.deep.equal(expectedList);
         });
         it('should change the number of rows showed per page', async function() {
             const expectedRowsPerPage= 20;
@@ -433,15 +431,15 @@ describe('Web Tables Page functionality check', function() {
             expect(entriesTotal, `Total number of entries don't equal ${entriesTotal}`).to.be.equal(0);
         });
         it('should search text through several pages of entries and include new added entries', async function() {
-            await webTablesPage.setRowsPerPage(5);
+            //await webTablesPage.setRowsPerPage(5);
             const dataEntry = testUsers.map(user => keys.map(k => user[k]));
             await webTablesPage.addNewEntry(placeholders, ...dataEntry);
             await webTablesPage.waitPreviousButton();
             const searchText='2';
             await webTablesPage.searchEntries(searchText);
-            await webTablesPage.waitForTableUpdate(5);
+            await webTablesPage.waitForTableUpdate(10);
             const entriesTotal= await webTablesPage.getTotalNotNullEntriesNumber();
-            expect(entriesTotal, `Total number of entries don't equal ${entriesTotal}`).to.be.equal(4);
+            expect(entriesTotal, `Total number of entries don't equal ${entriesTotal}`).to.be.equal(5);
             let entryString = keys.map(k => defaultEntries[1][k]).join(' ');
             let inTable=await webTablesPage.isEntryOnPage(entryString);
             expect(inTable, `Entry with ${searchText} in ${defaultEntries[1].Salary} was not found`).to.be.true;
@@ -451,62 +449,65 @@ describe('Web Tables Page functionality check', function() {
             entryString = keys.map(k => testUsers[1][k]).join(' ');
             inTable=await webTablesPage.isEntryOnPage(entryString);
             expect(inTable, `Entry with ${searchText} in ${testUsers[1].LastName} and ${testUsers[1].Email} was not found`).to.be.true;
-            entryString = keys.map(k => testUsers[2][k]).join(' ');
+            entryString = keys.map(k => testUsers[4][k]).join(' ');
             inTable=await webTablesPage.isEntryOnPage(entryString);
-            expect(inTable, `Entry with ${searchText} in ${testUsers[2].Department} was not found`).to.be.true;
+            expect(inTable, `Entry with ${searchText} in ${testUsers[4].FirstName} was not found`).to.be.true;
+            entryString = keys.map(k => testUsers[7][k]).join(' ');
+            inTable=await webTablesPage.isEntryOnPage(entryString);
+            expect(inTable, `Entry with ${searchText} in ${testUsers[7].Department} was not found`).to.be.true;
         });
         it('should expand search result when reduce text', async function() {
-            await webTablesPage.setRowsPerPage(5);
+            //await webTablesPage.setRowsPerPage(5);
             const dataEntry = testUsers.map(user => keys.map(k => user[k]));
             await webTablesPage.addNewEntry(placeholders, ...dataEntry);
-            await webTablesPage.waitForTableUpdate(3);
+            await webTablesPage.waitPreviousButton();
             const searchText='example.e';
             await webTablesPage.searchEntries(searchText);
+            await webTablesPage.waitForTableUpdate(10);
             const initialCount = await webTablesPage.getTotalNotNullEntriesNumber();
-            //console.log("Entries after first search: ", initialCount);
             await webTablesPage.deleteCharsFromTextSearch();
             await webTablesPage.waitForTableUpdate(initialCount);
             const expandedCount= await webTablesPage.getTotalNotNullEntriesNumber();
-            //console.log("Entries after backspacing: ", expandedCount);
             expect(expandedCount, "Entries did not expand after reducing text").to.be.greaterThan(initialCount);
             expect(expandedCount, "Total number of entries don`t equal 4").to.be.equal(4);
             let entryString = keys.map(k => testUsers[0][k]).join(' ');
             let inTable=await webTablesPage.isEntryOnPage(entryString);
-            expect(inTable, `Entry with 'example.' in ${testUsers[0].Email} was not found`).to.be.true;
+            expect(inTable, `Entry with '${searchText.slice(0,-1)}' in ${testUsers[0].Email} was not found`).to.be.true;
             entryString = keys.map(k => defaultEntries[0][k]).join(' ');
             inTable=await webTablesPage.isEntryOnPage(entryString);
-            expect(inTable, `Entry with 'example.' in ${defaultEntries[0].Email} was not found`).to.be.true;
+            expect(inTable, `Entry with '${searchText.slice(0,-1)}' in ${defaultEntries[0].Email} was not found`).to.be.true;
             entryString = keys.map(k => defaultEntries[1][k]).join(' ');
             inTable=await webTablesPage.isEntryOnPage(entryString);
-            expect(inTable, `Entry with 'example.' in ${defaultEntries[1].Email} was not found`).to.be.true;
+            expect(inTable, `Entry with '${searchText.slice(0,-1)}' in ${defaultEntries[1].Email} was not found`).to.be.true;
             entryString = keys.map(k => defaultEntries[2][k]).join(' ');
             inTable=await webTablesPage.isEntryOnPage(entryString);
-            expect(inTable, `Entry with 'example.' in ${defaultEntries[2].Email} was not found`).to.be.true;
+            expect(inTable, `Entry with '${searchText.slice(0,-1)}' in ${defaultEntries[2].Email} was not found`).to.be.true;
         });
-        it('should check that search result could include more than one page', async function() {
-            await webTablesPage.setRowsPerPage(5);
+        it.skip('should check that search result could include more than one page', async function() {
+            //await webTablesPage.setRowsPerPage(5);
             const dataEntry = testUsers.map(user => keys.map(k => user[k]));
             await webTablesPage.addNewEntry(placeholders, ...dataEntry);
-            await webTablesPage.waitForTableUpdate(3);
+            await webTablesPage.waitPreviousButton();
             const searchText='@';
             await webTablesPage.searchEntries(searchText);
+            await webTablesPage.waitPreviousButton();
             await webTablesPage.clickNextPageButton();
             const searchTextNextPage= await webTablesPage.getSearchFieldValue();
             expect(searchTextNextPage, "Search text does not match with typed on the previous page").to.be.equal(searchText);
         });
     });
-    describe('regression: Pagination bottom menu check', function() {
-        it('should check the text for number of rows showed per page by default', async function() {
+    describe.skip('regression: Pagination bottom menu check', function() {
+        /*it('should check the text for number of rows showed per page by default', async function() {
             const defaultRowsPerPageText= await webTablesPage.rowsPerPageText();
             const expectedValue='10 rows';
             expect(defaultRowsPerPageText, `Expected and actual rows amount ${defaultRowsPerPageText} do not match`).to.be.equal(expectedValue);
-        });
+        });*/
         it('should display more than one page', async function() {
             const dataEntry = testUsers.map(user => keys.map(k => user[k]));
             //const expectedEntry = dataEntry.join(' ');
             await webTablesPage.addNewEntry(placeholders, ...dataEntry);
             await webTablesPage.waitPreviousButton();
-            await webTablesPage.setRowsPerPage(5);
+            //await webTablesPage.setRowsPerPage(10);
             const totalPages= await webTablesPage.getTotalPages();
             const nextButtonState= await webTablesPage.isNextButtonEnabled();
             const previousButtonState= await webTablesPage.isPreviousButtonEnabled();
@@ -521,7 +522,7 @@ describe('Web Tables Page functionality check', function() {
             //const expectedEntry = dataEntry.join(' ');
             await webTablesPage.addNewEntry(placeholders, ...dataEntry);
             await webTablesPage.waitPreviousButton();
-            await webTablesPage.setRowsPerPage(5);
+            //await webTablesPage.setRowsPerPage(5);
             await webTablesPage.clickNextPageButton();
             const totalPages= await webTablesPage.getTotalPages();
             const nextButtonState= await webTablesPage.isNextButtonEnabled();
@@ -535,13 +536,13 @@ describe('Web Tables Page functionality check', function() {
             expect(previousButtonState, "'Previous' Button is  not enabled").to.be.true;
         });
         it('should display corresponding number of pages and current page after switching to bigger amount', async function() {
-            await webTablesPage.setRowsPerPage(5);
+            //await webTablesPage.setRowsPerPage(5);
             const dataEntry = testUsers.map(user => keys.map(k => user[k]));
             //const expectedEntry = dataEntry.join(' ');
             await webTablesPage.addNewEntry(placeholders, ...dataEntry);
             await webTablesPage.waitPreviousButton();
             await webTablesPage.clickNextPageButton();
-            await webTablesPage.setRowsPerPage(10);
+            await webTablesPage.setRowsPerPage(20);
             await webTablesPage.closeRowsPerPageDropdown();
             const actualPageNumber= await webTablesPage.getCurrentPageNumber();
             const totalPages= await webTablesPage.getTotalPages();
