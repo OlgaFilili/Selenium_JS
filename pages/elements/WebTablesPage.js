@@ -1,7 +1,7 @@
 const BasePage = require("../BasePage.js");
 const MainMenu = require("../../components/MainMenu.js");
-const { waitVisible } = require("../../utils/WaitUtils.js");
-const { isInputValid, scrollRelatively } = require("../../utils/BrowserUtils.js");
+const { waitVisible, waitClickable } = require("../../utils/WaitUtils.js");
+const { isInputValid, scrollRelatively, clickElement } = require("../../utils/BrowserUtils.js");
 
 class WebTablesPage extends BasePage
 {
@@ -21,7 +21,6 @@ class WebTablesPage extends BasePage
         this.regFormPreffix="//form[@id='userForm']//input[@placeholder='";
         this.regFormSubmitButton= { id: "submit"};
         this.pageCurrentOfTotal= { xpath: "//div[text()='Page']//strong"};
-        //this.totalPages= {xpath: "//span[text()='Page']//span"};
         this.previousPageButton= { xpath: "//button[text()='Previous']"};
         this.nextPageButton= { xpath: "//button[text()='Next']"};
         this.rowsPerPageSelect= { xpath: "//select"};
@@ -50,7 +49,6 @@ class WebTablesPage extends BasePage
         let text;
         for (const row of rows) {
             text = await this._getText(row);
-            //console.log(text)
             if (text.includes(email)) {
                 return row;
             }
@@ -59,13 +57,7 @@ class WebTablesPage extends BasePage
     }
     async getTotalNotNullEntriesNumber(){
         const rows= await this._finds(this.tableElements);
-        //let firstCell, firstText;
-        let number=0;
-        for (const row of rows) {
-            number++;
-        }
-        //console.log(rows.length);
-        return number;
+        return rows.length;
     }
     async getRowObject(rowElement) {
         const cells = await this._findsInside(rowElement, this.cell);
@@ -100,12 +92,17 @@ class WebTablesPage extends BasePage
     async clickSubmitButton(){
         await this._click(this.regFormSubmitButton);
     }
+    // Native Selenium click is unreliable here due to footer overlapping
+    // pagination controls inside a scrollable container.
+    // JS click is used intentionally for stability.
+    // Same issue for interaction with the amount of entries per page show-select dropdown.
     async clickPreviousPageButton(){
-        await this._click(this.previousPageButton);
+        const element=await waitClickable(this.driver, this.previousPageButton);
+        await clickElement(this.driver, element);
     }
     async clickNextPageButton(){
-        const nextButton=await this._find(this.nextPageButton);
-        await this._clickElement(nextButton);
+        const element=await waitClickable(this.driver, this.nextPageButton);
+        await clickElement(this.driver, element);
     }
     async deleteEntry(email){
         const row= await this.findEntry(email);
@@ -175,7 +172,7 @@ class WebTablesPage extends BasePage
     }
     async closeRowsPerPageDropdown(){
         const select = await this._find(this.rowsPerPageSelect);
-        await this._clickElement(select);
+        await clickElement(this.driver, select);
         await this._pressEscape();
         await scrollRelatively(this.driver, 0, -190);
     }
@@ -188,22 +185,19 @@ class WebTablesPage extends BasePage
     async isRegFormStillOpen(){
         return await this._isDisplayed(this.regFormHeader);
     }
-    async getPagesInfo(){
+    async _parsePagesInfo(){
         const info=await this._find(this.pageCurrentOfTotal);
-        const text= await this._getText(info);
-        return text;
+        const text= (await this._getText(info)).trim().replace(/\s+/g, ' ');
+        const [current, total]= text.split(' of ').map(Number);
+        return {current, total};
     }
     async getTotalPages(){
-        const text= await this.getPagesInfo();
-        //console.log(text);
-        //const value= text.split
-        return Number(2);
+        const {total}= await this._parsePagesInfo();
+        return total;
     }
     async getCurrentPageNumber(){
-        const text= await this.getPagesInfo();
-        //console.log(text);
-        //const value= text.split
-        return Number(1);
+        const {current}= await this._parsePagesInfo();
+        return current;
     }
     async getInputValidity(placeholder){
         const locator= await this._getRegFormFieldLocator(placeholder);

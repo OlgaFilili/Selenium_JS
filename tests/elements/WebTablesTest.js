@@ -483,7 +483,7 @@ describe('Web Tables Page functionality check', function() {
             inTable=await webTablesPage.isEntryOnPage(entryString);
             expect(inTable, `Entry with '${searchText.slice(0,-1)}' in ${defaultEntries[2].Email} was not found`).to.be.true;
         });
-        it.skip('should check that search result could include more than one page', async function() {
+        it('should check that search result could include more than one page', async function() {
             //await webTablesPage.setRowsPerPage(5);
             const dataEntry = testUsers.map(user => keys.map(k => user[k]));
             await webTablesPage.addNewEntry(placeholders, ...dataEntry);
@@ -492,11 +492,12 @@ describe('Web Tables Page functionality check', function() {
             await webTablesPage.searchEntries(searchText);
             await webTablesPage.waitPreviousButton();
             await webTablesPage.clickNextPageButton();
+            await webTablesPage.waitPreviousButton();
             const searchTextNextPage= await webTablesPage.getSearchFieldValue();
             expect(searchTextNextPage, "Search text does not match with typed on the previous page").to.be.equal(searchText);
         });
     });
-    describe.skip('regression: Pagination bottom menu check', function() {
+    describe('regression: Pagination bottom menu check', function() {
         /*it('should check the text for number of rows showed per page by default', async function() {
             const defaultRowsPerPageText= await webTablesPage.rowsPerPageText();
             const expectedValue='10 rows';
@@ -504,10 +505,8 @@ describe('Web Tables Page functionality check', function() {
         });*/
         it('should display more than one page', async function() {
             const dataEntry = testUsers.map(user => keys.map(k => user[k]));
-            //const expectedEntry = dataEntry.join(' ');
             await webTablesPage.addNewEntry(placeholders, ...dataEntry);
             await webTablesPage.waitPreviousButton();
-            //await webTablesPage.setRowsPerPage(10);
             const totalPages= await webTablesPage.getTotalPages();
             const nextButtonState= await webTablesPage.isNextButtonEnabled();
             const previousButtonState= await webTablesPage.isPreviousButtonEnabled();
@@ -519,11 +518,10 @@ describe('Web Tables Page functionality check', function() {
         });
         it('should switch to the next page', async function() {
             const dataEntry = testUsers.map(user => keys.map(k => user[k]));
-            //const expectedEntry = dataEntry.join(' ');
             await webTablesPage.addNewEntry(placeholders, ...dataEntry);
             await webTablesPage.waitPreviousButton();
-            //await webTablesPage.setRowsPerPage(5);
             await webTablesPage.clickNextPageButton();
+            await webTablesPage.waitPreviousButton();
             const totalPages= await webTablesPage.getTotalPages();
             const nextButtonState= await webTablesPage.isNextButtonEnabled();
             const previousButtonState= await webTablesPage.isPreviousButtonEnabled();
@@ -536,12 +534,11 @@ describe('Web Tables Page functionality check', function() {
             expect(previousButtonState, "'Previous' Button is  not enabled").to.be.true;
         });
         it('should display corresponding number of pages and current page after switching to bigger amount', async function() {
-            //await webTablesPage.setRowsPerPage(5);
             const dataEntry = testUsers.map(user => keys.map(k => user[k]));
-            //const expectedEntry = dataEntry.join(' ');
             await webTablesPage.addNewEntry(placeholders, ...dataEntry);
             await webTablesPage.waitPreviousButton();
             await webTablesPage.clickNextPageButton();
+            await webTablesPage.waitPreviousButton();
             await webTablesPage.setRowsPerPage(20);
             await webTablesPage.closeRowsPerPageDropdown();
             const actualPageNumber= await webTablesPage.getCurrentPageNumber();
