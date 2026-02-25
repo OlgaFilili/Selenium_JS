@@ -23,6 +23,8 @@ class WebTablesPage extends BasePage
         this.pageCurrentOfTotal= { xpath: "//div[text()='Page']//strong"};
         this.previousPageButton= { xpath: "//button[text()='Previous']"};
         this.nextPageButton= { xpath: "//button[text()='Next']"};
+        this.firstPageButton= { xpath: "//button[text()='First']"};
+        this.lastPageButton= { xpath: "//button[text()='Last']"};
         this.rowsPerPageSelect= { xpath: "//select"};
         this.rowsPerPageOptions="option";
 
@@ -45,10 +47,12 @@ class WebTablesPage extends BasePage
     }
 
     async findEntry(email){
+        console.log(email);
         const rows= await this._finds(this.tableElements);
         let text;
         for (const row of rows) {
             text = await this._getText(row);
+            console.log(text);
             if (text.includes(email)) {
                 return row;
             }
@@ -98,10 +102,22 @@ class WebTablesPage extends BasePage
     // Same issue for interaction with the amount of entries per page show-select dropdown.
     async clickPreviousPageButton(){
         const element=await waitClickable(this.driver, this.previousPageButton);
+        await scrollRelatively(this.driver, 0, 200);
         await clickElement(this.driver, element);
     }
     async clickNextPageButton(){
         const element=await waitClickable(this.driver, this.nextPageButton);
+        await scrollRelatively(this.driver, 0, 200);
+        await clickElement(this.driver, element);
+    }
+    async clickLastPageButton(){
+        const element=await waitClickable(this.driver, this.lastPageButton);
+        await scrollRelatively(this.driver, 0, 200);
+        await clickElement(this.driver, element);
+    }
+    async clickFirstPageButton(){
+        const element=await waitClickable(this.driver, this.firstPageButton);
+        await scrollRelatively(this.driver, 0, 200);
         await clickElement(this.driver, element);
     }
     async deleteEntry(email){
@@ -140,7 +156,7 @@ class WebTablesPage extends BasePage
     async rowsPerPageText() {
         const select = await this._find(this.rowsPerPageSelect);
         const selectedOption = await this._findInside(select, { css: `${this.rowsPerPageOptions}:checked`});
-        return await this._getText(selectedOption);
+        return (await this._getText(selectedOption)).replace(/\s+/g, ' ').trim();;
     }
     async listRowsPerPage(){
         const select= await this._find(this.rowsPerPageSelect);
@@ -159,7 +175,7 @@ class WebTablesPage extends BasePage
         let list=[]; 
         let value;
         for (let i=0; i<options.length; i++){
-            value= await this._getText(options[i]);
+            value= (await this._getText(options[i])).replace(/\s+/g, ' ').trim();
             list[i]=value;
         }
         return list;
@@ -181,6 +197,12 @@ class WebTablesPage extends BasePage
     }
     async isNextButtonEnabled(){
         return await this._isEnabled(this.nextPageButton);
+    }
+    async isFirstButtonEnabled(){
+        return await this._isEnabled(this.firstPageButton);
+    }
+    async isLastButtonEnabled(){
+        return await this._isEnabled(this.lastPageButton);
     }
     async isRegFormStillOpen(){
         return await this._isDisplayed(this.regFormHeader);

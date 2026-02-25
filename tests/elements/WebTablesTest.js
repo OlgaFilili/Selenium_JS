@@ -21,6 +21,12 @@ describe('Web Tables Page functionality check', function() {
     function freezeEntries(entries) {
         return Object.freeze(entries.map(e => Object.freeze(e)));
     }
+    function buildEntry(i) {
+        return entry(`User${i}`, `Test${i}`, i+ 20 + (i % 10), `user${i}@example.com`, 10000 + i*10, `Dept_${i}`);
+    }
+    function buildEntries(count) {
+        return freezeEntries( Array.from({ length: count }, (_, i) => buildEntry(i + 1)));
+    }
     const placeholders = Object.values(formFields).map(f => f.placeholder);
     const keys = Object.keys(formFields);
     const rowsPerPage= [10, 20, 30, 40, 50];
@@ -44,7 +50,7 @@ describe('Web Tables Page functionality check', function() {
         , 'mk934____h7y98tuyi6596987yy876968yy87....69@----klg.usdfs', 9999999999
         , '12345678!#$%^&*()_-+=AAA~')
         //too long values
-        ,entry(  "F".repeat(100), "L".repeat(100), 99999, "name@mail.aaa", 99999999999999,  "Dept".repeat(20))
+        ,entry(  "F".repeat(26), "L".repeat(26), 100, "name@mail.aaa", 99999999999999,  "Dept".repeat(26))
         //non-digit in Age
         , entry( 't34', 'Getr', 'ag', 'dfew@ergas.we', 4353634, 'lkj')
         //empty Department
@@ -61,6 +67,7 @@ describe('Web Tables Page functionality check', function() {
         , 'toolongsuffix@dot.suffixxxxxxx', 'tooshortsuffix@dot.s', 'special-char.in_the_name!@sd2.suffi'
         , 'special-char.in_the_local@sd2#.suffi', 'special0char.in_the_suffix@sd2.s_u'
     ];
+
     /** @type {WebTablesPage} */
     let webTablesPage;
     beforeEach(async function(){
@@ -156,57 +163,72 @@ describe('Web Tables Page functionality check', function() {
             expect(nextButtonState, "'Next' Button is enabled").to.be.false;
         });
     });
-    describe('regression: Validation missing', function(){
-        it('should add extreme entry to the table', async function() {
-            const dataEntry= keys.map(k => extremeUsers[0][k]);
-            const expectedEntry= dataEntry.join(' ');
-            await webTablesPage.addNewEntry(placeholders, dataEntry);
-            await webTablesPage.waitPreviousButton();
-            const actualResult= await webTablesPage.isEntryOnPage(expectedEntry);
-            expect(actualResult, "Entry was not added").to.be.true;
+    describe('regression: Basic functionality check', function(){
+        describe('regression: Deletion with added entries', function(){
+            it('should check entries amount after a deletion', async function() {
+                // Known issue: Bug-028
+                // DemoQA removes all user-created rows when deleting a single created entry.
+                // Expected behavior would be row-level deletion only.
+                const users = buildEntries(2);
+                const bulkCreate= users.map(user => keys.map(k => user[k]));
+                await webTablesPage.addNewEntry(placeholders, ...bulkCreate);
+                await webTablesPage.waitPreviousButton();
+                let email = users[1].Email;
+                await webTablesPage.deleteEntry(email);
+                await webTablesPage.waitForTableUpdate(5);
+                const entriesTotal= await webTablesPage.getTotalNotNullEntriesNumber();
+                expect(entriesTotal, `Expected 4 entries, got ${entriesTotal}`).to.be.equal(4);
+            });
+        })
+        describe('regression: Validation missing', function(){
+            it('should add extreme entry to the table', async function() {
+                const dataEntry= keys.map(k => extremeUsers[0][k]);
+                const expectedEntry= dataEntry.join(' ');
+                await webTablesPage.addNewEntry(placeholders, dataEntry);
+                await webTablesPage.waitPreviousButton();
+                const actualResult= await webTablesPage.isEntryOnPage(expectedEntry);
+                expect(actualResult, "Entry was not added").to.be.true;
+            });
+            it('should add entry to the table with leading zeros in salary', async function() {
+                const dataEntry= keys.map(k => extremeUsers[4][k]);
+                const expectedEntry= dataEntry.join(' ');
+                await webTablesPage.addNewEntry(placeholders, dataEntry);
+                await webTablesPage.waitPreviousButton();
+                const actualResult= await webTablesPage.isEntryOnPage(expectedEntry);
+                expect(actualResult, "Entry was not added").to.be.true;
+            });
+            it('should add entry to the table with only spaces in First Name', async function() {
+                const dataEntry= keys.map(k => extremeUsers[5][k]);
+                const expectedEntry= dataEntry.join(' ');
+                await webTablesPage.addNewEntry(placeholders, dataEntry);
+                await webTablesPage.waitPreviousButton();
+                const actualResult= await webTablesPage.isEntryOnPage(expectedEntry);
+                expect(actualResult, "Entry was not added").to.be.true;
+            });
+            it('should add entry to the table with invalid too long email', async function() {
+                const dataEntry= keys.map(k => extremeUsers[6][k]);
+                const expectedEntry= dataEntry.join(' ');
+                await webTablesPage.addNewEntry(placeholders, dataEntry);
+                await webTablesPage.waitPreviousButton();
+                const actualResult= await webTablesPage.isEntryOnPage(expectedEntry);
+                expect(actualResult, "Entry was not added").to.be.true;
+            });
+            it('should edit entry with cyrillic letters in Last Name', async function() {
+                const email = defaultEntries[2].Email;
+                const newValue= "Gentry Вторая";
+                await webTablesPage.editEntry(email, placeholders[1], newValue);
+                await webTablesPage.waitPreviousButton();
+                let entryData= {...defaultEntries[2]};
+                entryData.LastName= newValue;
+                const expectedEntry = keys.map(k => entryData[k]).join(' ');
+                const actualResult= await webTablesPage.isEntryOnPage(expectedEntry);
+                expect(actualResult, `Last Name for ${entryData.FirstName} was not edited`).to.be.true;
+            });
         });
-        it('should add entry to the table with leading zeros in salary', async function() {
-            const dataEntry= keys.map(k => extremeUsers[4][k]);
-            const expectedEntry= dataEntry.join(' ');
-            await webTablesPage.addNewEntry(placeholders, dataEntry);
-            await webTablesPage.waitPreviousButton();
-            const actualResult= await webTablesPage.isEntryOnPage(expectedEntry);
-            expect(actualResult, "Entry was not added").to.be.true;
-        });
-        it('should add entry to the table with only spaces in First Name', async function() {
-            const dataEntry= keys.map(k => extremeUsers[5][k]);
-            const expectedEntry= dataEntry.join(' ');
-            await webTablesPage.addNewEntry(placeholders, dataEntry);
-            await webTablesPage.waitPreviousButton();
-            const actualResult= await webTablesPage.isEntryOnPage(expectedEntry);
-            expect(actualResult, "Entry was not added").to.be.true;
-        });
-        it('should add entry to the table with invalid too long email', async function() {
-            const dataEntry= keys.map(k => extremeUsers[6][k]);
-            const expectedEntry= dataEntry.join(' ');
-            await webTablesPage.addNewEntry(placeholders, dataEntry);
-            await webTablesPage.waitPreviousButton();
-            const actualResult= await webTablesPage.isEntryOnPage(expectedEntry);
-            expect(actualResult, "Entry was not added").to.be.true;
-        });
-        it('should edit entry with cyrillic letters in Last Name', async function() {
-            const email = defaultEntries[2].Email;
-            const newValue= "Gentry Вторая";
-            await webTablesPage.editEntry(email, placeholders[1], newValue);
-            await webTablesPage.waitPreviousButton();
-            let entryData= {...defaultEntries[2]};
-            entryData.LastName= newValue;
-            const expectedEntry = keys.map(k => entryData[k]).join(' ');
-            const actualResult= await webTablesPage.isEntryOnPage(expectedEntry);
-            expect(actualResult, `Last Name for ${entryData.FirstName} was not edited`).to.be.true;
-        });
-
     });
     describe('regression: Invalid and extreme inputs', function(){
         it('should failed to add entry to the table with invalid age', async function() {
             const dataEntry= keys.map(k => extremeUsers[2][k]);
-            //const expectedEntry = dataEntry.join(' ');
-            //console.log(dataEntry);
             const countBefore = await webTablesPage.getTotalNotNullEntriesNumber();
             await webTablesPage.addNewEntry(placeholders, dataEntry);
             let validity= await webTablesPage.getInputValidity(placeholders[2]);
@@ -248,7 +270,6 @@ describe('Web Tables Page functionality check', function() {
             ${String(extremeUsers[1].Salary).slice(0, 10)} ${(extremeUsers[1].Department).slice(0, 25)}`;
             await webTablesPage.addNewEntry(placeholders, dataEntry);
             await webTablesPage.waitPreviousButton();
-            //console.log(expectedEntry);
             const actualResult= await webTablesPage.isEntryOnPage(expectedEntry);
             expect(actualResult, "Entry was not added").to.be.true;
         });
@@ -431,7 +452,6 @@ describe('Web Tables Page functionality check', function() {
             expect(entriesTotal, `Total number of entries don't equal ${entriesTotal}`).to.be.equal(0);
         });
         it('should search text through several pages of entries and include new added entries', async function() {
-            //await webTablesPage.setRowsPerPage(5);
             const dataEntry = testUsers.map(user => keys.map(k => user[k]));
             await webTablesPage.addNewEntry(placeholders, ...dataEntry);
             await webTablesPage.waitPreviousButton();
@@ -457,7 +477,6 @@ describe('Web Tables Page functionality check', function() {
             expect(inTable, `Entry with ${searchText} in ${testUsers[7].Department} was not found`).to.be.true;
         });
         it('should expand search result when reduce text', async function() {
-            //await webTablesPage.setRowsPerPage(5);
             const dataEntry = testUsers.map(user => keys.map(k => user[k]));
             await webTablesPage.addNewEntry(placeholders, ...dataEntry);
             await webTablesPage.waitPreviousButton();
@@ -484,7 +503,6 @@ describe('Web Tables Page functionality check', function() {
             expect(inTable, `Entry with '${searchText.slice(0,-1)}' in ${defaultEntries[2].Email} was not found`).to.be.true;
         });
         it('should check that search result could include more than one page', async function() {
-            //await webTablesPage.setRowsPerPage(5);
             const dataEntry = testUsers.map(user => keys.map(k => user[k]));
             await webTablesPage.addNewEntry(placeholders, ...dataEntry);
             await webTablesPage.waitPreviousButton();
@@ -498,11 +516,17 @@ describe('Web Tables Page functionality check', function() {
         });
     });
     describe('regression: Pagination bottom menu check', function() {
-        /*it('should check the text for number of rows showed per page by default', async function() {
+        it('should check the text for number of rows showed per page by default', async function() {
             const defaultRowsPerPageText= await webTablesPage.rowsPerPageText();
-            const expectedValue='10 rows';
-            expect(defaultRowsPerPageText, `Expected and actual rows amount ${defaultRowsPerPageText} do not match`).to.be.equal(expectedValue);
-        });*/
+            const expectedValue="Show 10";
+            console.log(defaultRowsPerPageText);
+            expect(defaultRowsPerPageText, `Expected and actual ('${defaultRowsPerPageText}') text for rows amount do not match`).to.be.equal(expectedValue);
+        });
+        it('should check text of the list of available numbers of rows showed per page', async function() {
+            const optionsListText= await webTablesPage.listRowsPerPageText();
+            const expectedList= rowsPerPage.map(row => `Show ${row}`);
+            expect(optionsListText, `Expected and actual rows amount ${optionsListText} do not match`).to.deep.equal(expectedList);
+        });
         it('should display more than one page', async function() {
             const dataEntry = testUsers.map(user => keys.map(k => user[k]));
             await webTablesPage.addNewEntry(placeholders, ...dataEntry);
@@ -550,6 +574,97 @@ describe('Web Tables Page functionality check', function() {
             expect(nextButtonState, "'Next' Button is enabled").to.be.false;
             expect(previousButtonState, "'Previous' Button is enabled").to.be.false;
         });
-
+        it('should switch to the previous page', async function() {
+            this.timeout(30000);
+            const dataEntry = testUsers.map(user => keys.map(k => user[k]));
+            const users = buildEntries(11);
+            const bulkCreate= users.map(user => keys.map(k => user[k]));
+            await webTablesPage.addNewEntry(placeholders, ...dataEntry);
+            await webTablesPage.waitPreviousButton();
+            await webTablesPage.addNewEntry(placeholders, ...bulkCreate);
+            await webTablesPage.waitPreviousButton();
+            await webTablesPage.clickNextPageButton();
+            await webTablesPage.waitPreviousButton();
+            await webTablesPage.clickNextPageButton();
+            await webTablesPage.waitPreviousButton();
+            await webTablesPage.clickPreviousPageButton();
+            const totalPages= await webTablesPage.getTotalPages();
+            const nextButtonState= await webTablesPage.isNextButtonEnabled();
+            const previousButtonState= await webTablesPage.isPreviousButtonEnabled();
+            const actualPageNumber= await webTablesPage.getCurrentPageNumber();
+            expect(actualPageNumber, "Actual and expected current page number do not match").to.be.equal(2);
+            expect(totalPages, "Actual and expected total pages numbers do not match").to.be.equal(3);
+            expect(nextButtonState, "'Next' Button is not enabled").to.be.true;
+            expect(previousButtonState, "'Previous' Button is not enabled").to.be.true;
+        });
+        it('should allow navigation with the first and the last buttons', async function() {
+            this.timeout(30000);
+            const dataEntry = testUsers.map(user => keys.map(k => user[k]));
+            const users = buildEntries(11);
+            const bulkCreate= users.map(user => keys.map(k => user[k]));
+            await webTablesPage.addNewEntry(placeholders, ...dataEntry);
+            await webTablesPage.waitPreviousButton();
+            await webTablesPage.addNewEntry(placeholders, ...bulkCreate);
+            await webTablesPage.waitPreviousButton();
+            let firstButtonState= await webTablesPage.isFirstButtonEnabled();
+            let lastButtonState= await webTablesPage.isLastButtonEnabled();
+            expect(firstButtonState, "'First' Button is enabled").to.be.false;
+            expect(lastButtonState, "'Last' Button is not enabled").to.be.true;
+            await webTablesPage.clickLastPageButton();
+            await webTablesPage.waitPreviousButton();
+            let nextButtonState= await webTablesPage.isNextButtonEnabled();
+            let previousButtonState= await webTablesPage.isPreviousButtonEnabled();
+            firstButtonState= await webTablesPage.isFirstButtonEnabled();
+            lastButtonState= await webTablesPage.isLastButtonEnabled();
+            expect(nextButtonState, "'Next' Button is enabled").to.be.false;
+            expect(previousButtonState, "'Previous' Button is not enabled").to.be.true;
+            expect(firstButtonState, "'First' Button is not enabled").to.be.true;
+            expect(lastButtonState, "'Last' Button is enabled").to.be.false;
+            await webTablesPage.clickPreviousPageButton();
+            await webTablesPage.waitPreviousButton();
+            firstButtonState= await webTablesPage.isFirstButtonEnabled();
+            lastButtonState= await webTablesPage.isLastButtonEnabled();
+            expect(firstButtonState, "'First' Button is not enabled").to.be.true;
+            expect(lastButtonState, "'Last' Button is not enabled").to.be.true;
+            await webTablesPage.clickFirstPageButton();
+            await webTablesPage.waitPreviousButton();
+            nextButtonState= await webTablesPage.isNextButtonEnabled();
+            previousButtonState= await webTablesPage.isPreviousButtonEnabled();
+            firstButtonState= await webTablesPage.isFirstButtonEnabled();
+            lastButtonState= await webTablesPage.isLastButtonEnabled();
+            expect(nextButtonState, "'Next' Button is not enabled").to.be.true;
+            expect(previousButtonState, "'Previous' Button is enabled").to.be.false;
+            expect(firstButtonState, "'First' Button is enabled").to.be.false;
+            expect(lastButtonState, "'Last' Button is not enabled").to.be.true;
+        });
+        it.skip('should check pagination info after deletion', async function() {
+            // Known issue: Bug-028
+            // DemoQA removes all user-created rows when deleting a single created entry.
+            // This resets pagination to default (1) pages state.
+            // Expected behavior would be row-level deletion only.
+            this.timeout(30000);
+            const dataEntry = testUsers.map(user => keys.map(k => user[k]));
+            const users = buildEntries(11);
+            const bulkCreate= users.map(user => keys.map(k => user[k]));
+            await webTablesPage.addNewEntry(placeholders, ...dataEntry);
+            await webTablesPage.waitPreviousButton();
+            await webTablesPage.addNewEntry(placeholders, ...bulkCreate);
+            await webTablesPage.waitPreviousButton();
+            await webTablesPage.clickLastPageButton();
+            await webTablesPage.waitPreviousButton();
+            let totalPages= await webTablesPage.getTotalPages();
+            let actualPageNumber= await webTablesPage.getCurrentPageNumber();
+            expect(actualPageNumber, "Actual and expected current page number do not match").to.be.equal(3);
+            expect(totalPages, "Actual and expected total pages numbers do not match").to.be.equal(3);
+            let email = users[10].Email;
+            await webTablesPage.deleteEntry(email);
+            email = users[9].Email;
+            await webTablesPage.deleteEntry(email);
+            await webTablesPage.waitForTableUpdate(2);
+            totalPages= await webTablesPage.getTotalPages();
+            actualPageNumber= await webTablesPage.getCurrentPageNumber();
+            expect(actualPageNumber, "Actual and expected current page number do not match").to.be.equal(2);
+            expect(totalPages, "Actual and expected total pages numbers do not match").to.be.equal(2);
+        });
     });
 });
