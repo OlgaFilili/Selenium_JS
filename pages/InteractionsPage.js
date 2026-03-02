@@ -9,7 +9,8 @@ class InteractionsPage extends BasePage
         this.menu= new MainMenu(driver);
         this.cardName="Interactions";
         this.itemNames=['Sortable', 'Selectable', 'Resizable', 'Droppable', 'Dragabble'];
-        this.infoText= { xpath: "//div[@class='col-12 mt-4 col-md-6']"};
+        this.itemLinks=this.itemNames.map(item => `/${item.charAt(0).toLowerCase() + item.slice(1)}`);
+        this.infoText= { xpath: "//div[contains(@class,'col-12 mt-4 col-md-6')]"};
     }
 
     async getInteractionsPageText() {
@@ -17,11 +18,11 @@ class InteractionsPage extends BasePage
     }
 
     async gotoSortableMenuItem() {
-        await this.menu.clickMenuItem(this.cardName, this.itemNames[0]);
+        await this.menu.clickMenuItem(this.cardName, this.itemLinks[0]);
         return getPageByMenuItem(this.driver, this.itemNames[0]);
     }
     async gotoDroppableMenuItem() {
-        await this.menu.clickMenuItem(this.cardName, this.itemNames[3]);
+        await this.menu.clickMenuItem(this.cardName, this.itemLinks[3]);
         return getPageByMenuItem(this.driver, this.itemNames[3]);
     }
 }

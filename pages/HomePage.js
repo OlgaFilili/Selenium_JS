@@ -6,14 +6,15 @@ const WidgetsPage = require('./WidgetsPage.js');
 const InteractionsPage = require('./InteractionsPage.js');
 const BooksPage = require("./book_store/BooksPage.js");
 const { waitVisible }= require("../utils/WaitUtils.js");
+const { clickElement } = require("../utils/BrowserUtils.js");
 
 class HomePage extends BasePage 
 {
   constructor(driver) {
     super(driver);
-    this.cardPrefix= "//div[@id='root']//a[@href='/";
+    this.cardPrefix= "//div[@id='root']//a[@href='";
     //this.cardNames=['Elements', 'Forms', 'Alerts, Frame & Windows', 'Widgets', 'Interactions', 'Book Store Application'];
-    this.cardLinks=['elements', 'forms', 'alertsWindows', 'widgets', 'interaction', 'books'];
+    this.cardLinks=['/elements', '/forms', '/alertsWindows', '/widgets', '/interaction', '/books'];
     this.booksCardName= { xpath: "//div[@id='root']//h5[text()='Book Store Application']"};
   }
 
@@ -51,7 +52,8 @@ class HomePage extends BasePage
   }
   async gotoBookStoreApplication() {
     const bookStoreApplicationCard= this._getCardLink(this.cardLinks[5]);
-    await this._click(bookStoreApplicationCard);
+    const element= await this._find(bookStoreApplicationCard);
+    await clickElement(this.driver, element);
     return new BooksPage(this.driver);
   }
 }

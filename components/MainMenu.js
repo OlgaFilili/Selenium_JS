@@ -1,6 +1,6 @@
 const BasePage = require("../pages/BasePage.js");
 const { waitVisible, waitClickable, waitIsRemoved } = require("../utils/WaitUtils.js");
-const { scrollToElement } = require("../utils/BrowserUtils.js");
+const { scrollToElement, clickElement } = require("../utils/BrowserUtils.js");
 
 class MainMenu extends BasePage
 {
@@ -12,6 +12,7 @@ class MainMenu extends BasePage
     this.cardMenuSuffix= "//ancestor::div[contains(@class,'element-group')]//div[contains(@class,'element-list')]";
     //Menu Items
     this.menuItemPrefix="//li//span[text()='";
+    this.menuItemLinkPrefix="//li//a[@href='";
     this.menuItemSuffix="']//ancestor::li[contains(@class, 'btn btn-light')]";
   }
   // names={'Elements', 'Forms', 'Alerts, Frame & Windows', 'Widgets', 'Interactions', 'Book Store Application'}
@@ -23,6 +24,9 @@ class MainMenu extends BasePage
   }
   _getMenuItemLocator(name) {
     return { xpath: `${this.menuItemPrefix}${name}']`};
+  }
+  _getMenuItemLinkLocator(name) {
+    return { xpath: `${this.menuItemLinkPrefix}${name}']`};
   }
   _checkStateMenuItemLocator(name) {
     return { xpath: `${this.menuItemPrefix}${name}${this.menuItemSuffix}`};
@@ -62,9 +66,9 @@ class MainMenu extends BasePage
     const container = this._getMenuStatusLocator(name);
     const element = await this._find(container);
     const classValue = await this._getClass(element);
-
     if (!classValue.includes("show")) {
-        await this._click(header);
+      const clickHeader=await this._find(header);
+      await clickElement(this.driver, clickHeader);
     }
   }
 
@@ -72,23 +76,23 @@ class MainMenu extends BasePage
     await this._ensureMenuVisible();
     const header = this._getMenuHeaderLocator(name);
     const container = this._getMenuStatusLocator(name);
-
     const element = await this._find(container);
     const classValue = await this._getClass(element);
-
     if (classValue.includes("show")) {
-        await this._click(header);
+      const clickHeader=await this._find(header);
+      await clickElement(this.driver, clickHeader);
     }
   }
 
-  async clickMenuItem(menuName, itemName) {
+  async clickMenuItem(menuName, itemLink) {
     await this.expandMenu(menuName);
-    const item = this._getMenuItemLocator(itemName);
-    await this._click(item);
+    const item = this._getMenuItemLinkLocator(itemLink);
+    const element= await this._find(item);
+    await clickElement(this.driver, element);
   }
   async waitMenuVisible(name){
     const locator = this._getMenuStatusLocator(name);
-    waitVisible(this.driver, locator);
+    await waitVisible(this.driver, locator);
     return await this._find(locator);
   }
 

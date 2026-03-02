@@ -10,23 +10,24 @@ class ElementsPage extends BasePage
     super(driver);
     this.menu= new MainMenu(driver);
     this.cardName="Elements";
-    this.menuItems=['Text Box', 'Check Box', 'Radio Button', 'Web Tables'];
-    this.infoText= { xpath: "//div[@class='col-12 mt-4 col-md-6']"};
+    this.itemNames=['Text Box', 'Check Box', 'Radio Button', 'Web Tables'];
+    this.itemLinks=['/text-box', '/checkbox', '/radio-button', '/webtables'];
+    this.infoText= { xpath: "//div[contains(@class,'col-12 mt-4 col-md-6')]"};
   }
   async getInteractionsPageText() {
     return await this._getText(this.infoText);
   }
   
   async gotoRadioButtonMenuItem() {
-    await this.menu.clickMenuItem(this.cardName, this.menuItems[2]);
+    await this.menu.clickMenuItem(this.cardName, this.itemLinks[2]);
     return new RadioButtonPage(this.driver);
   }
   async gotoCheckBoxMenuItem() {
-    await this.menu.clickMenuItem(this.cardName, this.menuItems[1]);
+    await this.menu.clickMenuItem(this.cardName, this.itemLinks[1]);
     return new CheckBoxPage(this.driver);
   }
   async gotoWebTablesMenuItem() {
-    await this.menu.clickMenuItem(this.cardName, this.menuItems[3]);
+    await this.menu.clickMenuItem(this.cardName, this.itemLinks[3]);
     return new WebTablesPage(this.driver);
   }
 }
