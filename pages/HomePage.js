@@ -37,12 +37,14 @@ class HomePage extends BasePage
   }
   async gotoAlertsFrameWindows() {
     const alertsFrameWindowsCard= this._getCardLink(this.cardLinks[2]);
-    await this._click(alertsFrameWindowsCard);
+    const element= await this._find(alertsFrameWindowsCard);
+    await clickElement(this.driver, element);
     return new AlertsFrameWindowsPage(this.driver);
   }
   async gotoWidgets() {
     const widgetsCard= this._getCardLink(this.cardLinks[3]);
-    await this._click(widgetsCard);
+    const element= await this._find(widgetsCard);
+    await clickElement(this.driver, element);
     return new WidgetsPage(this.driver);
   }
   async gotoInteractions() {

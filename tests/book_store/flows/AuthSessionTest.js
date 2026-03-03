@@ -19,7 +19,7 @@ describe('Authorization state-based behavior check', function() {
             await loginPage.inputCredentials(username, password);
             const userPage= new AuthenticatedPage(loginPage.driver);
             await userPage.clickLogoutButton();
-            await loginPage.menu.clickMenuItem("Book Store Application", "Book Store");
+            await loginPage.menu.clickMenuItem("Book Store Application", "/books");
             const notAuth= await booksPage.isLoginButtonVisible();
             expect(notAuth, "Error! System is not in expected state").to.be.true;
             const isThereUserName = await booksPage.isUserNameDisplayed();
@@ -34,7 +34,7 @@ describe('Authorization state-based behavior check', function() {
             await loginPage.inputCredentials(username, password);
             const loginInFailed= await loginPage.isLoginInFailed();
             this.authSucceeded = !loginInFailed;
-            await booksPage.menu.clickMenuItem("Book Store Application", "Login");
+            await booksPage.menu.clickMenuItem("Book Store Application", "/login");
             const isAuth= await loginPage.isLoginPageInAuthState();
             expect(isAuth, "Error! System is not in expected state").to.be.true;
             const actualMessage= await loginPage.getAlreadyLoggedInMessage();

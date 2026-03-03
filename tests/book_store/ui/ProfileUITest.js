@@ -18,7 +18,7 @@ describe('Profile Page UI check', function() {
     beforeEach(async function() {
         const homePage= await getHomePage();
         booksPage= await homePage.gotoBookStoreApplication();
-        await booksPage.menu.clickMenuItem("Book Store Application", "Profile");
+        await booksPage.menu.clickMenuItem("Book Store Application", "/profile");
         profilePage= await getPageByMenuItem(this.driver, "Profile");
     });
     after(async function() {

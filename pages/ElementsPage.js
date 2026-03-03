@@ -14,7 +14,7 @@ class ElementsPage extends BasePage
     this.itemLinks=['/text-box', '/checkbox', '/radio-button', '/webtables'];
     this.infoText= { xpath: "//div[contains(@class,'col-12 mt-4 col-md-6')]"};
   }
-  async getInteractionsPageText() {
+  async getElementsPageText() {
     return await this._getText(this.infoText);
   }
   

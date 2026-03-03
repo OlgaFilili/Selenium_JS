@@ -252,7 +252,7 @@ describe('BooksTable component functionality check', function() {
             homePage= this.homePage;
             booksPage= await homePage.gotoBookStoreApplication();
             await booksPage.waitLoginButton();
-            await booksPage.menu.clickMenuItem("Book Store Application", "Profile");
+            await booksPage.menu.clickMenuItem("Book Store Application", "/profile");
             profilePage= await getPageByMenuItem(this.driver, "Profile");
             await profilePage.gotoLoginPage();
             await loginTestUser(this);

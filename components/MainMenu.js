@@ -41,7 +41,7 @@ class MainMenu extends BasePage
   async isNavBarVisible() {
     return await this._isDisplayed(this.navigationBarButton);
   }
-  async isMenuRemoved(){
+  async waitMenuRemoved(){
     await waitIsRemoved(this.driver, this.expandedMenuLocator);
   }
   async isNavBarExpanded(){
@@ -62,11 +62,11 @@ class MainMenu extends BasePage
 
   async expandMenu(name) {
     await this._ensureMenuVisible();
-    const header = this._getMenuHeaderLocator(name);
     const container = this._getMenuStatusLocator(name);
     const element = await this._find(container);
     const classValue = await this._getClass(element);
     if (!classValue.includes("show")) {
+      const header = this._getMenuHeaderLocator(name);
       const clickHeader=await this._find(header);
       await clickElement(this.driver, clickHeader);
     }
@@ -74,11 +74,11 @@ class MainMenu extends BasePage
 
   async collapseMenu(name) {
     await this._ensureMenuVisible();
-    const header = this._getMenuHeaderLocator(name);
     const container = this._getMenuStatusLocator(name);
     const element = await this._find(container);
     const classValue = await this._getClass(element);
     if (classValue.includes("show")) {
+      const header = this._getMenuHeaderLocator(name);
       const clickHeader=await this._find(header);
       await clickElement(this.driver, clickHeader);
     }
