@@ -225,16 +225,20 @@ class WebTablesPage extends BasePage
         const isValid= await isInputValid(this.driver, element);
         return isValid;
     }
-    async searchEntries(text){
-        await this._set(this.searchBox, text);
-    }
-    async deleteCharsFromTextSearch(num = 1){
-        await this._backspace(this.searchBox, num);
-    }
     async getSearchFieldValue() {
         const element= await this._find(this.searchBox);
         return await this._getValue(element);
     }
+    async searchEntries(text){
+        await this._set(this.searchBox, text);
+        const actual = await this.getSearchFieldValue();
+        if (actual !== text) throw new Error(`SearchBox value mismatch: expected "${text}", got "${actual}"`);
+
+    }
+    async deleteCharsFromTextSearch(num = 1){
+        await this._backspace(this.searchBox, num);
+    }
+
     async waitForTableUpdate(previousCount, timeout = 5000) {
         await this.driver.wait(async () => {
             const currentCount = await this.getTotalNotNullEntriesNumber();

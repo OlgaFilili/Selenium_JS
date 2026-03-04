@@ -459,7 +459,7 @@ describe('Web Tables Page functionality check', function() {
             await webTablesPage.searchEntries(searchText);
             await webTablesPage.waitForTableUpdate(10);
             const entriesTotal= await webTablesPage.getTotalNotNullEntriesNumber();
-            expect(entriesTotal, `Total number of entries don't equal ${entriesTotal}`).to.be.equal(5);
+            expect(entriesTotal, `Total number of entries (${entriesTotal}) don't equal 5`).to.be.equal(5);
             let entryString = keys.map(k => defaultEntries[1][k]).join(' ');
             let inTable=await webTablesPage.isEntryOnPage(entryString);
             expect(inTable, `Entry with ${searchText} in ${defaultEntries[1].Salary} was not found`).to.be.true;
@@ -512,7 +512,7 @@ describe('Web Tables Page functionality check', function() {
             await webTablesPage.clickNextPageButton();
             await webTablesPage.waitPreviousButton();
             const searchTextNextPage= await webTablesPage.getSearchFieldValue();
-            expect(searchTextNextPage, "Search text does not match with typed on the previous page").to.be.equal(searchText);
+            expect(searchTextNextPage, `SearchBox value mismatch: expected "${searchText}", got "${searchTextNextPage}"`).to.be.equal(searchText);
         });
     });
     describe('regression: Pagination bottom menu check', function() {

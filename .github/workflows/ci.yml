@@ -29,6 +29,10 @@ jobs:
       - name: Ensure test user exists
         run: node tests/setup/EnsureTestUser.js
 
+      - name: List test files in runner
+        run: |
+          find tests -type f -name "*.js" -print | sort
+
       - name: Run tests
         run: npx mocha "tests/**/*.js" --timeout 50000
 
