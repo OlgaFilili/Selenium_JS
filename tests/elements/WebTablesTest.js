@@ -476,7 +476,7 @@ describe('Web Tables Page functionality check', function() {
             inTable=await webTablesPage.isEntryOnPage(entryString);
             expect(inTable, `Entry with ${searchText} in ${testUsers[7].Department} was not found`).to.be.true;
         });
-        it('should expand search result when reduce text', async function() {
+        it.only('should expand search result when reduce text', async function() {
             const dataEntry = testUsers.map(user => keys.map(k => user[k]));
             await webTablesPage.addNewEntry(placeholders, ...dataEntry);
             await webTablesPage.waitPreviousButton();
@@ -502,7 +502,7 @@ describe('Web Tables Page functionality check', function() {
             inTable=await webTablesPage.isEntryOnPage(entryString);
             expect(inTable, `Entry with '${searchText.slice(0,-1)}' in ${defaultEntries[2].Email} was not found`).to.be.true;
         });
-        it('should check that search result could include more than one page', async function() {
+        it.only('should check that search result could include more than one page', async function() {
             const dataEntry = testUsers.map(user => keys.map(k => user[k]));
             await webTablesPage.addNewEntry(placeholders, ...dataEntry);
             await webTablesPage.waitPreviousButton();
@@ -519,7 +519,7 @@ describe('Web Tables Page functionality check', function() {
         it('should check the text for number of rows showed per page by default', async function() {
             const defaultRowsPerPageText= await webTablesPage.rowsPerPageText();
             const expectedValue="Show 10";
-            console.log(defaultRowsPerPageText);
+            //console.log(defaultRowsPerPageText);
             expect(defaultRowsPerPageText, `Expected and actual ('${defaultRowsPerPageText}') text for rows amount do not match`).to.be.equal(expectedValue);
         });
         it('should check text of the list of available numbers of rows showed per page', async function() {

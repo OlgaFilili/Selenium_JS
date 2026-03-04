@@ -47,12 +47,10 @@ class WebTablesPage extends BasePage
     }
 
     async findEntry(email){
-        console.log(email);
         const rows= await this._finds(this.tableElements);
         let text;
         for (const row of rows) {
             text = await this._getText(row);
-            console.log(text);
             if (text.includes(email)) {
                 return row;
             }

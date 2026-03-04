@@ -5,7 +5,7 @@ const WidgetsPage = require("../pages/WidgetsPage.js");
 const BooksPage= require ("../pages/book_store/BooksPage.js");
 const { expect }= require('chai');
 
-describe.only('Main Menu responsive behavior check', function(){
+describe('Main Menu responsive behavior check', function(){
     const mainMenuNames=['Elements', 'Forms', 'Alerts, Frame & Windows', 'Widgets', 'Interactions', 'Book Store Application'];
     const elementsMenuItems=['Text Box', 'Radio Button', 'Check box', 'Web Tables'];
     const formsMenuItem='Practice Form';
