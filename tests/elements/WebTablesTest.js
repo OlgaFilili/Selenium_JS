@@ -476,7 +476,7 @@ describe('Web Tables Page functionality check', function() {
             inTable=await webTablesPage.isEntryOnPage(entryString);
             expect(inTable, `Entry with ${searchText} in ${testUsers[7].Department} was not found`).to.be.true;
         });
-        it.only('should expand search result when reduce text', async function() {
+        it('should expand search result when reduce text', async function() {
             const dataEntry = testUsers.map(user => keys.map(k => user[k]));
             await webTablesPage.addNewEntry(placeholders, ...dataEntry);
             await webTablesPage.waitPreviousButton();
@@ -502,7 +502,7 @@ describe('Web Tables Page functionality check', function() {
             inTable=await webTablesPage.isEntryOnPage(entryString);
             expect(inTable, `Entry with '${searchText.slice(0,-1)}' in ${defaultEntries[2].Email} was not found`).to.be.true;
         });
-        it.only('should check that search result could include more than one page', async function() {
+        it('should check that search result could include more than one page', async function() {
             const dataEntry = testUsers.map(user => keys.map(k => user[k]));
             await webTablesPage.addNewEntry(placeholders, ...dataEntry);
             await webTablesPage.waitPreviousButton();
