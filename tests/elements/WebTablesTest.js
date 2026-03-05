@@ -18,19 +18,22 @@ describe('Web Tables Page functionality check', function() {
     function entry(fn, ln, age, email, salary, dept) {
         return { FirstName: fn, LastName: ln, Age: String(age), Email: email, Salary: String(salary), Department: dept };
     }
+    function freezeEntries(entries) {
+        return Object.freeze(entries.map(e => Object.freeze(e)));
+    }
     const placeholders = Object.values(formFields).map(f => f.placeholder);
     const keys = Object.keys(formFields);
     const rowsPerPage= [5, 10, 20, 25, 50, 100];
-    const defaultEntries=[
+    const defaultEntries=freezeEntries([
          entry( 'Cierra', 'Vega', 39, 'cierra@example.com', 10000, 'Insurance')
         ,entry( 'Alden', 'Cantrell', 45, 'alden@example.com', 12000, 'Compliance')
         ,entry( 'Kierra', 'Gentry', 29, 'kierra@example.com', 2000, 'Legal')
-    ];
-    const testUsers=[
+    ]);
+    const testUsers=freezeEntries([
          entry( 'Abc', 'Def', 99, 'Abc-99@.example.ert', 1, 'qwerty111#@!')
         ,entry( 'F', 'L 2', 53, 'F.2@34-5_df.com', 9990000, 'True')
         ,entry( 'Arthur Jr.', 'Trudo', 17, 'Arthur_Jr@asd.dklm', 10000, 'False2')
-    ];
+    ]);
     const extremeUsers=[ //extreme values for all fields
         entry( 'AbcdeFgh1jKlmnoPqrst@@@@@', '#UvwxYz123Zyxwv%tsrQp0nml', 1
         , 'mk934____h7y98tuyi6596987yy876968yy87....69@----klg.usdfs', 9999999999
@@ -93,7 +96,7 @@ describe('Web Tables Page functionality check', function() {
             const newValue= "New Department";
             await webTablesPage.editEntry(email, placeholders[5], newValue);
             await webTablesPage.waitPreviousButton();
-            let entryData= defaultEntries[1];
+            let entryData= {...defaultEntries[1]};
             entryData.Department = newValue;
             const expectedEntry = keys.map(k => entryData[k]).join(' ');
             const actualResult= await webTablesPage.isEntryOnPage(expectedEntry);
@@ -104,7 +107,7 @@ describe('Web Tables Page functionality check', function() {
             const newValue= 20000;
             await webTablesPage.editEntry(email, placeholders[4], newValue);
             await webTablesPage.waitPreviousButton();
-            let entryData= defaultEntries[2];
+            let entryData= {...defaultEntries[2]};
             entryData.Salary = newValue;
             const expectedEntry = keys.map(k => entryData[k]).join(' ');
             const actualResult= await webTablesPage.isEntryOnPage(expectedEntry);
@@ -115,7 +118,7 @@ describe('Web Tables Page functionality check', function() {
             const newValue= 'vega@example.com';
             await webTablesPage.editEntry(email, placeholders[3], newValue);
             await webTablesPage.waitPreviousButton();
-            let entryData= defaultEntries[0];
+            let entryData= {...defaultEntries[0]};
             entryData.Email = newValue;
             const expectedEntry = keys.map(k => entryData[k]).join(' ');
             const actualResult= await webTablesPage.isEntryOnPage(expectedEntry);
@@ -190,10 +193,10 @@ describe('Web Tables Page functionality check', function() {
         });
         it('should edit entry with cyrillic letters in Last Name', async function() {
             const email = defaultEntries[2].Email;
-            const newValue= "Gientry Вторая";
+            const newValue= "Gentry Вторая";
             await webTablesPage.editEntry(email, placeholders[1], newValue);
             await webTablesPage.waitPreviousButton();
-            let entryData= defaultEntries[2];
+            let entryData= {...defaultEntries[2]};
             entryData.LastName= newValue;
             const expectedEntry = keys.map(k => entryData[k]).join(' ');
             const actualResult= await webTablesPage.isEntryOnPage(expectedEntry);
@@ -253,7 +256,7 @@ describe('Web Tables Page functionality check', function() {
         });
         describe('regression: Invalid emails', function(){
             it('should failed to add entry to the table with email without @', async function() {
-                let newEntry=testUsers[2];
+                let newEntry={...testUsers[2]};
                 newEntry.Email=invalidEmails[0];
                 const dataEntry= keys.map(k => newEntry[k]);
                 const countBefore = await webTablesPage.getTotalNotNullEntriesNumber();
@@ -267,7 +270,7 @@ describe('Web Tables Page functionality check', function() {
                 expect(countAfter, "Not Null rows number changed").to.be.equal(countBefore);
             });
             it('should failed to add entry to the table with email with 2 @', async function() {
-                let newEntry=testUsers[2];
+                let newEntry={...testUsers[2]};
                 newEntry.Email=invalidEmails[1];
                 const dataEntry= keys.map(k => newEntry[k]);
                 const countBefore = await webTablesPage.getTotalNotNullEntriesNumber();
@@ -281,7 +284,7 @@ describe('Web Tables Page functionality check', function() {
                 expect(countAfter, "Not Null rows number changed").to.be.equal(countBefore);
             });
             it('should failed to add entry to the table with email without dot after @', async function() {
-                let newEntry=testUsers[2];
+                let newEntry={...testUsers[2]};
                 newEntry.Email=invalidEmails[2];
                 const dataEntry= keys.map(k => newEntry[k]);
                 const countBefore = await webTablesPage.getTotalNotNullEntriesNumber();
@@ -295,7 +298,7 @@ describe('Web Tables Page functionality check', function() {
                 expect(countAfter, "Not Null rows number changed").to.be.equal(countBefore);
             });
             it('should failed to add entry to the table with email with number in suffix', async function() {
-                let newEntry=testUsers[2];
+                let newEntry={...testUsers[2]};
                 newEntry.Email=invalidEmails[3];
                 const dataEntry= keys.map(k => newEntry[k]);
                 const countBefore = await webTablesPage.getTotalNotNullEntriesNumber();
@@ -309,7 +312,7 @@ describe('Web Tables Page functionality check', function() {
                 expect(countAfter, "Not Null rows number changed").to.be.equal(countBefore);
             });
             it('should failed to add entry to the table with too long suffix', async function() {
-                let newEntry=testUsers[2];
+                let newEntry={...testUsers[2]};
                 newEntry.Email=invalidEmails[4];
                 const dataEntry= keys.map(k => newEntry[k]);
                 const countBefore = await webTablesPage.getTotalNotNullEntriesNumber();
@@ -323,7 +326,7 @@ describe('Web Tables Page functionality check', function() {
                 expect(countAfter, "Not Null rows number changed").to.be.equal(countBefore);
             });
             it('should failed to add entry to the table with too short suffix', async function() {
-                let newEntry=testUsers[2];
+                let newEntry={...testUsers[2]};
                 newEntry.Email=invalidEmails[5];
                 const dataEntry= keys.map(k => newEntry[k]);
                 const countBefore = await webTablesPage.getTotalNotNullEntriesNumber();
@@ -337,7 +340,7 @@ describe('Web Tables Page functionality check', function() {
                 expect(countAfter, "Not Null rows number changed").to.be.equal(countBefore);
             });
             it('should failed to add entry to the table with special char in the name', async function() {
-                let newEntry=testUsers[2];
+                let newEntry={...testUsers[2]};
                 newEntry.Email=invalidEmails[6];
                 const dataEntry= keys.map(k => newEntry[k]);
                 const countBefore = await webTablesPage.getTotalNotNullEntriesNumber();
@@ -351,7 +354,7 @@ describe('Web Tables Page functionality check', function() {
                 expect(countAfter, "Not Null rows number changed").to.be.equal(countBefore);
             });
             it('should failed to add entry to the table with special char in the local', async function() {
-                let newEntry=testUsers[2];
+                let newEntry={...testUsers[2]};
                 newEntry.Email=invalidEmails[7];
                 const dataEntry= keys.map(k => newEntry[k]);
                 const countBefore = await webTablesPage.getTotalNotNullEntriesNumber();
@@ -365,7 +368,7 @@ describe('Web Tables Page functionality check', function() {
                 expect(countAfter, "Not Null rows number changed").to.be.equal(countBefore);
             });
             it('should failed to add entry to the table with special char in the suffix', async function() {
-                let newEntry=testUsers[2];
+                let newEntry={...testUsers[2]};
                 newEntry.Email=invalidEmails[8];
                 const dataEntry= keys.map(k => newEntry[k]);
                 const countBefore = await webTablesPage.getTotalNotNullEntriesNumber();
@@ -412,6 +415,7 @@ describe('Web Tables Page functionality check', function() {
         it('should search text through the page', async function() {
             const searchText='rra';
             await webTablesPage.searchEntries(searchText);
+            await webTablesPage.waitForTableUpdate(3);
             const entriesTotal= await webTablesPage.getTotalNotNullEntriesNumber();
             expect(entriesTotal, `Expected 2 entries, got ${entriesTotal}`).to.be.equal(2);
             let entryString = keys.map(k => defaultEntries[0][k]).join(' ');
@@ -424,6 +428,7 @@ describe('Web Tables Page functionality check', function() {
         it('should display empty table if search text is missing', async function() {
             const searchText='na';
             await webTablesPage.searchEntries(searchText);
+            await webTablesPage.waitForTableUpdate(3);
             const entriesTotal= await webTablesPage.getTotalNotNullEntriesNumber();
             expect(entriesTotal, `Total number of entries don't equal ${entriesTotal}`).to.be.equal(0);
         });
@@ -434,6 +439,7 @@ describe('Web Tables Page functionality check', function() {
             await webTablesPage.waitPreviousButton();
             const searchText='2';
             await webTablesPage.searchEntries(searchText);
+            await webTablesPage.waitForTableUpdate(5);
             const entriesTotal= await webTablesPage.getTotalNotNullEntriesNumber();
             expect(entriesTotal, `Total number of entries don't equal ${entriesTotal}`).to.be.equal(4);
             let entryString = keys.map(k => defaultEntries[1][k]).join(' ');
