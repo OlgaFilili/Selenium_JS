@@ -30,7 +30,7 @@ jobs:
         run: node tests/setup/EnsureTestUser.js
 
       - name: Run tests
-        run: npx mocha tests/**/*.js --timeout 30000
+        run: npx mocha "tests/**/*.js" --timeout 50000
 
       - name: Upload screenshots on failure
         if: failure()

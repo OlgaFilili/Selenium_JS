@@ -69,12 +69,15 @@ class BasePage
   }
 
   async _set(locator, text) {
-    let element= await this._find(locator);
-    await element.clear();
+    let element = await this._find(locator);
+    await this._clickElement(element);
+    await element.sendKeys(Key.chord(Key.CONTROL, 'a'));
+    await element.sendKeys(Key.BACK_SPACE);
     await element.sendKeys(text);
   }
   async _backspace(locator, num) {
     const element = await this._find(locator);
+    await this._clickElement(element);
     await element.sendKeys(Key.chord(...Array(num).fill(Key.BACK_SPACE)));
   }
   async _pressEscape() {
