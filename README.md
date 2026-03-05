@@ -3,8 +3,26 @@ An automation testing project using Selenium WebDriver with JavaScript.
 
 ## Project Overview
 Automated UI tests for the DemoQA sample web application, implemented with Selenium WebDriver and JavaScript.
-The project follows the Page Object Model and includes reusable components, utilities, and structured test suites.
+The project follows the Page Object Model and includes reusable components, utilities, structured test suites, and a GitHub Actions CI workflow for automated test execution.
 API testing artifacts for the DemoQA Book Store authorization endpoints are also included.
+
+## QA Artifacts
+This repository also contains manual QA documentation created during testing:
+- API test cases (smoke and regression)
+- exploratory testing checklist
+- bug reports linked to test cases
+- UI issue documentation
+Artifacts can be found in the `docs/` folder.
+
+## Project Status
+Fully functional with working Mocha tests.
+Page Object Model implemented (pages/, components/ and utils/ folders).
+Shared abstractions are used for common behavior, including an AuthenticatedPage base class for authorized user state.
+Test coverage includes:
+- UI component validation (Elements, BooksTable)
+- Navigation and layout checks
+- Book Store authentication flows (UI, functional, session-level)
+Core reusable components: BaseTest.js, BasePage.js.
 
 ## Prerequisites / Environment
 - Node.js v22.20.0
@@ -36,10 +54,11 @@ Selenium_JS/
 ├─ docs/  
 │   ├─ api/
 │   │   ├─ bugs/                      # Bug reports linked to test cases
+│   │   ├─ checklists/
 │   │   ├─ test-cases/                # API test cases (smoke, regression)
 │   │   └─ README.md                  # API testing overview
 │   ├─ flows/bugs/     
-│   │   └─ bugs.md                    # API testing overview               
+│   │   └─ bugs.md              
 │   └─ ui/bugs/ 
 │       ├─ booksTable_component.md
 │       └─ profilePage.md
@@ -120,17 +139,6 @@ Then run locally:
 CI (GitHub Actions): tests run headless; permanent test user is created automatically via tests/setup/EnsureTestUser.js.
 Note: LoginPage tests currently use hard-coded credentials as part of an early development phase. CI ensures a test user exists, so tests can run reliably.
 
-## Project Status
-Fully functional with working Mocha tests.
-Page Object Model implemented (pages/, components/ and utils/ folders).
-Shared abstractions are used for common behavior, including an AuthenticatedPage base class for authorized user state.
-Test coverage includes:
-- UI component validation (Elements, BooksTable)
-- Navigation and layout checks
-- Book Store authentication flows (UI, functional, session-level)
-
-Core reusable components: BaseTest.js, BasePage.js.
-
 ## API Testing
 Covered areas:
 - Authorization endpoint testing
@@ -166,6 +174,11 @@ Key points for the current setup:
   - real UI test execution
   - handling of unstable test environments
   - capturing failure artifacts
+### Test stability notes
+During CI integration several typical E2E automation challenges were encountered and addressed:
+- Headless input instability: some input interactions (e.g., search field in WebTables) occasionally lost focus in headless CI runs. This was stabilized by explicitly focusing elements before typing.
+- Timing differences between local and CI environments: additional waits were introduced where UI updates were asynchronous.
+- External application instability: DemoQA is a public demo site and occasionally introduces UI or API changes that break existing tests. Test adaptations for such changes are maintained in separate branches to keep the main test infrastructure stable.
 
 This setup is primarily educational and was added to better understand how automated tests can be integrated into CI pipelines.
 
