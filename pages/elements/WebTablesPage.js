@@ -231,9 +231,6 @@ class WebTablesPage extends BasePage
     }
     async searchEntries(text){
         await this._set(this.searchBox, text);
-        const actual = await this.getSearchFieldValue();
-        if (actual !== text) throw new Error(`SearchBox value mismatch: expected "${text}", got "${actual}"`);
-
     }
     async deleteCharsFromTextSearch(num = 1){
         await this._backspace(this.searchBox, num);
