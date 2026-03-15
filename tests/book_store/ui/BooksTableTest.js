@@ -48,6 +48,7 @@ describe('BooksTable component functionality check', function() {
         let homePage, booksPage;
         beforeEach(async function(){
             homePage= this.homePage;
+            await homePage.waitCardsVisible();
             booksPage= await homePage.gotoBookStoreApplication();
             await booksPage.waitLoginButton();
         });
@@ -250,10 +251,12 @@ describe('BooksTable component functionality check', function() {
         });
         beforeEach(async function() {
             homePage= this.homePage;
+            await homePage.waitCardsVisible();
             booksPage= await homePage.gotoBookStoreApplication();
             await booksPage.waitLoginButton();
             await booksPage.menu.clickMenuItem("Book Store Application", "Profile");
             profilePage= await getPageByMenuItem(this.driver, "Profile");
+            await profilePage.waitNotLoggedInState();
             await profilePage.gotoLoginPage();
             await loginTestUser(this);
         });
