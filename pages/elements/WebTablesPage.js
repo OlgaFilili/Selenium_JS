@@ -1,7 +1,7 @@
 const BasePage = require("../BasePage.js");
 const MainMenu = require("../../components/MainMenu.js");
-const { waitVisible } = require("../../utils/WaitUtils.js");
-const { isInputValid, scrollRelatively } = require("../../utils/BrowserUtils.js");
+const { waitVisible, waitClickable } = require("../../utils/WaitUtils.js");
+const { isInputValid, scrollRelatively, clickElement } = require("../../utils/BrowserUtils.js");
 
 class WebTablesPage extends BasePage
 {
@@ -11,41 +11,35 @@ class WebTablesPage extends BasePage
         this.tableHeader= { xpath: "//h1[text()='Web Tables']"};
         this.addButton= { id: "addNewRecordButton"};
         this.searchBox= { id: "searchBox"};
-        this.tableColumns= { xpath: "//div[contains(@class,'header-content')]"};
-        this.tableElements= { xpath: "//div[@class='rt-tr-group']"};
-        this.cell= { xpath: ".//div[@role='gridcell']"};
+        this.tableColumns= { xpath: "//tr//th"};
+        this.tableElements= { xpath: "//tbody//tr"};
+        this.cell= { xpath: ".//td"};
         this.editButton={ xpath: ".//span[@title='Edit']"};
         this.deleteButton={ xpath: ".//span[@title='Delete']"};
         this.regFormHeader= { id: "registration-form-modal"};
-        this.regFormCloseButton= { xpath: "//span[text()='Close']//parent::button"};
+        this.regFormCloseButton= { xpath: "//button[@aria-label='Close']"};
         this.regFormPreffix="//form[@id='userForm']//input[@placeholder='";
         this.regFormSubmitButton= { id: "submit"};
-        this.currentPage= { xpath: "//input[@aria-label='jump to page']"};
-        this.totalPages= {xpath: "//span[text()='Page']//span"};
+        this.pageCurrentOfTotal= { xpath: "//div[text()='Page']//strong"};
         this.previousPageButton= { xpath: "//button[text()='Previous']"};
         this.nextPageButton= { xpath: "//button[text()='Next']"};
+        this.firstPageButton= { xpath: "//button[text()='First']"};
+        this.lastPageButton= { xpath: "//button[text()='Last']"};
         this.rowsPerPageSelect= { xpath: "//select"};
         this.rowsPerPageOptions="option";
 
-        this.entryOnPage={ xpath: "//div[@class='rt-tbody']//div[@role='row']"};
     }
-
     _getRegFormFieldLocator(placeholder){
         return { xpath: `${this.regFormPreffix}${placeholder}']`};
-    }
-    _getRowsPerPageLocator(num){
-        return { xpath: `${this.rowsPerPagePrefix}${num}']`}
     }
     async getTableHeader(){
         return await this._getText(this.tableHeader);
     }
-
     async getTableColumns(){
         const columns= await this._finds(this.tableColumns);
         const text= await Promise.all(columns.map(col => this._getText(col)));
         return text.join(' ');
     }
-
     async findEntry(email){
         const rows= await this._finds(this.tableElements);
         let text;
@@ -59,17 +53,7 @@ class WebTablesPage extends BasePage
     }
     async getTotalNotNullEntriesNumber(){
         const rows= await this._finds(this.tableElements);
-        let firstCell, firstText;
-        let number=0;
-        for (const row of rows) {
-            firstCell = await this._findInside(row, this.cell);
-            firstText = (await this._getText(firstCell)).trim();
-            if (firstText){
-                number++;
-            }
-            else break;
-        }
-        return number;
+        return rows.length;
     }
     async getRowObject(rowElement) {
         const cells = await this._findsInside(rowElement, this.cell);
@@ -87,7 +71,7 @@ class WebTablesPage extends BasePage
     async isEntryOnPage(data){
         const expected = data.replace(/\s+/g, ' ').trim();
         let entryData;
-        const rows= await this._finds(this.entryOnPage);
+        const rows= await this._finds(this.tableElements);
         for (const row of rows){
             entryData=(await this._getText(row)).replace(/\s+/g, ' ').trim();
             if (entryData===expected) return true;
@@ -104,11 +88,29 @@ class WebTablesPage extends BasePage
     async clickSubmitButton(){
         await this._click(this.regFormSubmitButton);
     }
+    // Native Selenium click is unreliable here due to footer overlapping
+    // pagination controls inside a scrollable container.
+    // JS click is used intentionally for stability.
+    // Same issue for interaction with the amount of entries per page show-select dropdown.
     async clickPreviousPageButton(){
-        await this._click(this.previousPageButton);
+        const element=await waitClickable(this.driver, this.previousPageButton);
+        await scrollRelatively(this.driver, 0, 200);
+        await clickElement(this.driver, element);
     }
     async clickNextPageButton(){
-        await this._click(this.nextPageButton);
+        const element=await waitClickable(this.driver, this.nextPageButton);
+        await scrollRelatively(this.driver, 0, 200);
+        await clickElement(this.driver, element);
+    }
+    async clickLastPageButton(){
+        const element=await waitClickable(this.driver, this.lastPageButton);
+        await scrollRelatively(this.driver, 0, 200);
+        await clickElement(this.driver, element);
+    }
+    async clickFirstPageButton(){
+        const element=await waitClickable(this.driver, this.firstPageButton);
+        await scrollRelatively(this.driver, 0, 200);
+        await clickElement(this.driver, element);
     }
     async deleteEntry(email){
         const row= await this.findEntry(email);
@@ -120,7 +122,6 @@ class WebTablesPage extends BasePage
         await this._set(locator, value);
     }
     async editEntry(email, placeholder, value){
-        //console.log("email: ", email);
         const row= await this.findEntry(email);
         const cells= await this.getRowObject(row);
         await this._clickElement(cells.EditButton);
@@ -147,7 +148,7 @@ class WebTablesPage extends BasePage
     async rowsPerPageText() {
         const select = await this._find(this.rowsPerPageSelect);
         const selectedOption = await this._findInside(select, { css: `${this.rowsPerPageOptions}:checked`});
-        return await this._getText(selectedOption);
+        return (await this._getText(selectedOption)).replace(/\s+/g, ' ').trim();;
     }
     async listRowsPerPage(){
         const select= await this._find(this.rowsPerPageSelect);
@@ -166,7 +167,7 @@ class WebTablesPage extends BasePage
         let list=[]; 
         let value;
         for (let i=0; i<options.length; i++){
-            value= await this._getText(options[i]);
+            value= (await this._getText(options[i])).replace(/\s+/g, ' ').trim();
             list[i]=value;
         }
         return list;
@@ -179,7 +180,7 @@ class WebTablesPage extends BasePage
     }
     async closeRowsPerPageDropdown(){
         const select = await this._find(this.rowsPerPageSelect);
-        await this._clickElement(select);
+        await clickElement(this.driver, select);
         await this._pressEscape();
         await scrollRelatively(this.driver, 0, -190);
     }
@@ -189,17 +190,28 @@ class WebTablesPage extends BasePage
     async isNextButtonEnabled(){
         return await this._isEnabled(this.nextPageButton);
     }
+    async isFirstButtonEnabled(){
+        return await this._isEnabled(this.firstPageButton);
+    }
+    async isLastButtonEnabled(){
+        return await this._isEnabled(this.lastPageButton);
+    }
     async isRegFormStillOpen(){
         return await this._isDisplayed(this.regFormHeader);
     }
+    async _parsePagesInfo(){
+        const info=await this._find(this.pageCurrentOfTotal);
+        const text= (await this._getText(info)).trim().replace(/\s+/g, ' ');
+        const [current, total]= text.split(' of ').map(Number);
+        return {current, total};
+    }
     async getTotalPages(){
-        const value= await this._getText(this.totalPages);
-        return Number(value);
+        const {total}= await this._parsePagesInfo();
+        return total;
     }
     async getCurrentPageNumber(){
-        const element= await this._find(this.currentPage);
-        const value= await this._getValue(element);
-        return Number(value);
+        const {current}= await this._parsePagesInfo();
+        return current;
     }
     async getInputValidity(placeholder){
         const locator= await this._getRegFormFieldLocator(placeholder);
@@ -207,17 +219,18 @@ class WebTablesPage extends BasePage
         const isValid= await isInputValid(this.driver, element);
         return isValid;
     }
+    async getSearchFieldValue() {
+        const element= await this._find(this.searchBox);
+        return await this._getValue(element);
+    }
     async searchEntries(text){
         await this._set(this.searchBox, text);
     }
     async deleteCharsFromTextSearch(num = 1){
         await this._backspace(this.searchBox, num);
     }
-    async getSearchFieldValue() {
-        const element= await this._find(this.searchBox);
-        return await this._getValue(element);
-    }
-    async waitForTableUpdate(previousCount, timeout = 2000) {
+
+    async waitForTableUpdate(previousCount, timeout = 5000) {
         await this.driver.wait(async () => {
             const currentCount = await this.getTotalNotNullEntriesNumber();
             return currentCount !== previousCount;

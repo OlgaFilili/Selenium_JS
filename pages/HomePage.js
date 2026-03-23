@@ -5,47 +5,60 @@ const AlertsFrameWindowsPage = require('./AlertsFrameWindowsPage.js');
 const WidgetsPage = require('./WidgetsPage.js');
 const InteractionsPage = require('./InteractionsPage.js');
 const BooksPage = require("./book_store/BooksPage.js");
+const { waitVisible }= require("../utils/WaitUtils.js");
+const { clickElement } = require("../utils/BrowserUtils.js");
 
 class HomePage extends BasePage 
 {
   constructor(driver) {
     super(driver);
-    this.cardPrefix= "//div[@id='app']//h5[text()='";
-    this.cardNames=['Elements', 'Forms', 'Alerts, Frame & Windows', 'Widgets', 'Interactions', 'Book Store Application'];
+    this.cardPrefix= "//div[@id='root']//a[@href='";
+    //this.cardNames=['Elements', 'Forms', 'Alerts, Frame & Windows', 'Widgets', 'Interactions', 'Book Store Application'];
+    this.cardLinks=['/elements', '/forms', '/alertsWindows', '/widgets', '/interaction', '/books'];
+    this.booksCardName= { xpath: "//div[@id='root']//h5[text()='Book Store Application']"};
   }
 
-  _getCardLocator(cardName){
-    return { xpath: `${this.cardPrefix}${cardName}']`};
+  _getCardLink(cardLink){
+    return { xpath: `${this.cardPrefix}${cardLink}']`};
 
-  }  
+  }
+  async waitCardsVisible(){
+    await waitVisible(this.driver, this.booksCardName);
+  }
   async gotoElements() {
-    const elementsCard=this._getCardLocator(this.cardNames[0]);
-    await this._click(elementsCard);
+    const elementsCard=this._getCardLink(this.cardLinks[0]);
+    const element= await this._find(elementsCard);
+    await clickElement(this.driver, element);
     return new ElementsPage(this.driver);
   }
   async gotoForms() {
-    const formsCard= this._getCardLocator(this.cardNames[1]);
-    await this._click(formsCard);
+    const formsCard= this._getCardLink(this.cardLinks[1]);
+    const element= await this._find(formsCard);
+    await clickElement(this.driver, element);
     return new FormsPage(this.driver);
   }
   async gotoAlertsFrameWindows() {
-    const alertsFrameWindowsCard= this._getCardLocator(this.cardNames[2]);
-    await this._click(alertsFrameWindowsCard);
+    const alertsFrameWindowsCard= this._getCardLink(this.cardLinks[2]);
+    const element= await this._find(alertsFrameWindowsCard);
+    await clickElement(this.driver, element);
     return new AlertsFrameWindowsPage(this.driver);
   }
   async gotoWidgets() {
-    const widgetsCard= this._getCardLocator(this.cardNames[3]);
-    await this._click(widgetsCard);
+    const widgetsCard= this._getCardLink(this.cardLinks[3]);
+    const element= await this._find(widgetsCard);
+    await clickElement(this.driver, element);
     return new WidgetsPage(this.driver);
   }
   async gotoInteractions() {
-    const interactionsCard= this._getCardLocator(this.cardNames[4]);
-    await this._click(interactionsCard);
+    const interactionsCard= this._getCardLink(this.cardLinks[4]);
+    const element= await this._find(interactionsCard);
+    await clickElement(this.driver, element);
     return new InteractionsPage(this.driver);
   }
   async gotoBookStoreApplication() {
-    const bookStoreApplicationCard= this._getCardLocator(this.cardNames[5]);
-    await this._click(bookStoreApplicationCard);
+    const bookStoreApplicationCard= this._getCardLink(this.cardLinks[5]);
+    const element= await this._find(bookStoreApplicationCard);
+    await clickElement(this.driver, element);
     return new BooksPage(this.driver);
   }
 }

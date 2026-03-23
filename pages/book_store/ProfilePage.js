@@ -10,7 +10,7 @@ class ProfilePage extends AuthenticatedPage
         this.menu= new MainMenu(driver);
         this.booksTable= new BooksTable(driver);
         this.notLogginMessage= { id: "notLoggin-label" };
-        this.booksLabel= { id: "userName-label" };
+        this.booksLabel= { xpath: "//div[contains(@class,'col-md-2')]//label" };
         this.loginLink= { xpath: "//label[@id='notLoggin-label']//a[text()='login']" };
         this.registerLink= { xpath: "//label[@id='notLoggin-label']//a[text()='register']" };
         this.gotoStoreButton= { id: "gotoStore" };
@@ -20,19 +20,23 @@ class ProfilePage extends AuthenticatedPage
         this.deleteModalText= { xpath: "//div[contains(text(),'to delete')]"};
         this.deleteModalOkButton= { id: "closeSmallModal-ok"};
         this.deleteModalCancelButton= { id: "closeSmallModal-cancel"};
-        this.deleteModalCloseButton= { xpath: "//span[text()='Close']//parent::button"};
+        this.deleteModalCloseButton= { xpath: "//button[@aria-label='Close']"};
+        this.userNotFoundMessage= { xpath: "//p[@id='name']"};
     }
-    _getdeleteAccountButtonLocator(){
+    _getDeleteAccountButtonLocator(){
         return { xpath: `${this.buttonsTag}${this.deleteAccountButtonText}']`};
     }
     _getDeleteAllBooksButtonLocator(){
-        return { xpath: `(${this.buttonsTag}${this.deleteAllBooksButtonText}'])[2]`};
+        return { xpath: `(${this.buttonsTag}${this.deleteAllBooksButtonText}'])[1]`};
     }
     async getProfilePageUrl() {
         return await this._getUrl();
     }
     async waitNotLoggedInState(){
         await waitVisible(this.driver, this.notLogginMessage);
+    }
+    async waitUserNotFoundMessage(){
+        await waitVisible(this.driver, this.userNotFoundMessage);
     }
     async waitDeleteModal(){
         await waitVisible(this.driver, this.deleteModalTitle);
@@ -43,11 +47,15 @@ class ProfilePage extends AuthenticatedPage
         const Message= await Promise.all(textLines.map(text => this._getText(text)));
         return Message.join(' ').replace(/\s+/g, ' ').trim();
     }
+    async getUserNotFoundMessage(){
+        await this.waitUserNotFoundMessage();
+        return await this._getText(this.userNotFoundMessage);
+    }
     async gotoBookStore(){
         await this._click(this.gotoStoreButton);
     }
     async deleteAccount(){
-        const locator= await this._getdeleteAccountButtonLocator();
+        const locator= await this._getDeleteAccountButtonLocator();
         await this._click(locator);
     }
     async gotoLoginPage(){
@@ -79,6 +87,12 @@ class ProfilePage extends AuthenticatedPage
     async isBooksLabelDisplayed(){
         await this.waitUserPageReady();
         return await this._isDisplayed(this.booksLabel);
+    }
+    async getUserNotFoundMessage(){
+        return await this._getText(this.userNotFoundMessage);
+    }
+    async getUserNotFoundMessageColor(){
+        return await this._getColorValue(this.userNotFoundMessage, 'color');
     }
     async cancelAccountDeletion(){
         await this.waitDeleteModal();

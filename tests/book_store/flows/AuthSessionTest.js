@@ -1,6 +1,6 @@
-const { getHomePage }= require("../../BaseTest.js");
 const LoginPage = require('../../../pages/book_store/LoginPage.js');
 const AuthenticatedPage = require("../../../pages/book_store/AuthenticatedPage.js");
+const ProfilePage = require("../../../pages/book_store/ProfilePage.js");
 const { refreshPage } = require("../../../utils/BrowserUtils.js");
 const { expect }= require('chai');
 
@@ -8,7 +8,7 @@ describe('Authorization state-based behavior check', function() {
     /** @type {LoginPage} */
     let loginPage, booksPage;
     beforeEach(async function(){
-        const homePage= await getHomePage();
+        const homePage= this.homePage;
         await homePage.waitCardsVisible();
         booksPage= await homePage.gotoBookStoreApplication();
         loginPage= await booksPage.clickLoginButton();
@@ -20,7 +20,8 @@ describe('Authorization state-based behavior check', function() {
             await loginPage.inputCredentials(username, password);
             const userPage= new AuthenticatedPage(loginPage.driver);
             await userPage.clickLogoutButton();
-            await loginPage.menu.clickMenuItem("Book Store Application", "Book Store");
+            await loginPage.menu.clickMenuItem("Book Store Application", "/books");
+            await booksPage.booksTable.waitSearchBox();
             const notAuth= await booksPage.isLoginButtonVisible();
             expect(notAuth, "Error! System is not in expected state").to.be.true;
             const isThereUserName = await booksPage.isUserNameDisplayed();
@@ -35,7 +36,8 @@ describe('Authorization state-based behavior check', function() {
             await loginPage.inputCredentials(username, password);
             const loginInFailed= await loginPage.isLoginInFailed();
             this.authSucceeded = !loginInFailed;
-            await booksPage.menu.clickMenuItem("Book Store Application", "Login");
+            const userPage= new ProfilePage(loginPage.driver);
+            await userPage.menu.clickMenuItem("Book Store Application", "/login");
             const isAuth= await loginPage.isLoginPageInAuthState();
             expect(isAuth, "Error! System is not in expected state").to.be.true;
             const actualMessage= await loginPage.getAlreadyLoggedInMessage();
@@ -50,7 +52,7 @@ describe('Authorization state-based behavior check', function() {
             const userPage= new AuthenticatedPage(loginPage.driver);
             await refreshPage(loginPage.driver);
             await userPage.waitUserPageReady();
-            const isThereUserName = await booksPage.isUserNameDisplayed();
+            const isThereUserName = await userPage.isUserNameDisplayed();
             expect(isThereUserName, 'UserName is not logged in after refresh the page').to.be.true;
         });
     });

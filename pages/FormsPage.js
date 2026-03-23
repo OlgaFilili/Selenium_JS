@@ -9,7 +9,8 @@ class FormsPage extends BasePage
     this.menu= new MainMenu(driver);
     this.cardName="Forms";
     this.itemName="Practice Form";
-    this.infoText= { xpath: "//div[@class='col-12 mt-4 col-md-6']"};
+    this.itemLink="/automation-practice-form";
+    this.infoText= { xpath: "//div[contains(@class,'col-12 mt-4 col-md-6')]"};
     }
     
     async getFormsPageText() {
@@ -17,7 +18,7 @@ class FormsPage extends BasePage
     }
 
     async gotoPracticeFormMenuItem() {
-        await this.menu.clickMenuItem(this.cardName, this.itemName);
+        await this.menu.clickMenuItem(this.cardName, this.itemLink);
         return new AutomationPracticeFormPage(this.driver);
     }
 }

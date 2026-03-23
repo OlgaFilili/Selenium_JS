@@ -6,21 +6,16 @@ class AuthenticatedPage extends BasePage
   constructor(driver) {
     super(driver);
     this.buttonsTag= "//button[text()='";
-    this.logoutButtonText= "Log out";
-    this.userNameLabel = { id: "userName-label" };
+    this.logoutButton= { xpath: "//button[@id='submit' and contains(text(),'ut')]"};
+    this.userNameLabel = { xpath: "//div[contains(@class,'col-md-4')]//label[contains(@id,'label')]" };
     this.userNameValue = { id: "userName-value" };
   }
-  _getLogoutButtonLocator(){
-      return { xpath: `${this.buttonsTag}${this.logoutButtonText}']`};
-  }
   async waitUserPageReady(){
-    const locator= await this._getLogoutButtonLocator();
-    await waitVisible(this.driver, locator);
+    await waitVisible(this.driver, this.logoutButton);
   }
   async clickLogoutButton(){
-    const locator= await this._getLogoutButtonLocator();
-    await waitVisible(this.driver, locator);
-    await this._click(locator);
+    await waitVisible(this.driver, this.logoutButton);
+    await this._click(this.logoutButton);
   }
   async getUserName(){
     await this.waitUserPageReady();
