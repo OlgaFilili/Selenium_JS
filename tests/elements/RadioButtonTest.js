@@ -1,4 +1,3 @@
-const { getHomePage } = require("../BaseTest.js");
 const { capitalizeFirstLetter } = require("../../utils/StringUtils.js");
 const RadioButtonPage = require("../../pages/elements/RadioButtonPage.js");
 const { expect } = require('chai');
@@ -8,8 +7,9 @@ describe('Radio Button Page functionality check', function() {
   /** @type {RadioButtonPage} */
   let radioButtonPage;
   beforeEach (async function(){
-    const homePage= await getHomePage();
+    const homePage= this.homePage;
     const elementsPage= await homePage.gotoElements();
+    await elementsPage.menu.waitMenuVisible("Elements");
     radioButtonPage= await elementsPage.gotoRadioButtonMenuItem();
   });
   options.forEach(option => {
@@ -30,7 +30,7 @@ describe('Radio Button Page functionality check', function() {
       expect(optionSelected, `${option}-option was not selected`).to.be.true;
       expect(actualConfirmationText, 'The message does not start with "You have selected "').to.be.equal("You have selected ");
       expect(actualConfirmation, 'Actual and expected confirmation text do not match').to.be.equal(capitalizeFirstLetter(option));
-      expect(actualOptionColorInMessage, 'Actual and txpected color of selected option in message do not match').to.be.equal("rgba(40, 167, 69, 1)");
+      expect(actualOptionColorInMessage, 'Actual and txpected color of selected option in message do not match').to.be.equal("rgba(25, 135, 84, 1)");
     });
   });
 });

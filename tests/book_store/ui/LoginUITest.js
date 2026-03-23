@@ -1,4 +1,3 @@
-const { getHomePage }= require("../../BaseTest.js");
 const LoginPage = require('../../../pages/book_store/LoginPage.js');
 const AuthenticatedPage = require("../../../pages/book_store/AuthenticatedPage.js");
 const ProfilePage = require("../../../pages/book_store/ProfilePage.js");
@@ -9,7 +8,7 @@ describe('Login Page UI check', function() {
     /** @type {LoginPage} */
     let loginPage, booksPage, userPage;
     beforeEach(async function(){
-        const homePage= await getHomePage();
+        const homePage= this.homePage;
         await homePage.waitCardsVisible();
         booksPage= await homePage.gotoBookStoreApplication();
         loginPage= await booksPage.clickLoginButton();
@@ -96,7 +95,7 @@ describe('Login Page UI check', function() {
             await loginPage.inputCredentials(username, password);
             const loginInFailed= await loginPage.isLoginInFailed();
             this.authSucceeded = !loginInFailed;
-            await booksPage.menu.clickMenuItem("Book Store Application", "Login");
+            await booksPage.menu.clickMenuItem("Book Store Application", "/login");
             await loginPage.goToProfileFromAlreadyLoggedInMessage();
             userPage= new ProfilePage(loginPage.driver);
             await userPage.waitUserPageReady();

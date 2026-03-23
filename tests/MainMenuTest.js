@@ -6,7 +6,7 @@ const {getPageByMenuItem}= require("../utils/PageFactoryUtils.js");
 const { expect }= require('chai');
 
 
-describe ('Main Menu navigation functionality check', function(){
+describe('Main Menu navigation functionality check', function(){
     const mainMenuNames=['Elements', 'Forms', 'Alerts, Frame & Windows', 'Widgets', 'Interactions', 'Book Store Application'];
     const elementsMenuItems=['Text Box', 'Radio Button', 'Check box', 'Web Tables'];
     const formsMenuItem='Practice Form';
@@ -19,37 +19,46 @@ describe ('Main Menu navigation functionality check', function(){
     let homePage, anyPage;
     beforeEach(async function(){
         homePage= this.homePage;
+        await homePage.waitCardsVisible();
     });
     describe('smoke: Basic redirect from Home page and display', function(){
         it('should check Forms menu default page is displayed', async function(){
             anyPage= await homePage.gotoForms();
+            await anyPage.menu.waitMenuVisible(mainMenuNames[1]);
             const actualMessage=await anyPage.getFormsPageText();
             expect(actualMessage, 'Actual and expected text on the Forms page do not match').to.be.equal(expectedMessage);
         });
         it('should check Forms menu is expanded after navigating from the Home Page', async function(){
             anyPage= await homePage.gotoForms();
+            await anyPage.menu.waitMenuVisible(mainMenuNames[1]);
             const isExpanded= await anyPage.menu.isMenuExpanded(mainMenuNames[1]);
             expect(isExpanded, `${mainMenuNames[1]} menu is not expanded`).to.be.true;
         });
         it('should check redirection from Forms menu to Practice Form', async function(){
             anyPage= await homePage.gotoForms();
+            await anyPage.menu.waitMenuVisible(mainMenuNames[1]);
             const practiceFormPage=await anyPage.gotoPracticeFormMenuItem();
+            await practiceFormPage.waitMainHeader();
             const actualHeader=await practiceFormPage.getMainHeader();
             expect(actualHeader, 'Actual and expected main headers do not match').to.be.equal(formsMenuItem);
         });
         it('should check Interactions menu default page is displayed', async function(){
             anyPage= await homePage.gotoInteractions();
+            await anyPage.menu.waitMenuVisible(mainMenuNames[4]);
             const actualMessage=await anyPage.getInteractionsPageText();
             expect(actualMessage, 'Actual and expected text on the Forms page do not match').to.be.equal(expectedMessage);
         });
         it('should check Interactions menu is expanded after navigating from the Home Page', async function(){
             anyPage= await homePage.gotoInteractions();
+            await anyPage.menu.waitMenuVisible(mainMenuNames[4]);
             const isExpanded= await anyPage.menu.isMenuExpanded(mainMenuNames[4]);
             expect(isExpanded, `${mainMenuNames[4]} menu is not expanded`).to.be.true;
         });
         it('should check redirection from Interactions menu to Droppable', async function(){
             anyPage= await homePage.gotoInteractions();
+            await anyPage.menu.waitMenuVisible(mainMenuNames[4]);
             const droppablePage= await anyPage.gotoDroppableMenuItem();
+            await droppablePage.waitMainHeader();
             const actualHeader=await droppablePage.getMainHeader();
             expect(actualHeader, 'Actual and expected main headers do not match').to.be.equal(interactionsMenuItems[3]);
         });
@@ -65,8 +74,9 @@ describe ('Main Menu navigation functionality check', function(){
     describe('smoke: Redirect from one menu page to another menu page', function(){
         it('should check redirection inside one menu- Interactions', async function(){
             anyPage= await homePage.gotoInteractions();
+            await anyPage.menu.waitMenuVisible(mainMenuNames[4]);
             const droppablePage= await anyPage.gotoDroppableMenuItem();
-            await droppablePage.menu.clickMenuItem(mainMenuNames[4], interactionsMenuItems[0]);
+            await droppablePage.menu.clickMenuItem(mainMenuNames[4], '/sortable');// interactionsMenuItems[0]);
             //waitVisible(this.driver, {xpath: "//div[text()='Six']"});
             const sortablePage=await getPageByMenuItem(this.driver, interactionsMenuItems[0]);
             const actualHeader=await sortablePage.getMainHeader();
@@ -74,15 +84,17 @@ describe ('Main Menu navigation functionality check', function(){
         });
         it('should check redirection from one menu card to sub-menu of another card', async function(){
             anyPage= await homePage.gotoAlertsFrameWindows();
-            await anyPage.menu.clickMenuItem(mainMenuNames[4], interactionsMenuItems[3]);
+            await anyPage.menu.waitMenuVisible(mainMenuNames[2]);
+            await anyPage.menu.clickMenuItem(mainMenuNames[4], '/droppable'); //interactionsMenuItems[3]);
             const droppablePage=await getPageByMenuItem(this.driver, interactionsMenuItems[3]);
             const actualHeader=await droppablePage.getMainHeader();
             expect(actualHeader, `Actual and expected main header of ${interactionsMenuItems[3]} page do not match`).to.be.equal(interactionsMenuItems[3]);
         });
         it('should check redirection from one card sub-menu to sub-menu of another card', async function(){
             anyPage= await homePage.gotoElements();
+            await anyPage.menu.waitMenuVisible(mainMenuNames[0]);
             const webTablesPage= await anyPage.gotoWebTablesMenuItem();
-            await webTablesPage.menu.clickMenuItem(mainMenuNames[2], aFWMenuItems[0]);
+            await webTablesPage.menu.clickMenuItem(mainMenuNames[2], '/browser-windows'); // aFWMenuItems[0]);
             const browserWindowsPage=await getPageByMenuItem(this.driver, aFWMenuItems[0]);
             const actualHeader=await browserWindowsPage.getMainHeader();
             expect(actualHeader, `Actual and expected main header of ${aFWMenuItems[0]} page do not match`).to.be.equal(aFWMenuItems[0]);
@@ -91,20 +103,23 @@ describe ('Main Menu navigation functionality check', function(){
     describe('regression: Collapsing and expanding menu check', function(){
         it('should check the menu page stays opened while expanding another menu', async function(){
             anyPage= await homePage.gotoWidgets();
+            await anyPage.menu.waitMenuVisible(mainMenuNames[3]);
             await anyPage.menu.expandMenu(mainMenuNames[5]);
             const actualText=await anyPage.getWidgetsPageText();
             expect(actualText, `Actual and expected text on the ${mainMenuNames[3]} page do not match`).to.be.equal(expectedMessage);
         });
         it('should check the menu page stays opened while another menu is expanded and then collapsed', async function(){
             anyPage= await homePage.gotoAlertsFrameWindows();
+            await anyPage.menu.waitMenuVisible(mainMenuNames[2]);
             await anyPage.menu.expandMenu(mainMenuNames[5]);
             await anyPage.menu.waitMenuVisible(mainMenuNames[5]);
             await anyPage.menu.collapseMenu(mainMenuNames[5]);
             const actualText=await anyPage.getAlertsFrameWindowsPageText();
-            expect(actualText, `Actual and expected text on the ${mainMenuNames[4]} page do not match`).to.be.equal(expectedMessage);
+            expect(actualText, `Actual and expected text on the ${mainMenuNames[2]} page do not match`).to.be.equal(expectedMessage);
         });
         it('should check the sub-menu stays active after returning to expanded parent-menu', async function(){
             anyPage= await homePage.gotoElements();
+            await anyPage.menu.waitMenuVisible(mainMenuNames[0]);
             const webTablesPage= await anyPage.gotoWebTablesMenuItem();
             await webTablesPage.menu.expandMenu(mainMenuNames[3])
             await webTablesPage.menu.waitMenuVisible(mainMenuNames[3]);

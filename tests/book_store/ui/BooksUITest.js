@@ -1,22 +1,23 @@
-const { getHomePage } = require("../../BaseTest.js");
 const api = require("../../../api");
 const { loginTestUser } = require("../../helpers/LoginHelper.js");
 const { logoutTestUser } = require("../../helpers/LogoutHelper.js");
 const LoginPage = require("../../../pages/book_store/LoginPage.js");
 const BooksPage = require("../../../pages/book_store/BooksPage.js");
+const ProfilePage = require("../../../pages/book_store/ProfilePage.js");
 const { expect }= require('chai');
 
 
 describe('Books Page UI check', function() {
     /** @type {BooksPage} */
-    let booksPage, loginPage;
+    let booksPage, loginPage, profilePage;
     before(async function() {
         this.testUser = await api.user.createUser();
     });
     beforeEach(async function() {
-        const homePage= await getHomePage();
+        const homePage= this.homePage;
         await homePage.waitCardsVisible();
         booksPage= await homePage.gotoBookStoreApplication();
+        await booksPage.waitLoginButton();
     });
     after(async function() {
         await api.user.deleteUser(this.testUser);
@@ -30,29 +31,31 @@ describe('Books Page UI check', function() {
         });
         describe('smoke: Logged-in state of the page', function(){
             beforeEach(async function() {
-                await booksPage.clickLoginButton();
+                loginPage= await booksPage.clickLoginButton();
                 await loginTestUser(this);
             });
             afterEach(async function() {
                 await logoutTestUser(this);
             });
             it('should login in', async function(){
-                await booksPage.waitUserPageReady();
-                const currentUrl= await booksPage.getBooksPageUrl();
-                expect(currentUrl, "Error! Wrong redirect link").to.be.include("/books");
-                const actualLoggedInUsername= await booksPage.getUserName();
+                profilePage= new ProfilePage(loginPage.driver);
+                await profilePage.waitUserPageReady();
+                const currentUrl= await profilePage.getProfilePageUrl();
+                expect(currentUrl, "Error! Wrong redirect link").to.be.include("/profile");
+                const actualLoggedInUsername= await profilePage.getUserName();
                 expect(actualLoggedInUsername, 'Error!!! Wrong logged-in Username').to.be.equal(this.testUser.userName);   
             });
         });
     });
     describe('regression: Session-ending flows', function(){
         beforeEach(async function () {
-            await booksPage.clickLoginButton();
+            loginPage= await booksPage.clickLoginButton();
             await loginTestUser(this);
         });
         it('should check successful log out with redirection to login page', async function(){
-            await booksPage.waitUserPageReady();
-            await booksPage.clickLogoutButton();
+            profilePage= new ProfilePage(loginPage.driver);
+            await profilePage.waitUserPageReady();
+            await profilePage.clickLogoutButton();
             loginPage= new LoginPage(booksPage.driver);
             await loginPage.waitNotLoggedInState();
             const currentUrl= await loginPage.getLoginPageUrl();

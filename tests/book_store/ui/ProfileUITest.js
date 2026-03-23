@@ -1,12 +1,12 @@
-const { getHomePage } = require("../../BaseTest.js");
 const { getPageByMenuItem } = require("../../../utils/PageFactoryUtils.js");
 const api = require("../../../api");
 const { loginTestUser } = require("../../helpers/LoginHelper.js");
 const { logoutTestUser } = require("../../helpers/LogoutHelper.js");
 const ProfilePage = require("../../../pages/book_store/ProfilePage.js");
 const LoginPage = require("../../../pages/book_store/LoginPage.js");
-const { expect }= require('chai');
 const BooksPage = require("../../../pages/book_store/BooksPage.js");
+const { expect }= require('chai');
+
 
 
 describe('Profile Page UI check', function() {
@@ -16,10 +16,10 @@ describe('Profile Page UI check', function() {
         this.testUser = await api.user.createUser();
     });
     beforeEach(async function() {
-        const homePage= await getHomePage();
+        const homePage= this.homePage;
         await homePage.waitCardsVisible();
         booksPage= await homePage.gotoBookStoreApplication();
-        await booksPage.menu.clickMenuItem("Book Store Application", "Profile");
+        await booksPage.menu.clickMenuItem("Book Store Application", "/profile");
         profilePage= await getPageByMenuItem(this.driver, "Profile");
     });
     after(async function() {

@@ -1,4 +1,3 @@
-const { getHomePage }= require("../../BaseTest.js");
 const LoginPage = require('../../../pages/book_store/LoginPage.js');
 const AuthenticatedPage = require("../../../pages/book_store/AuthenticatedPage.js");
 const { expect }= require('chai');
@@ -7,7 +6,7 @@ describe('Authorization functionality check', function() {
     /** @type {LoginPage} */
     let loginPage, booksPage;
     beforeEach(async function(){
-        const homePage= await getHomePage();
+        const homePage= this.homePage;
         await homePage.waitCardsVisible();
         booksPage= await homePage.gotoBookStoreApplication();
         loginPage= await booksPage.clickLoginButton();

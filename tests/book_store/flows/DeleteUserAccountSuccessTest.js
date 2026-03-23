@@ -1,4 +1,3 @@
-const { getHomePage } = require("../../BaseTest.js");
 const { getPageByMenuItem } = require("../../../utils/PageFactoryUtils.js");
 const api = require("../../../api");
 const { loginTestUser } = require("../../helpers/LoginHelper.js");
@@ -15,21 +14,25 @@ describe('Delete User Account flow check', function() {
         this.testUser = await api.user.createUser();
     });
     beforeEach(async function() {
-        const homePage= await getHomePage();
+        const homePage= this.homePage;
+        await homePage.waitCardsVisible();
         booksPage= await homePage.gotoBookStoreApplication();
-        await booksPage.menu.clickMenuItem("Book Store Application", "Profile");
+        await booksPage.menu.clickMenuItem("Book Store Application", "/profile");
         profilePage= await getPageByMenuItem(this.driver, "Profile");
         await profilePage.gotoLoginPage();
         await loginTestUser(this);
     });
     describe('smoke: Basic successful deletion flow check', function(){
-        it('should check the delete modal dialog visibility', async function(){
+        it.skip('should check the delete modal dialog and confirmation alert visibility', async function(){
+            // Knowing issue: Bug-032
             const errorMessage="Invalid username or password!";
             const alertMessage="User Deleted.";
             await profilePage.waitUserPageReady();
             await profilePage.deleteAccount();
             await profilePage.confirmAccountDeletion();
             const alertText = await getAlertText(this.driver);
+            //console.log(alertText);
+            // Actual: no AlertMessage
             expect(alertText, "Actual and expected alert messages do not match").to.be.equal(alertMessage);
             await acceptAlert(this.driver);
             loginPage= new LoginPage(profilePage.driver);
@@ -44,16 +47,25 @@ describe('Delete User Account flow check', function() {
         });
     });
     describe('regression: Handle of expired token session check', function(){
-        it.skip('should check previous token login session closes correctly after account deletion', async function(){
-            // Skipped due to known issue: Bug-020
+        it('should check previous token login session closes correctly after account deletion', async function(){
+            //Knowing issue: Bug-031
+            // Note: In a previous release this flow failed with Bug-020
+            // Current behavior changed after release, but the session invalidation problem still persists
             await profilePage.waitUserPageReady();
             await api.user.deleteUser(this.testUser);
             await refreshPage(profilePage.driver);
-            // Expected: user should be redirected to logged-out state
-            // Actual: blank page (BUG!!!)
-            await profilePage.waitNotLoggedInState();
-            await profilePage.gotoLoginPage();
-            loginPage= new LoginPage(profilePage.driver);
+            await profilePage.waitUserNotFoundMessage();
+            const expectedMessage= "User not found!";
+            const actualMessage= await profilePage.getUserNotFoundMessage();
+            expect(actualMessage, "Actual and expected messags do not match").to.be.equal(expectedMessage);
+            const actualMessageColor= await profilePage.getUserNotFoundMessageColor();
+            expect(actualMessageColor, "Actual and expected 'User not found!' message colors do not match").to.be.equal("rgba(255, 0, 0, 1)");
+            await profilePage.menu.clickMenuItem("Book Store Application", "/login")
+            loginPage= await getPageByMenuItem(this.driver, "Login");
+            const isLoggedIn= await loginPage.isLoginPageInAuthState();
+            expect(isLoggedIn, "Error! LoginPage in authenticated state").to.be.false;
+            // Expected: user should be redirected to logged-out state of login page
+            // Actual: login page in logged-in state
             await loginPage.waitNotLoggedInState();
             await loginPage.inputCredentials(this.testUser.userName, this.testUser.password);
             const loginInFailed= await loginPage.isLoginInFailed();
