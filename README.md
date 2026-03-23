@@ -6,6 +6,20 @@ Automated UI tests for the DemoQA sample web application, implemented with Selen
 The project follows the Page Object Model and includes reusable components, utilities, structured test suites, and a GitHub Actions CI workflow for automated test execution.
 API testing artifacts for the DemoQA Book Store authorization endpoints are also included.
 
+## Project Evolution
+During the course of this project, the DemoQA Book Store application underwent multiple updates and functional changes.
+As a result:
+- Existing UI and API behavior changed
+- Some previously implemented tests became outdated or unstable
+- New UI elements and flows were introduced
+In this phase, the focus was on:
+- Adapting existing test cases and automation to the updated application behavior
+- Refactoring Page Objects and test flows to match the current UI structure
+- Stabilizing CI execution and resolving test flakiness caused by application changes
+- Re-validating previously implemented scenarios against the updated system
+
+New functionality (such as extended Book Store features and updated Register flows) will be covered in separate iterations.
+
 ## QA Artifacts
 This repository also contains manual QA documentation created during testing:
 - API test cases (smoke and regression)
@@ -20,7 +34,7 @@ Page Object Model implemented (pages/, components/ and utils/ folders).
 Shared abstractions are used for common behavior, including an AuthenticatedPage base class for authorized user state.
 Test coverage includes:
 - UI component validation (Elements, BooksTable)
-- Navigation and layout checks
+- Navigation and layout checks (MainMenu component)
 - Book Store authentication flows (UI, functional, session-level)
 Core reusable components: BaseTest.js, BasePage.js.
 
@@ -28,7 +42,7 @@ Core reusable components: BaseTest.js, BasePage.js.
 - Node.js v22.20.0
 - npm v10.9.3
 - Windows 10 Pro
-- Chrome v144 (tested)
+- Chrome v145 (for CI)
 
 ## Project Setup
 1. Clone the repo:
@@ -61,7 +75,9 @@ Selenium_JS/
 │   │   └─ bugs.md              
 │   └─ ui/bugs/ 
 │       ├─ booksTable_component.md
-│       └─ profilePage.md
+│       ├─ mainMenu_component.md
+│       ├─ profilePage.md
+│       └─ webTablesPage.md
 ├─ node_modules/                      # Installed dependencies (ignored by Git)
 ├─ pages/                             # Page Object Model classes
 │   ├─ alerts/
@@ -87,7 +103,9 @@ Selenium_JS/
 │   ├─ BasePage.js
 │   ├─ ElementsPage.js
 │   ├─ FormsPage.js
-│   └─ HomePage.js
+│   ├─ HomePage.js
+│   ├─ InteractionsPage.js
+│   └─ WidgetsPage.js
 ├─ tests/                             # Test scripts
 │   ├─ book_store/
 │   │   ├─ flows   
@@ -127,7 +145,7 @@ Selenium_JS/
 5. Running Tests
 Run all tests locally:
 ```npx mocha tests/```
-Locally: tests run with a visible Chrome browser (headed mode).
+Locally: tests run with a visible Chrome browser (headed mode) v146 tested.
 To create a permanent user on a local machine, you can add scripts to package.json:
 "scripts": {
   "setup:user": "node tests/setup/EnsureTestUser.js",
@@ -170,10 +188,11 @@ Key points for the current setup:
 - Manual trigger via workflow_dispatch is available for reruns outside PRs.
 - Permanent test user creation is integrated into CI (EnsureTestUser.js) to avoid test failures due to missing credentials.
 - Screenshots are captured for failed tests.
-- Some tests may fail consistently due to DemoQA app issues; this is expected and demonstrates real-world test handling:
+- Some tests may fail consistently due to DemoQA app issues (7 tests); this is expected and demonstrates real-world test handling:
   - real UI test execution
   - handling of unstable test environments
   - capturing failure artifacts
+- Some end-to-end tests are skipped in CI due to known issues documented in the bugs section (3 tests).
 ### Test stability notes
 During CI integration several typical E2E automation challenges were encountered and addressed:
 - Headless input instability: some input interactions (e.g., search field in WebTables) occasionally lost focus in headless CI runs. This was stabilized by explicitly focusing elements before typing.

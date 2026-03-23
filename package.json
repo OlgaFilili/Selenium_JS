@@ -20,7 +20,7 @@
   "devDependencies": {
     "axios": "^1.13.2",
     "chai": "^4.3.10",
-    "chromedriver": "^144.0.1",
+    "chromedriver": "^146.0.3",
     "mocha": "^10.2.0",
     "selenium-webdriver": "^4.35.0"
   }
