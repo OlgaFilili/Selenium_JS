@@ -6,7 +6,6 @@ const { saveScreenshot } = require("../utils/ScreenshotUtils.js");
 let driver;
 let url = 'https://demoqa.com/';
 let homePage;
-
 before(async function() {
     // runs once before all tests
     driver= await createDriver();
@@ -17,10 +16,13 @@ before(async function() {
 });
 
 beforeEach(async function() {
+    if (process.env.CI === 'true') {
+        await driver.manage().window().setRect({ width: 1920, height: 1080 });
+    }
     // runs before each test
     await driver.get(url);
-    homePage =new HomePage(driver);
-    this.homePage=homePage;
+    homePage=  new HomePage(driver);
+    this.homePage= homePage;
 });
 
 afterEach(async function () {

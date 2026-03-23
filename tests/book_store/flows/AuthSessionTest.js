@@ -9,6 +9,7 @@ describe('Authorization state-based behavior check', function() {
     let loginPage, booksPage;
     beforeEach(async function(){
         const homePage= await getHomePage();
+        await homePage.waitCardsVisible();
         booksPage= await homePage.gotoBookStoreApplication();
         loginPage= await booksPage.clickLoginButton();
     });

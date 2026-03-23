@@ -15,6 +15,7 @@ describe('Books Page UI check', function() {
     });
     beforeEach(async function() {
         const homePage= await getHomePage();
+        await homePage.waitCardsVisible();
         booksPage= await homePage.gotoBookStoreApplication();
     });
     after(async function() {

@@ -10,6 +10,7 @@ describe('Login Page UI check', function() {
     let loginPage, booksPage, userPage;
     beforeEach(async function(){
         const homePage= await getHomePage();
+        await homePage.waitCardsVisible();
         booksPage= await homePage.gotoBookStoreApplication();
         loginPage= await booksPage.clickLoginButton();
     });
