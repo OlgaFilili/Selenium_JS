@@ -39,4 +39,4 @@ async function refreshPage(driver) {
   await driver.navigate().refresh();
 }
 
-module.exports = { scrollToElement, getDirectText, isInputValid, scrollRelatively, isInViewport, refreshPage };
+module.exports = { scrollToElement, getDirectText, isInputValid, scrollRelatively, isInViewport, refreshPage, clickElement };

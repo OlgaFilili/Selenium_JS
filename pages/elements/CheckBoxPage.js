@@ -1,42 +1,39 @@
 const BasePage = require("../BasePage.js");
 const MainMenu = require("../../components/MainMenu.js");
+const { waitVisible } = require("../../utils/WaitUtils.js");
 
 class CheckBoxPage extends BasePage
 {
     constructor(driver) {
         super(driver);
         this.menu= new MainMenu(driver);
-        this.expandAllButton={ xpath: "//button[@title='Expand all']"};
-        this.collapseAllButton={ xpath: "//button[@title= 'Collapse all']"};
-        this.toggleButton= "//parent::span/button";
-        this.chBXpathPrefix= "//label[@for='tree-node-";
-        this.chBXpathSuffix= "']";
-        this.stateXpathSuffix= "/*[name()='svg']";
+        this.header= { xpath: "//h1[text()='Check Box']"};
+        this.toggleButton= "switcher";
+        this.chBState= "checkbox";
+        //span[@title='Home']//parent::div/span[contains(@class, 'checkbox')]
+        this.chBXpathPrefix= "//span[@title='";
+        this.chBXpathSuffix= "']//parent::div/span[contains(@class, '";
+        this.stateXpathSuffix= "')]";
         this.confirmationMessageXpath= "//div[@id='result']";
     }
 
     _getChBLocator(node){
-        return { xpath: `${this.chBXpathPrefix}${node}${this.chBXpathSuffix}`};
+        return { xpath: `${this.chBXpathPrefix}${node}${this.chBXpathSuffix}${this.chBState}${this.stateXpathSuffix}`};
     }
     _getTgButtonLocator(node){
-        return { xpath: `${this.chBXpathPrefix}${node}${this.chBXpathSuffix}${this.toggleButton}`};
+        return { xpath: `${this.chBXpathPrefix}${node}${this.chBXpathSuffix}${this.toggleButton}${this.stateXpathSuffix}`};
     }
-
-    async clickExpandAllButton(){
-        await this._click(this.expandAllButton);
+    async waitHeader(){
+        await waitVisible(this.driver, this.header);
     }
-    async clickCollapseAllButton(){
-        await this._click(this.collapseAllButton);
-    }
-
     /** @returns {string} node */
     async getCheckBoxState(node) {
-        const locator = { xpath: `${this.chBXpathPrefix}${node}${this.chBXpathSuffix}//span[@class='rct-checkbox']${this.stateXpathSuffix}`};
+        const locator =  this._getChBLocator(node);
         const element = await this._find(locator);
-        const classAttr = await element.getAttribute('class');
+        const classAttr = await element.getAttribute('aria-checked');
 
-        if (classAttr.includes('rct-icon-check')) return 'check';
-        if (classAttr.includes('rct-icon-half-check')) return 'half';
+        if (classAttr.includes('true')) return 'check';
+        if (classAttr.includes('mixed')) return 'half';
         return 'uncheck';
     }
     async clickChB(node){
@@ -58,7 +55,7 @@ class CheckBoxPage extends BasePage
         }
     }
     async isNodeExpanded(node){
-        const locator={ xpath: `${this.chBXpathPrefix}${node}${this.chBXpathSuffix}${this.toggleButton}${this.stateXpathSuffix}`};
+        const locator=this._getTgButtonLocator(node);
         const element=await this._find(locator);
         const classAttr= await element.getAttribute('class');
         //console.log(`"${node}" class? ->`, classAttr);
@@ -67,7 +64,7 @@ class CheckBoxPage extends BasePage
     }
 
     async expandNode(node){
-        const locator=this._getTgButtonLocator(node);
+        const locator= this._getTgButtonLocator(node);
         const expanded=await this.isNodeExpanded(node);
         //console.log(`"${node}" expanded? ->`, expanded);
         if (!expanded){

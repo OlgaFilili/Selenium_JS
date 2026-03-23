@@ -1,12 +1,13 @@
 const BasePage = require("../BasePage.js");
 const MainMenu = require("../../components/MainMenu.js");
+const { waitVisible } = require("../../utils/WaitUtils.js");
 
 class DroppablePage extends BasePage
 {
     constructor(driver) {
         super(driver);
         this.menu= new MainMenu(driver);
-        this.mainHeader= "//div//h1";
+        this.mainHeader={ xpath: "//div//h1"};
         this.idTabMenuPreffix="droppableExample-tab-";
         this.tabMenuItems= {
             simple:             { name: 'Simple'},
@@ -19,6 +20,9 @@ class DroppablePage extends BasePage
     }
     _getTabMenuLocator(key){
         return {id: `${this.idTabMenuPreffix}${key}`};
+    }
+    async waitMainHeader(){
+        await waitVisible(this.driver, this.mainHeader);
     }
     async getMainHeader(){
         return await this._getText(this.mainHeader);

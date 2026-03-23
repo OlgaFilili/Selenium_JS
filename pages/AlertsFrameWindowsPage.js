@@ -9,14 +9,15 @@ class AlertsFrameWindowsPage extends BasePage
         this.menu= new MainMenu(driver);
         this.cardName= "Alerts, Frame & Windows"
         this.itemNames=['Browser Windows', 'Alerts', 'Frames', 'Nested Frames', 'Modal Dialogs'];
-        this.infoText= { xpath: "//div[@class='col-12 mt-4 col-md-6']"};
+        this.itemLinks=['/browser-windows'];
+        this.infoText= { xpath: "//div[contains(@class,'col-12 mt-4 col-md-6')]"};
     }
 
     async getAlertsFrameWindowsPageText() {
         return await this._getText(this.infoText);
     }
     async gotoBrowserWindowsMenuItem() {
-        await this.menu.clickMenuItem(this.cardName, this.itemNames[0]);
+        await this.menu.clickMenuItem(this.cardName, this.itemLinks[0]);
         return getPageByMenuItem(this.driver, this.itemNames[0]);
     }
 

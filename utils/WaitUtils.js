@@ -11,8 +11,7 @@ async function waitForStableUI(driver) {
     const startTime = Date.now();
     while (true) {
         const elements = await Promise.all(
-            TRANSIENT_SELECTORS.map(sel => driver.findElements({ css: sel }))
-        );
+            TRANSIENT_SELECTORS.map(sel => driver.findElements({ css: sel })));
         const visible = elements.flat().filter(el => el);
         if (visible.length === 0) break;
         if (Date.now() - startTime > timeout) break;
@@ -22,9 +21,17 @@ async function waitForStableUI(driver) {
 }
 async function waitVisible(driver, locator) {
     const timeout= 10000;
-    const element = await driver.wait(until.elementLocated(locator), timeout);
-    await driver.wait(until.elementIsVisible(element), timeout);
-    return element;
+    await driver.wait(async () => {
+        try {
+            const element = await driver.findElement(locator);
+            return await element.isDisplayed();
+        } catch (err) {
+            if (err.name === 'NoSuchElementError' ||
+                err.name === 'StaleElementReferenceError') return false;
+            throw err;
+        }
+    }, timeout);
+    return await driver.findElement(locator);
 }
 async function waitIsRemoved(driver, locator) {
     const timeout= 10000;
@@ -33,9 +40,7 @@ async function waitIsRemoved(driver, locator) {
         await driver.wait(until.stalenessOf(element), timeout);
     } catch (err) {
         // if element is NOT found -> it's already gone, exactly what we need
-        if (err.name === "NoSuchElementError") {
-            return;
-        }
+        if (err.name === "NoSuchElementError") return;
         throw err;
     }
 }

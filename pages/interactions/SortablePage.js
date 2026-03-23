@@ -7,7 +7,7 @@ class SortablePage extends BasePage
     constructor(driver) {
         super(driver);
         this.menu= new MainMenu(driver);
-        this.mainHeader= "//div//h1";
+        this.mainHeader={ xpath: "//div//h1"};
         this.idTabMenuPreffix="demo-tab-";
         this.keys= ['list', 'grid'];
         this.tabMenuItems = this.keys.map(key => capitalizeFirstLetter(key));

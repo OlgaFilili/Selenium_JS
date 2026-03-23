@@ -20,6 +20,7 @@ beforeEach(async function() {
         await driver.manage().window().setRect({ width: 1920, height: 1080 });
     }
     // runs before each test
+    await driver.manage().deleteAllCookies();
     await driver.get(url);
     homePage=  new HomePage(driver);
     this.homePage= homePage;
@@ -42,11 +43,3 @@ after(async function() {
     //await new Promise(r => setTimeout(r, 3000));
     await quitDriver();
 });
-
-/**
- * @returns {import('../pages/HomePage')}
- */
-function getHomePage() {
-  return homePage;
-}
-module.exports = { getHomePage };
