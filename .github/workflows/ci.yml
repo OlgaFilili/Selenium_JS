@@ -26,9 +26,6 @@ jobs:
       - name: Install dependencies
         run: npm ci
 
-      - name: Override ChromeDriver for CI
-        run: npm install --no-save chromedriver@145
-
       - name: Check browser versions
         run: |
           google-chrome --version || true
