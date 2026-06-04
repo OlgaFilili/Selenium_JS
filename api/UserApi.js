@@ -9,7 +9,7 @@ class UserApi {
             password: 'Test123!'
         };
     }
-    async _generateToken(user) {
+    async generateToken(user) {
         const tokenResponse = await axios.post(`${BASE_URL}/Account/v1/GenerateToken`,
             {   userName: user.userName,
                 password: user.password} );
@@ -17,8 +17,10 @@ class UserApi {
         return token;
     }
     async createUser() {
-        const user = this._generateUser();
-        const response = await axios.post(`${BASE_URL}/Account/v1/User`, user);
+        let user = this._generateUser();
+        const response = await axios.post(`${BASE_URL}/Account/v1/User`,             
+            {   userName: user.userName,
+                password: user.password} );
         user.userId = response.data.userID;
         user.books= response.data.books;
         return user;

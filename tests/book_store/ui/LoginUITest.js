@@ -27,7 +27,7 @@ describe('Login Page UI check', function() {
             this.authSucceeded = !loginInFailed;
             expect(loginInFailed, "Error! System behaved unexpectedly").to.be.true;
             const validity= await loginPage.getUsernameValidity();
-            expect(validity, "Username`s field frame is not red").to.be.false;
+            expect(validity, "UserName`s field frame is not red").to.be.false;
         });
         it('should fail login if password is empty', async function(){
             const username= "Name";
@@ -87,7 +87,7 @@ describe('Login Page UI check', function() {
             expect(loginInFailed, "Error! Authorization was not successful").to.be.false;
             userPage= new AuthenticatedPage(loginPage.driver);
             const actualUserName = await userPage.getUserName();
-            expect(actualUserName, 'Actual and expected usernames do not match').to.be.equal(username);
+            expect(actualUserName, 'Actual and expected userNames do not match').to.be.equal(username);
         });
         it('should check redirect behavior to the Profile from Login page in auth state', async function(){
             const username= "Name User123";
@@ -104,7 +104,7 @@ describe('Login Page UI check', function() {
             const isAuth= await userPage.isUserNameDisplayed();
             expect(isAuth, "Error! System is not in expected state").to.be.true;
             const actualUserName = await userPage.getUserName();
-            expect(actualUserName, 'Username does not right').to.be.equal(username);
+            expect(actualUserName, 'Actual and expected userNames do not match').to.be.equal(username);
 
         });
     });

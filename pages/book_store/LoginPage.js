@@ -1,5 +1,6 @@
 const BasePage = require("../BasePage.js");
 const MainMenu = require("../../components/MainMenu.js");
+const RegisterPage = require("./RegisterPage.js");
 const { waitVisible, waitForFirstVisible } = require("../../utils/WaitUtils.js");
 const { isInputValid } = require("../../utils/BrowserUtils.js");
 
@@ -89,7 +90,9 @@ class LoginPage extends BasePage
         return isDisplayed;
     }
     async clickNewUserButton(){
+        await this.waitNotLoggedInState();
         await this._click(this.newUserButton);
+        return new RegisterPage(this.driver);
     }
     async verifyErrorMessageColor(){
         await waitVisible(this.driver, this.errorMessage);

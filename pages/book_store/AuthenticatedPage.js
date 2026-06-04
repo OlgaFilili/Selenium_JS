@@ -19,11 +19,11 @@ class AuthenticatedPage extends BasePage
   }
   async getUserName(){
     await this.waitUserPageReady();
-    return await this._getText(this.userNameValue);
+    const element=await this._find(this.userNameValue);
+    return await this._getTextContent(element);
   }
   async isUserNameDisplayed(){
     return await this._isDisplayed(this.userNameValue);
   }
-
 }
 module.exports= AuthenticatedPage;

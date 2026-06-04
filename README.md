@@ -4,7 +4,7 @@ An automation testing project using Selenium WebDriver with JavaScript.
 ## Project Overview
 Automated UI tests for the DemoQA sample web application, implemented with Selenium WebDriver and JavaScript.
 The project follows the Page Object Model and includes reusable components, utilities, structured test suites, and a GitHub Actions CI workflow for automated test execution.
-API testing artifacts for the DemoQA Book Store authorization endpoints are also included.
+API testing artifacts for DemoQA Book Store account-related endpoints are also included, covering authentication, registration, token generation, user management, exploratory testing, and bug reporting.
 
 ## Project Evolution
 During the course of this project, the DemoQA Book Store application underwent multiple updates and functional changes.
@@ -18,7 +18,7 @@ In this phase, the focus was on:
 - Stabilizing CI execution and resolving test flakiness caused by application changes
 - Re-validating previously implemented scenarios against the updated system
 
-New functionality (such as extended Book Store features and updated Register flows) will be covered in separate iterations.
+New functionality (such as extended Book Store features) will be covered in separate iterations.
 
 ## QA Artifacts
 This repository also contains manual QA documentation created during testing:
@@ -34,8 +34,9 @@ Page Object Model implemented (pages/, components/ and utils/ folders).
 Shared abstractions are used for common behavior, including an AuthenticatedPage base class for authorized user state.
 Test coverage includes:
 - UI component validation (Elements, BooksTable)
-- Navigation and layout checks (MainMenu component)
+- Navigation and layout checks (MainMenu, BooksTable components)
 - Book Store authentication flows (UI, functional, session-level)
+- User registration and account management flows
 Core reusable components: BaseTest.js, BasePage.js.
 
 ## Prerequisites / Environment
@@ -72,11 +73,14 @@ Selenium_JS/
 │   │   ├─ test-cases/                # API test cases (smoke, regression)
 │   │   └─ README.md                  # API testing overview
 │   ├─ flows/bugs/     
-│   │   └─ bugs.md              
+│   │   └─ bugs.md  
+│   ├─ integration/bugs/     
+│   │   └─ bugs.md                 
 │   └─ ui/bugs/ 
 │       ├─ booksTable_component.md
-│       ├─ mainMenu_component.md
+│       ├─ mainMenu_component(responsive).md
 │       ├─ profilePage.md
+│       ├─ registerPage.md
 │       └─ webTablesPage.md
 ├─ node_modules/                      # Installed dependencies (ignored by Git)
 ├─ pages/                             # Page Object Model classes
@@ -87,6 +91,7 @@ Selenium_JS/
 │   │   ├─ BooksPage.js
 │   │   ├─ LoginPage.js
 │   │   ├─ ProfilePage.js
+│   │   ├─ RegisterPage.js
 │   │   └─ SwaggerPage.js
 │   ├─ elements/
 │   │   ├─ CheckBoxPage.js
@@ -106,25 +111,32 @@ Selenium_JS/
 │   ├─ HomePage.js
 │   ├─ InteractionsPage.js
 │   └─ WidgetsPage.js
+├─ testData 
+│   ├─ RegisterData.js      
 ├─ tests/                             # Test scripts
 │   ├─ book_store/
 │   │   ├─ flows   
 │   │   │   ├─ AuthSessionTest.js
 │   │   │   ├─ DeleteUserAccountSuccessTest.js
 │   │   │   ├─ LoginNegativeTest.js
-│   │   │   └─ LoginSuccessTest.js
+│   │   │   ├─ LoginSuccessTest.js
+│   │   │   ├─ RegisterNegativeTest.js
+│   │   │   ├─ RegisterSuccessTest.js
+│   │   │   └─ RegisterValidationTest.js
 │   │   └─ ui
 │   │       ├─ BooksTableTest.js
 │   │       ├─ BooksUITest.js
 │   │       ├─ LoginUITest.js
-│   │       └─ ProfileUITest.js
+│   │       ├─ ProfileUITest.js
+│   │       └─ RegisterUITest.js
 │   ├─ elements/
 │   │   ├─ CheckBoxTest.js
 │   │   ├─ RadioButtonTest.js
 │   │   └─ WebTablesTest.js
 │   ├─ helpers/                       # Test helper functions
 │   │   ├─ LoginHelper.js
-│   │   └─ LogoutHelper.js
+│   │   ├─ LogoutHelper.js
+│   │   └─ RegisterHelper.js
 │   ├─ setup/                         # Creates permanent test user for CI
 │   │   └─ EnsureTestUser.js
 │   ├─ BaseTest.js                    # Common test setup/teardown
@@ -167,14 +179,14 @@ Covered areas:
 Test cases and bug reports can be found in:
 - `docs/api/`
 This part of the project demonstrates API endpoints testing approach, test design, and bug reporting skills.
-API analysis is used to support UI and end-to-end authorization testing.
+API analysis is used to support UI testing, end-to-end user flows, session handling validation, and investigation of application defects.
 
 ## UI Test Structure Notes
 UI tests are organized based on the complexity and behavior of the tested area.
 - For isolated components (Elements), tests focus on direct UI checks.
 - For Book Store functionality, tests are grouped by intent:
   - `ui/` — UI-level checks (layout, labels, element visibility)
-  - `flows/` — functional user flows (authentication, navigation, user account deletion, state changes)
+  - `flows/` — functional user flows (authentication, navigation, user account deletion, registration, state changes)
 
 - Authorization automation is split into three layers:
   - Login UI validation
@@ -188,11 +200,11 @@ Key points for the current setup:
 - Manual trigger via workflow_dispatch is available for reruns outside PRs.
 - Permanent test user creation is integrated into CI (EnsureTestUser.js) to avoid test failures due to missing credentials.
 - Screenshots are captured for failed tests.
-- Some tests may fail consistently due to DemoQA app issues (7 tests); this is expected and demonstrates real-world test handling:
+- Some tests may fail consistently due to DemoQA app issues; this is expected and demonstrates real-world test handling:
   - real UI test execution
   - handling of unstable test environments
   - capturing failure artifacts
-- Some end-to-end tests are skipped in CI due to known issues documented in the bugs section (3 tests).
+- Some end-to-end tests are skipped in CI due to known issues documented in the bugs section.
 ### Test stability notes
 During CI integration several typical E2E automation challenges were encountered and addressed:
 - Headless input instability: some input interactions (e.g., search field in WebTables) occasionally lost focus in headless CI runs. This was stabilized by explicitly focusing elements before typing.
@@ -202,7 +214,8 @@ During CI integration several typical E2E automation challenges were encountered
 This setup is primarily educational and was added to better understand how automated tests can be integrated into CI pipelines.
 
 ## Notes
-ChromeDriver is managed via the chromedriver package.
+Chrome is controlled via Selenium WebDriver.
+Driver management is handled automatically by Selenium (no manual ChromeDriver dependency).
 Tests are written using Mocha + Chai + Selenium WebDriver.
 Async/await is used consistently for reliable asynchronous handling.
 Screenshot capture is enabled for failing tests.
