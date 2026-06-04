@@ -19,6 +19,30 @@ async function waitForStableUI(driver) {
     }
     await new Promise(r => setTimeout(r, 50));
 }
+async function waitForDomStable(driver) {
+    const timeout= 10000;
+    await driver.executeAsyncScript(function(timeout, done) {
+        let timer;
+        const observer = new MutationObserver(() => {
+            clearTimeout(timer);
+            timer = setTimeout(() => {
+                observer.disconnect();
+                done(true);
+            }, 500); // 500ms of stable silence
+        });
+
+        observer.observe(document, {
+            childList: true,
+            subtree: true,
+            attributes: true
+        });
+
+        timer = setTimeout(() => {
+            observer.disconnect();
+            done(true);
+        }, timeout);
+    }, timeout);
+}
 async function waitVisible(driver, locator) {
     const timeout= 10000;
     await driver.wait(async () => {
@@ -50,6 +74,12 @@ async function waitClickable(driver, locator) {
     await driver.wait(until.elementIsEnabled(element), timeout);
     return element;
 }
+async function waitIsActive(driver, element) {
+    const timeout= 10000;
+    await driver.wait(async () => {
+        return await driver.executeScript( "return arguments[0] === document.activeElement", element);
+    }, timeout);  
+}
 async function waitText(driver, locator, expectedText) {
     const timeout= 10000;
     await driver.wait(async () => {
@@ -65,5 +95,5 @@ async function waitForFirstVisible(driver, successEl, failureEl) {
         waitVisible(driver, failureEl).then(() => false)
     ]);
 }
-module.exports={ waitClickable, waitVisible, waitForStableUI, waitIsRemoved, waitForFirstVisible };
+module.exports={ waitClickable, waitVisible, waitForStableUI, waitIsRemoved, waitForFirstVisible, waitForDomStable };
 

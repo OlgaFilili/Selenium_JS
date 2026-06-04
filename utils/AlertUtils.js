@@ -3,7 +3,14 @@ const { until } = require('selenium-webdriver');
 async function waitForAlert(driver, timeout = 5000) {
     await driver.wait(until.alertIsPresent(), timeout);
 }
-
+async function isAlertPresent(driver, timeout = 500) {
+    try {
+        await driver.wait(until.alertIsPresent(), timeout);
+        return true;
+    } catch {
+        return false;
+    }
+}
 async function getAlertText(driver) {
     await waitForAlert(driver);
     const alert = await driver.switchTo().alert();
@@ -16,4 +23,4 @@ async function acceptAlert(driver) {
     await alert.accept();
 }
 
-module.exports = { getAlertText, acceptAlert };
+module.exports = { isAlertPresent, getAlertText, acceptAlert };

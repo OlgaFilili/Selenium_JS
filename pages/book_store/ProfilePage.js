@@ -64,7 +64,7 @@ class ProfilePage extends AuthenticatedPage
     }
     async gotoRegisterPage(){
         await this.waitNotLoggedInState();
-        await this._click(this.registerLink);    
+        await this._click(this.registerLink);
     }
     async getLabelText(){
         await this.waitUserPageReady();

@@ -1,5 +1,5 @@
 const { scrollToElement } = require("../utils/BrowserUtils.js");
-const { waitClickable } = require("../utils/WaitUtils.js");
+const { waitClickable, waitIsActive } = require("../utils/WaitUtils.js");
 const { Key }= require('selenium-webdriver');
 class BasePage 
 {
@@ -57,7 +57,7 @@ class BasePage
   }
   async _clickElement(element) {
     try {
-        await element.click();
+      await element.click();
     } catch (err) {
       if (err.name === 'ElementClickInterceptedError') {
         await scrollToElement(this.driver, element);
@@ -68,13 +68,15 @@ class BasePage
     }
   }
 
-  async _set(locator, text) {
-    let element = await this._find(locator);
+async _set(locator, text) {
+    let element= await this._find(locator);
     await this._clickElement(element);
     await element.sendKeys(Key.chord(Key.CONTROL, 'a'));
     await element.sendKeys(Key.BACK_SPACE);
-    await element.sendKeys(text);
-  }
+    for (const char of text) {
+      await element.sendKeys(char);
+    }
+}
   async _backspace(locator, num) {
     const element = await this._find(locator);
     await this._clickElement(element);
@@ -105,6 +107,9 @@ class BasePage
   }
   async _getSrc(element){
     return await element.getAttribute('src');
+  }
+  async _getTextContent(element){
+    return await element.getAttribute('textContent');
   }
   async _getText(target) {
     let element;
