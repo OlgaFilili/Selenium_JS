@@ -26,6 +26,9 @@ jobs:
       - name: Install dependencies
         run: npm ci
 
+      - name: Install chromedriver matching Chrome
+        run: npm install --no-save chromedriver
+
       - name: Check browser versions
         run: |
           google-chrome --version || true
