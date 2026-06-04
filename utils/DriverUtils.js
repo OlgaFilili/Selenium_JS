@@ -1,6 +1,5 @@
 const { Builder } = require("selenium-webdriver");
 const chrome = require('selenium-webdriver/chrome');
-const chromedriver = require('chromedriver');
 
 let driver; // will be created once
 
@@ -17,10 +16,9 @@ async function createDriver() {
         '--window-size=1920,1080'
       );
     }
-    const service= new chrome.ServiceBuilder(chromedriver.path);
+    //const service= new chrome.ServiceBuilder(chromedriver.path);
     driver = await new Builder()
       .forBrowser("chrome")
-      .setChromeService(service)
       .setChromeOptions(options)
       .build();
   }

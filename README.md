@@ -214,7 +214,8 @@ During CI integration several typical E2E automation challenges were encountered
 This setup is primarily educational and was added to better understand how automated tests can be integrated into CI pipelines.
 
 ## Notes
-ChromeDriver is managed via the chromedriver package.
+Chrome is controlled via Selenium WebDriver.
+Driver management is handled automatically by Selenium (no manual ChromeDriver dependency).
 Tests are written using Mocha + Chai + Selenium WebDriver.
 Async/await is used consistently for reliable asynchronous handling.
 Screenshot capture is enabled for failing tests.
