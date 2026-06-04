@@ -63,3 +63,49 @@
 - The behavior suggests that the login page may rely on locally stored authentication state rather than validating the user session after account deletion.
 - Attempting to log in again with the deleted user correctly fails.
 - Screenshot attached.
+
+## Bug-035
+**Title:** Credential whitespace normalization is inconsistent for leading and trailing spaces
+**Environment:** DemoQA Book Store Application (https://demoqa.com)
+**Severity:** Medium
+**Found during:** Register automation validation testing (end-to-end flow)
+**Related test cases:**
+- Registration negative check
+       regression: data normalization check
+         should check normalization behavior for trailing spaces in credentials
+- Registration negative check
+       regression: data normalization check
+         should check normalization behavior for leading spaces in credentials
+**Preconditions:**
+- A user account exists with leading spaces in username/password.
+- B user account exists with trailing spaces in username/password.
+**Steps to reproduce:**
+Scenario A: Leading spaces in credentials:
+1. Log in to the application with a valid user credentials with leading whitespaces on https://demoqa.com/login.
+2. Observe UserName on the logged-in user profile page.
+3. Log out.
+4. Attempt to log in to the same account using trimmed credentials (without leading whitespaces).
+
+Scenario B: Trailing spaces in credentials:
+1. Log in to the application with a valid user credentials with trailing whitespaces on https://demoqa.com/login.
+2. Observe UserName on the logged-in user profile page.
+3. Log out.
+4. Attempt to log in to the same account using trimmed credentials (without trailing whitespaces).
+**Actual result:**
+Scenario A:
+- UserName preserved leading whitespaces.
+- Login failed when credentials are entered without leading whitespaces.
+Scenario B:
+- Username is displayed in trimmed form (without trailing whitespaces).
+- User successfully logged in with trimmed version of the credentials.
+Summary:
+- Leading whitespaces are preserved as part of credentials.
+- Trailing whitespaces are trimmed during registration and ignored during authentication.
+- This creates inconsistent credential handling and ambiguous login behavior.
+**Expected result:**
+- Credential whitespace should be normalized consistently.
+- Leading and trailing whitespace should be handled according to a single consistent normalization policy (either preserved or trimmed).
+- Authentication behavior should match the stored credential format predictably.
+**Notes:**
+- Related API bugs: Bug-003 (api_auth), Bug-010 (api_generate), Bug-024 (api_register)
+- Lower-level API issues appear to be manifestations of the same normalization inconsistency.

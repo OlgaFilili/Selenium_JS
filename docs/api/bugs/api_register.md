@@ -32,7 +32,7 @@ with request body:
 **Notes:**
 - User registered with a password containing internal whitespace can be successfully authenticated via POST /GenerateToken, this indicates that inconsistent input is persisted.
 
-## Bug-024
+## Bug-024 !!!Superseded by Bug-035 (system-level whitespace normalization issue)
 **Title:** Inconsistent whitespace normalization in user registration and authentication
 **Environment:** DemoQA Book Store API  
 **Endpoint:** POST /Account/v1/User 
